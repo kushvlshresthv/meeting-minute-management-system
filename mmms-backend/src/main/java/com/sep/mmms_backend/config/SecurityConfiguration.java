@@ -2,6 +2,7 @@ package com.sep.mmms_backend.config;
 
 import com.sep.mmms_backend.exception_handling.CustomAccessDeniedHandler;
 import com.sep.mmms_backend.exception_handling.CustomBasicAuthenticationEntryPoint;
+import com.sep.mmms_backend.global_constants.GlobalConstants;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.user_details_service.DatabaseUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -28,8 +31,10 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain getSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((config)-> {
-           config.requestMatchers("/login").authenticated();
+            config.requestMatchers("/h2-console/**", "/isAuthenticated").permitAll();
+            config.requestMatchers("/api/**").authenticated();
         });
+
 
         http.httpBasic(config-> {
 
@@ -53,10 +58,31 @@ public class SecurityConfiguration {
         });
 
 
+        //by default all the POST routes are csrf protected
+        //TODO: for now CSRF is disabled, will configure later
         http.csrf(AbstractHttpConfigurer::disable);
+
         http.cors(Customizer.withDefaults());
 
+        //NOTE: this is for h2 database urls to work fine
+        http.headers(AbstractHttpConfigurer::disable);
+
         return http.build();
+    }
+
+
+    //configuring the CORS
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(GlobalConstants.FRONTEND_URL)
+                        .allowedMethods("*")
+                        .allowCredentials(true);
+            }
+        };
     }
 
 

@@ -20,11 +20,11 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
 
         Response errorResponse = new Response();
 
-        errorResponse.setMessage("Authentication Failed");
+        errorResponse.setMessage("Authentication Failed: " + authException.getMessage());
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), errorResponse);
 
-        log.error("Authentication Failed: " + authException.getMessage());
+        log.error("Authentication Failed: {}", authException.getMessage());
     }
 }

@@ -21,11 +21,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
        Response errorResponse = new Response();
-       errorResponse.setMessage("Access Denied");
+       errorResponse.setMessage("Access Denied: " + accessDeniedException.getMessage());
 
        ObjectMapper mapper = new ObjectMapper();
        mapper.writeValue(response.getWriter(), errorResponse);
 
-        log.error("Access Denied Exception: " + accessDeniedException.getMessage());
+        log.error("Access Denied Exception: {} ", accessDeniedException.getMessage());
     }
 }
