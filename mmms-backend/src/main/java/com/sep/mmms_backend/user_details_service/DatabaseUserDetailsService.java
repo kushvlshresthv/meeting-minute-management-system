@@ -18,7 +18,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser registeredUser = appUserService.loadUserByUsername(username);
-        log.info("UserDetailsService invoked by: " + username);
+        log.info("UserDetailsService invoked by: {}", username);
 
         if(registeredUser != null) {
             UserDetails user = User.withUsername(username).password(registeredUser.getPassword()).build();

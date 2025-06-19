@@ -2,6 +2,7 @@ package com.sep.mmms_backend.exception_handling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.mmms_backend.response.Response;
+import com.sep.mmms_backend.response.ResponseMessage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,11 +22,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
        Response errorResponse = new Response();
-       errorResponse.setMessage("Access Denied: " + accessDeniedException.getMessage());
+       errorResponse.setMessage(ResponseMessage.ACCESS_DENIED +": " + accessDeniedException.getMessage());
 
        ObjectMapper mapper = new ObjectMapper();
        mapper.writeValue(response.getWriter(), errorResponse);
 
-        log.error("Access Denied Exception: {} ", accessDeniedException.getMessage());
+        log.error("{}: {} ",ResponseMessage.ACCESS_DENIED , accessDeniedException.getMessage());
     }
 }
