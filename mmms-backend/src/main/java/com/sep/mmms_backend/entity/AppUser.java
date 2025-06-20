@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.entity;
 
 import com.sep.mmms_backend.validators.annotations.CheckUsernameAvailability;
+import com.sep.mmms_backend.validators.annotations.FieldsValueMatch;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,6 +16,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 
+@FieldsValueMatch.List({
+        @FieldsValueMatch(field = "password", fieldMatch = "confirmPassword", message = "Passwords must match"),
+})
 public class AppUser {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -46,6 +50,17 @@ public class AppUser {
     @Transient
     String confirmPassword;
 
-    //TODO: add the joined meetings as well as the post of the person
-
+    //TODO: add the joined meetings as well as the 'post' of the person in the institution
 }
+
+/*
+{
+    "uid": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "John",
+    "email": "JohnDoe@gmail.com",
+    "password":"johndoe",
+    "confirmPassword":"johndoe"
+}
+ */

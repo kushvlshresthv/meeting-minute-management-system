@@ -4,7 +4,9 @@ public enum ResponseMessage {
     LOGIN_SUCCESSFUL("Login successful"),
     LOGOUT_SUCCESSFUL("Logout successful"),
     AUTHENTICATION_FAILED("Authentication Failed"),
-    ACCESS_DENIED("Access Denied");
+    ACCESS_DENIED("Access Denied"),
+    REGISTER_USER_FAILED("Failed to register user"),
+    REGISTER_USER_SUCCESS("User registered successfully");
 
 
 

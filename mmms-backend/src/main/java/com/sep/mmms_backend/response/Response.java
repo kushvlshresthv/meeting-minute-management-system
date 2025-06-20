@@ -20,4 +20,9 @@ public class Response {
     public Response(ResponseMessage responseMessage) {
         this.message = responseMessage.getMessage();
     }
+
+    public Response(ResponseMessage responseMessage, Object mainBody) {
+        this.message = responseMessage.getMessage();
+        this.mainBody = mainBody;
+    }
 }
