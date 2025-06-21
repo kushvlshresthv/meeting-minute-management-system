@@ -52,7 +52,7 @@ RESPONSE BODY:
 
 ``` json
 {
-    "message": "user with the username already exists",
+    "message": "User registered successfully",
     "mainBody": null
 }
 ```
