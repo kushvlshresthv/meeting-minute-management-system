@@ -1,11 +1,17 @@
 package com.sep.mmms_backend.entity;
 
-import com.sep.mmms_backend.validators.annotations.CheckUsernameAvailability;
+import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
 import com.sep.mmms_backend.validators.annotations.FieldsValueMatch;
+import com.sep.mmms_backend.validators.annotations.UsernameFormat;
 import jakarta.persistence.*;
+import jakarta.validation.Validation;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import static com.sep.mmms_backend.global_constants.ValidationErrorMessages.*;
 
 @Getter
 @Setter
@@ -17,36 +23,38 @@ import lombok.*;
 @NoArgsConstructor
 
 @FieldsValueMatch.List({
-        @FieldsValueMatch(field = "password", fieldMatch = "confirmPassword", message = "Passwords must match"),
+        @FieldsValueMatch(field = "password", fieldMatch = "confirmPassword", message = PASSWORD_CONFIRMPASSWORD_MISMATCH),
 })
 public class AppUser {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     int uid;
 
-    @NotEmpty
+
+    @NotBlank(message = FIELD_CANNOT_BE_EMPTY)
     @Column(name="firstname")
     String firstName;
 
-    @NotEmpty
+    @NotBlank(message = FIELD_CANNOT_BE_EMPTY)
     @Column(name="lastname")
     String lastName;
 
     @Column(name="username")
-    @NotEmpty
-    @CheckUsernameAvailability
+    @NotBlank(message = FIELD_CANNOT_BE_EMPTY)
+    @UsernameFormat
     String username;
 
-    @NotEmpty
-    @Email
+    @NotBlank(message = FIELD_CANNOT_BE_EMPTY)
+    @Email(message= VALID_EMAIL_REQUIRED)
     @Column(name="email")
     String email;
 
-    @NotEmpty
+    @NotBlank(message = FIELD_CANNOT_BE_EMPTY)
     @Column(name="password")
+    @Size(min=5, message= CHOOSE_STRONGER_PASSWORD)
     String password;
 
-    @NotEmpty
+    @NotEmpty(message = FIELD_CANNOT_BE_EMPTY)
     @Transient
     String confirmPassword;
 

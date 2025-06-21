@@ -3,7 +3,7 @@ package com.sep.mmms_backend.controller;
 import com.sep.mmms_backend.config.SecurityConfiguration;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.response.Response;
-import com.sep.mmms_backend.response.ResponseMessage;
+import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +60,7 @@ public class LoginLogoutControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage().startsWith(ResponseMessage.AUTHENTICATION_FAILED.getMessage() + " Bad Credentials"));
+        Assertions.assertThat(response.getMessage().startsWith(ResponseMessages.AUTHENTICATION_FAILED.toString() + " Bad Credentials"));
     }
 
     //2) tests when the provided username does exists in the database, but password is wrong
@@ -83,7 +83,7 @@ public class LoginLogoutControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage().startsWith(ResponseMessage.AUTHENTICATION_FAILED.getMessage() + " Bad Credentials"));
+        Assertions.assertThat(response.getMessage().startsWith(ResponseMessages.AUTHENTICATION_FAILED.toString() + " Bad Credentials"));
     }
 
 
@@ -106,7 +106,7 @@ public class LoginLogoutControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage().startsWith(ResponseMessage.LOGIN_SUCCESSFUL.getMessage()));
+        Assertions.assertThat(response.getMessage().startsWith(ResponseMessages.LOGIN_SUCCESSFUL.toString()));
     }
 
 
@@ -120,7 +120,7 @@ public class LoginLogoutControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage().startsWith(ResponseMessage.ACCESS_DENIED.getMessage() + " Full authentication is required to access this resource"));
+        Assertions.assertThat(response.getMessage().startsWith(ResponseMessages.ACCESS_DENIED.toString() + " Full authentication is required to access this resource"));
     }
 
     //5) tests the case when a logged in user tries to logout
@@ -133,7 +133,7 @@ public class LoginLogoutControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage().startsWith(ResponseMessage.LOGOUT_SUCCESSFUL.getMessage()));
+        Assertions.assertThat(response.getMessage().startsWith(ResponseMessages.LOGOUT_SUCCESSFUL.toString()));
     }
 
 }

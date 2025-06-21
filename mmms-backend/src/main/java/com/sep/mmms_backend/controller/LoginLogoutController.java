@@ -1,7 +1,7 @@
 package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.response.Response;
-import com.sep.mmms_backend.response.ResponseMessage;
+import com.sep.mmms_backend.response.ResponseMessages;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -20,7 +20,7 @@ public class LoginLogoutController {
     // "/login" is a secure rest end point handled by Spring Security
     @GetMapping("/login")
     public ResponseEntity<Response> tryLogin(HttpSession session) {
-        return new ResponseEntity<Response>(new Response(ResponseMessage.LOGIN_SUCCESSFUL), HttpStatus.OK);
+        return new ResponseEntity<Response>(new Response(ResponseMessages.LOGIN_SUCCESSFUL), HttpStatus.OK);
     }
 
     //TODO: configure the csrf and its tokens and make these request as POST.
@@ -34,6 +34,6 @@ public class LoginLogoutController {
             //clear the SecurityContextHolder and the following code also invalidates the HttpSession
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        return ResponseEntity.ok().body(new Response(ResponseMessage.LOGOUT_SUCCESSFUL));
+        return ResponseEntity.ok().body(new Response(ResponseMessages.LOGOUT_SUCCESSFUL));
     }
 }

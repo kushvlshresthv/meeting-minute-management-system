@@ -1,6 +1,6 @@
 package com.sep.mmms_backend.response;
 
-public enum ResponseMessage {
+public enum ResponseMessages {
     LOGIN_SUCCESSFUL("Login successful"),
     LOGOUT_SUCCESSFUL("Logout successful"),
     AUTHENTICATION_FAILED("Authentication Failed"),
@@ -11,11 +11,11 @@ public enum ResponseMessage {
 
 
     private final String message;
-    ResponseMessage(String message) {
+    ResponseMessages(String message) {
         this.message = message;
     }
 
-    public String getMessage() {
+    public String toString() {
         return message;
     }
 }

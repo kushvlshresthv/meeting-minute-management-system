@@ -3,7 +3,6 @@ package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.config.SecurityConfiguration;
 import com.sep.mmms_backend.response.Response;
-import com.sep.mmms_backend.response.ResponseMessage;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
 import org.assertj.core.api.Assertions;

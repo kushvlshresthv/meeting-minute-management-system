@@ -2,7 +2,7 @@ package com.sep.mmms_backend.exception_handling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.mmms_backend.response.Response;
-import com.sep.mmms_backend.response.ResponseMessage;
+import com.sep.mmms_backend.response.ResponseMessages;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,11 +21,11 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
 
         Response errorResponse = new Response();
 
-        errorResponse.setMessage(ResponseMessage.AUTHENTICATION_FAILED.getMessage() + ": " + authException.getMessage());
+        errorResponse.setMessage(ResponseMessages.AUTHENTICATION_FAILED.toString() + ": " + authException.getMessage());
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), errorResponse);
 
-        log.error("{}: {}", ResponseMessage.AUTHENTICATION_FAILED.getMessage() , authException.getMessage());
+        log.error("{}: {}", ResponseMessages.AUTHENTICATION_FAILED.toString() , authException.getMessage());
     }
 }

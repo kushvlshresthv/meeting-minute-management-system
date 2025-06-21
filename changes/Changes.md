@@ -1,5 +1,181 @@
+# Latest Changes:  
 
-# Latest Changes: 
+## [1] Implemented /register
+
+- At this stage of the application, to register, a user has to submit the following details: 
+
+1. Firstname
+2. Lastname
+3. Username
+4. Email
+5. Password
+6. ConfirmPassword
+
+>NOTE: More Fields may be added in the future
+
+### Each of the fields has the following server-side validation
+
+
+| Field Name          | Validators                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| 1. Firstname        | First name can't be blank                                                          |
+| 2. Lastname         | Lastname can't be blank                                                            |
+| 3. Username         | Username can't be blank<br><br>Username should only contain `a-z A-Z 0-9 _`<br>    |
+| 4. Email            | Email can't be blank<br><br>Email must be a valid email                            |
+| 5. Password         | Password can't be blank<br><br>Password must be higher or equal to 5 letters       |
+| 6. Confirm Password | Confirm Password can't be blank<br><br>Confirm Password and Password have to match |
+
+
+- If any of the validation fails, the server will return `Http.BAD_REQUEST`
+
+### Response for various Request body
+
+#### [1] Proper Format: 
+
+- The following json body is the proper valid format for the request body
+
+REQUEST BODY: 
+
+``` json
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "John",
+    "email": "JohnDoe@gmail.com",
+    "password":"johndoe",
+    "confirmPassword":"johndoe"
+}
+```
+
+
+RESPONSE BODY: 
+
+``` json
+{
+    "message": "user with the username already exists",
+    "mainBody": null
+}
+```
+
+
+### [2] Invalid Format: FirstName is blank
+
+
+REQUEST BODY: 
+
+``` json
+HTTPSTATUS: BAD_REQUEST
+{
+    "firstName": "",
+    "lastName": "Doe",
+    "username": "John",
+    "email": "JohnDoe@gmail.com",
+    "password":"johndoe",
+    "confirmPassword":"johndoe"
+}
+```
+
+RESPONSE BODY: 
+
+``` json
+HTTPSTATUS: BAD_REQUEST
+{
+    "message": "Failed to register user",
+    "mainBody": {
+        "firstName": [
+            "This field cannot be empty"
+        ]
+    }
+}
+```
+
+>NOTE: Here the Response body JSON has two fields: `message` and `mainBody`.   `message` is a string and `mainBody` is another object(nested JSON) where each field of `mainBody` is an array of `Strings` (because a single field can have multiple validation failures as we will see below)
+
+
+> NOTE: the behaviour will be the same even if the 'firstname' field is entirely removed from the JSON 
+
+``` json
+HTTPSTATUS: BAD_REQUEST
+	 {
+	    "lastName": "Doe",
+	    "username": "John",
+	    "email": "JohnDoe@gmail.com",
+	    "password":"johndoe",
+	    "confirmPassword":"johndoe"
+	}
+``` 
+
+
+### [3] Invalid Format: Every field is blank
+
+REQUEST BODY: 
+
+
+``` json
+{
+    "firstName": "",
+    "lastName": "",
+    "username": "",
+    "email": "",
+    "password":"",
+    "confirmPassword":""
+}
+```
+
+
+RESPONSE BODY: 
+
+``` json
+{
+    "message": "Failed to register user",
+    "mainBody": {
+        "lastName": [
+            "This field cannot be empty"
+        ],
+        "firstName": [
+            "This field cannot be empty"
+        ],
+        "password": [
+            "Please choose a stronger password",
+            "This field cannot be empty"
+        ],
+        "confirmPassword": [
+            "This field cannot be empty"
+        ],
+        "email": [
+            "This field cannot be empty"
+        ],
+        "username": [
+            "This field cannot be empty"
+        ]
+    }
+}
+```
+
+
+## Frontend Usage: 
+
+1. make a form, take the user data from the form, create a JSON object, stringify the json object, attach the json object into the request body and send the request to the server. 
+
+2. Server might respond with BAD_REQUEST or OK
+
+	a.  If the response is HTTP_OK, then display: "Register Successful"
+	b.  If the response is HTTP_BAD_REQUEST, then parse the ResponseBody, check which `fields` are presents in the ResponseBody, read the error Messages for those fields, and reopen the SAME form displaying the error messages
+
+
+
+
+>
+>
+>
+>
+>
+>
+>
+>
+>
+
+# Previous Changes: [316eb06151128d39dc6a8b25b6110aadb83efdaa]
 
 ## [1] In /login route, made some changes
 

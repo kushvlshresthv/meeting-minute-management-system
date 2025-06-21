@@ -8,11 +8,13 @@ import org.springframework.beans.BeanWrapperImpl;
 public class FieldsValueMatchValidator implements ConstraintValidator<FieldsValueMatch, Object> {
     public String field;
     public String fieldMatch;
+    public String message;
 
     @Override
     public void initialize(FieldsValueMatch constraintAnnotation) {
         this.field = constraintAnnotation.field();
         this.fieldMatch = constraintAnnotation.fieldMatch();
+        this.message = constraintAnnotation.message();
     }
 
     @Override
@@ -20,11 +22,9 @@ public class FieldsValueMatchValidator implements ConstraintValidator<FieldsValu
         String fieldValue =(String) new BeanWrapperImpl(value).getPropertyValue(field);
         String fieldMatchValue =(String) new BeanWrapperImpl(value).getPropertyValue(fieldMatch);
 
-        if (fieldValue != null) {
-            return fieldValue.equals(fieldMatchValue);
+        if (fieldValue != null && fieldValue.equals(fieldMatchValue)) {
+            return true;
         } else {
-            //populate the error messages
-            String message = "Field " + field + " does not match field " + fieldMatch;
             context.buildConstraintViolationWithTemplate(message).addPropertyNode(field).addConstraintViolation();
             return false;
         }

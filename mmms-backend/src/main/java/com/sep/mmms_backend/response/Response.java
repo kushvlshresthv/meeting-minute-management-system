@@ -17,12 +17,12 @@ public class Response {
         this.message = message;
     }
 
-    public Response(ResponseMessage responseMessage) {
-        this.message = responseMessage.getMessage();
+    public Response(ResponseMessages responseMessage) {
+        this.message = responseMessage.toString();
     }
 
-    public Response(ResponseMessage responseMessage, Object mainBody) {
-        this.message = responseMessage.getMessage();
+    public Response(ResponseMessages responseMessage, Object mainBody) {
+        this.message = responseMessage.toString();
         this.mainBody = mainBody;
     }
 }
