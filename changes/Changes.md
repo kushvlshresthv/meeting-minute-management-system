@@ -1,15 +1,119 @@
-# Latest Changes:  
+
+# Latest Changes
+
+## [1] Implemented /api/createMeeting (POST)
+
+- At this stage of the application, to create a meeting, a user has to submit the following details: 
+
+1. meetingName
+2. meetingDescription
+3. meetingHeldDate
+
+- The three fields has the following server-side validations
+
+| field name         | description    |
+| ------------------ | -------------- |
+| 1. meetingName     | can'b be blank |
+| 2. meetingHeldDate | can't be blank |
+		
+- The user should be a valid authenticated user to invoke this route. 
+
+- When the request is sent, the backend will automatically  keep track of the following details which the frontend can request in the later part of the application: 
+
+1. createdBy
+2. createdDate
+3. updatedBy
+4. updatedDate
+
+> NOTE: if server fails to process any of the four information, it will return internal server error(might be some kind of bug, although this section of the application has been unit tested)
+
+## Responses for various requests
+
+### 1. valid save operation
+
+#### Request: 
+
+> NOTE: save operation is invoked after the login with account with uid = 2
+
+``` json
+{
+    "meetingName": "my_meeting",
+    "meetingDescription": "my_meeting_description",
+    "meetingHeldDate": "2025-01-11"
+}
+```
+
+> NOTE: The format of the date should be YYYY-MM-DD
+
+
+### Response: 
+
+``` json
+{
+    "message": "Meeting created successfully",
+    "mainBody": null
+}
+```
+
+### Database: 
+
+![](assets/media/file-20250623193550469.png)
+
+
+
+### 2. invalid save operation
+
+
+#### Request Body
+
+``` json
+{
+    "meetingName": "my_meeting",
+    "meetingDescription": "my_meeting_description"
+}
+```
+
+ResponseBody
+
+``` json
+HTTPSTATUS: BAD_REQUEST
+{
+    "message": "Failed to create meeting",
+    "mainBody": {
+        "meetingHeldDate": [
+            "This field cannot be empty"
+        ]
+    }
+}
+```
+
+
+
+>[!note]
+>
+>The type of response body when the validation fails is explained in the prevous changes for /register route(just below this change)
+
+>
+>
+>
+>
+>
+>
+>
+
+
+# Previous Changes:  380f7717503f11e8a5886f333cdb5cbe3ae12f01
 
 ## [1] Implemented /register
 
 - At this stage of the application, to register, a user has to submit the following details: 
 
-1. Firstname
-2. Lastname
-3. Username
-4. Email
-5. Password
-6. ConfirmPassword
+1. firstName
+2. lastName
+3. username
+4. email
+5. password
+6. confirmPassword
 
 >NOTE: More Fields may be added in the future
 
@@ -51,6 +155,7 @@ REQUEST BODY:
 RESPONSE BODY: 
 
 ``` json
+HTTPSTATUS: OK
 {
     "message": "User registered successfully",
     "mainBody": null
@@ -64,7 +169,6 @@ RESPONSE BODY:
 REQUEST BODY: 
 
 ``` json
-HTTPSTATUS: BAD_REQUEST
 {
     "firstName": "",
     "lastName": "Doe",
@@ -95,7 +199,6 @@ HTTPSTATUS: BAD_REQUEST
 > NOTE: the behaviour will be the same even if the 'firstname' field is entirely removed from the JSON 
 
 ``` json
-HTTPSTATUS: BAD_REQUEST
 	 {
 	    "lastName": "Doe",
 	    "username": "John",
@@ -126,6 +229,7 @@ REQUEST BODY:
 RESPONSE BODY: 
 
 ``` json
+HTTPSTATUS: BAD_REQUEST
 {
     "message": "Failed to register user",
     "mainBody": {
@@ -195,7 +299,7 @@ RESPONSE BODY:
 
 > [!note]
 > 
-> Frontend should tried to determine whether the login is successful or not with HTTP Status code, not by comparing the 'message' field which is subject to change in future
+> Frontend should  to determine whether the login is successful or not with HTTP Status code, not by comparing the 'message' field which is subject to change in future
 
 
 ## [2] /logout has been implemented

@@ -78,7 +78,7 @@ public class SecurityConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(GlobalConstants.FRONTEND_URL)
+                      .allowedOrigins(GlobalConstants.FRONTEND_URL)
                         .allowedMethods("*")
                         .allowCredentials(true);
             }

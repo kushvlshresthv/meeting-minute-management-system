@@ -66,9 +66,6 @@ public class RegisterUserController {
             log.error("User with the username `{}` already exists", appUser.getUsername());
             return ResponseEntity.badRequest().body(new Response(e.getMessage()));
         }
-        if(savedUser != null && savedUser.getUid() <=0) {
-            return ResponseEntity.internalServerError().body(null);
-        }
 
         log.info("User with the username @{} registered successfully", appUser.getUsername());
         return ResponseEntity.ok().body(new Response(ResponseMessages.REGISTER_USER_SUCCESS));

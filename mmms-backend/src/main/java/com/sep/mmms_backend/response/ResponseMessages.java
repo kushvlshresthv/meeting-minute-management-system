@@ -6,7 +6,10 @@ public enum ResponseMessages {
     AUTHENTICATION_FAILED("Authentication Failed"),
     ACCESS_DENIED("Access Denied"),
     REGISTER_USER_FAILED("Failed to register user"),
-    REGISTER_USER_SUCCESS("User registered successfully");
+    REGISTER_USER_SUCCESS("User registered successfully"),
+    MEETING_CREATION_FAILED("Failed to create meeting"),
+    MEETING_CREATION_SUCCESSFUL("Meeting registered successfully"),
+    ;
 
 
 
