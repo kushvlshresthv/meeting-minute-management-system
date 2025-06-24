@@ -2,7 +2,6 @@ package com.sep.mmms_backend.component;
 
 //this class is used by Auditor to fetch infor that is needed by Auditing related annotations such as @CreatedBy
 
-import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.service.AppUserService;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component("auditAwareImpl")
-public class AuditorAwareImpl implements AuditorAware<AppUser> {
+public class AuditorAwareImpl implements AuditorAware<String> {
    private final AppUserService appUserService;
 
    public AuditorAwareImpl(AppUserService appUserService) {
@@ -21,7 +20,7 @@ public class AuditorAwareImpl implements AuditorAware<AppUser> {
    }
 
     @Override
-    public Optional<AppUser> getCurrentAuditor() {
+    public Optional<String> getCurrentAuditor() {
 
        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -29,8 +28,6 @@ public class AuditorAwareImpl implements AuditorAware<AppUser> {
            return Optional.empty();
        }
 
-       String username = authentication.getName();
-       AppUser appUser = appUserService.loadUserByUsername(username);
-       return Optional.ofNullable(appUser);
+       return Optional.ofNullable(authentication.getName());
     }
 }

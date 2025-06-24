@@ -17,12 +17,20 @@ CREATE TABLE app_meetings (
           metting_description TEXT,
           meeting_held_date DATE NOT NULL,
 
-          created_by INT NOT NULL,
-          updated_by INT NOT NULL,
+          created_by VARCHAR(255) NOT NULL,
+          updated_by VARCHAR(255) NOT NULL,
 
           created_date DATE NOT NULL,
-          updated_date DATE NOT NULL,
-
-          CONSTRAINT fk_meeting_created_by FOREIGN KEY (created_by) REFERENCES app_users(uid),
-          CONSTRAINT fk_meeting_updated_by FOREIGN KEY (updated_by) REFERENCES app_users(uid)
+          updated_date DATE NOT NULL
 );
+
+
+CREATE TABLE user_attended_meetings (
+     uid INT,
+     meeting_id INT
+);
+
+CREATE TABLE user_unattended_meetings (
+     uid INT,
+     meeting_id INT
+)

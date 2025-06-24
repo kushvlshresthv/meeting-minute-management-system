@@ -11,6 +11,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
+
 import static com.sep.mmms_backend.global_constants.ValidationErrorMessages.*;
 
 @Getter
@@ -59,6 +61,31 @@ public class AppUser {
     String confirmPassword;
 
     //TODO: add the joined meetings as well as the 'post' of the person in the institution
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="user_attended_meetings",
+        joinColumns = {
+            @JoinColumn(name="user_id", referencedColumnName = "uid"),
+        },
+
+        inverseJoinColumns = {
+            @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
+        }
+    )
+    List<Meeting> attendedMeetings;
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="user_unattended_meeting",
+            joinColumns = {
+                    @JoinColumn(name="user_id", referencedColumnName = "uid"),
+            },
+
+            inverseJoinColumns = {
+                    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
+            }
+    )
+    List<Meeting> unattendedMeetings;
 }
 
 /*

@@ -14,6 +14,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name="app_meetings")
 @Getter
@@ -45,16 +46,13 @@ public class Meeting {
 
     @JsonIgnore
     @CreatedBy
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name="created_by", referencedColumnName = "uid", updatable = false)
-    private AppUser createdBy;
-
+    @Column(name="created_by", updatable = false)
+    private String createdBy;
 
     @JsonIgnore
     @LastModifiedBy
-    @OneToOne(fetch=FetchType.EAGER, optional= false)
-    @JoinColumn(name="updated_by", referencedColumnName = "uid")
-    private AppUser updatedBy;
+    @Column(name="updated_by")
+    private String updatedBy;
 
     @JsonIgnore
     @CreatedDate
@@ -65,6 +63,10 @@ public class Meeting {
     @LastModifiedDate
     @Column(name="updated_date", nullable = false)
     private LocalDate updatedDate;
-//    @OneToOne(fetch = FetchType.EAGER, optional = false)
-//    private MeetingMinute meetingMinute;
+
+    @ManyToMany(mappedBy="attendedMeetings", fetch = FetchType.LAZY)
+    public List<AppUser> attendees;
+
+    @ManyToMany(mappedBy="unattendedMeetings", fetch = FetchType.LAZY)
+    public List<AppUser> absentees;
 }

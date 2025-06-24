@@ -9,6 +9,7 @@ public enum ResponseMessages {
     REGISTER_USER_SUCCESS("User registered successfully"),
     MEETING_CREATION_FAILED("Failed to create meeting"),
     MEETING_CREATION_SUCCESSFUL("Meeting registered successfully"),
+    CREATE_MEETING_ROUTE_MISUSED("This route can only create new meetings")
     ;
 
 
