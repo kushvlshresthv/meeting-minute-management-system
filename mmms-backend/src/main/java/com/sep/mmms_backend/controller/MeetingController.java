@@ -31,7 +31,7 @@ public class MeetingController {
 
        //if meetingId is populated in the request body, then the operation should be 'save' not 'update'
        if(meeting.getMeetingId() != 0) {
-           return ResponseEntity.badRequest().body(new Response(ResponseMessages.CREATE_MEETING_ROUTE_MISUSED));
+           return ResponseEntity.badRequest().body(new Response(ResponseMessages.ROUTE_CREATE_MEETING_MISUSED));
        }
 
         //Validation failed:
@@ -56,7 +56,7 @@ public class MeetingController {
         try {
            Meeting savedMeeting = this.meetingService.saveNewMeeting(meeting);
         } catch(MeetingAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.CREATE_MEETING_ROUTE_MISUSED));
+            return ResponseEntity.badRequest().body(new Response(ResponseMessages.ROUTE_CREATE_MEETING_MISUSED));
         }
 
         return ResponseEntity.ok().body(new Response(ResponseMessages.MEETING_CREATION_SUCCESSFUL));

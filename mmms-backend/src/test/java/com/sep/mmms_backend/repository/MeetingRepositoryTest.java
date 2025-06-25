@@ -115,8 +115,8 @@ public class MeetingRepositoryTest {
         //a) verify that the @CreatedBy and @UpdatedBy fields are set
         Assertions.assertThat(foundMeeting.getCreatedBy()).isNotNull();
         Assertions.assertThat(foundMeeting.getUpdatedBy()).isNotNull();
-        Assertions.assertThat(foundMeeting.getCreatedBy().getUid()).isEqualTo(savedTestUser.getUid());
-        Assertions.assertThat(foundMeeting.getUpdatedBy().getUid()).isEqualTo(savedTestUser.getUid());
+        Assertions.assertThat(foundMeeting.getCreatedBy()).isEqualTo(savedTestUser.getUsername());
+        Assertions.assertThat(foundMeeting.getUpdatedBy()).isEqualTo(savedTestUser.getUsername());
 
         //b) Verify that the @CreatedDate and @LostModifiedDate fields are set
 
@@ -125,8 +125,8 @@ public class MeetingRepositoryTest {
         Assertions.assertThat(foundMeeting.getCreatedDate()).isEqualTo(LocalDate.now());
         Assertions.assertThat(foundMeeting.getUpdatedDate()).isEqualTo(LocalDate.now());
 
-        log.info("Created By: {}", foundMeeting.getCreatedBy().getUsername());
-        log.info("Updated By: {}", foundMeeting.getUpdatedBy().getUsername());
+        log.info("Created By: {}", foundMeeting.getCreatedBy());
+        log.info("Updated By: {}", foundMeeting.getUpdatedBy());
         log.info("Created Date: {}", foundMeeting.getCreatedDate());
         log.info("Updated Date: {}", foundMeeting.getUpdatedDate());
     }
@@ -152,16 +152,16 @@ public class MeetingRepositoryTest {
        Assertions.assertThat(updatedMeeting).isNotNull();
 
        //CreatedBy and CreatedDate should not change
-       Assertions.assertThat(updatedMeeting.getCreatedBy().getUsername()).isEqualTo(initialSavedMeeting.getCreatedBy().getUsername());
+       Assertions.assertThat(updatedMeeting.getCreatedBy()).isEqualTo(initialSavedMeeting.getCreatedBy());
        Assertions.assertThat(updatedMeeting.getCreatedDate()).isEqualTo(initialSavedMeeting.getCreatedDate());
 
        //UpdateBy field should be updated
-       Assertions.assertThat(updatedMeeting.getUpdatedBy().getUid()).isEqualTo(savedTestUser.getUid());
+       Assertions.assertThat(updatedMeeting.getUpdatedBy()).isEqualTo(savedTestUser.getUsername());
 
-       Assertions.assertThat(updatedMeeting.getUpdatedBy().getUsername()).isEqualTo(savedTestUser.getUsername());
+       Assertions.assertThat(updatedMeeting.getUpdatedBy()).isEqualTo(savedTestUser.getUsername());
 
-        log.info("CreatedBy: {}", updatedMeeting.getCreatedBy().getUsername());
-        log.info("Updated By field when the Meeting was created: {} ", updatedMeeting.getUpdatedBy().getUsername());
-        log.info("Updated By field when the Meeting was resaved by different user: {}", updatedMeeting.getUpdatedBy().getUsername());
+        log.info("CreatedBy: {}", updatedMeeting.getCreatedBy());
+        log.info("Updated By field when the Meeting was created: {} ", updatedMeeting.getUpdatedBy());
+        log.info("Updated By field when the Meeting was resaved by different user: {}", updatedMeeting.getUpdatedBy());
     }
 }

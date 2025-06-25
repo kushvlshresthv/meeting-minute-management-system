@@ -80,7 +80,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -111,7 +111,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -134,7 +134,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -159,7 +159,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         //get the main body of the response
         @SuppressWarnings("unchecked")
@@ -200,7 +200,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -224,7 +224,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -247,7 +247,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
 
         @SuppressWarnings("unchecked")
@@ -272,7 +272,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -296,7 +296,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
@@ -321,7 +321,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_FAILED.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_FAILED.toString());
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
         Assertions.assertThat(mainBody.containsKey("password"));
@@ -342,6 +342,6 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.REGISTER_USER_SUCCESS.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_SUCCESS.toString());
     }
 }
