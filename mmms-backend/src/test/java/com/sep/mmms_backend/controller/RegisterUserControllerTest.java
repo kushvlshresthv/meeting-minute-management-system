@@ -11,6 +11,7 @@ import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
+import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -59,7 +61,7 @@ public class RegisterUserControllerTest {
 
     private Response performRequestAndGetResponse(String destination, Object body, HttpStatus expectedHttpResponseStatus) throws Exception {
 
-        String requestBody = new ObjectMapper().writeValueAsString(user);
+        String requestBody = new ObjectMapper().writeValueAsString(body);
 
         MvcResult result = mockMvc.perform(post(destination).contentType(MediaType.APPLICATION_JSON).content(requestBody)).andReturn();
 
@@ -68,6 +70,22 @@ public class RegisterUserControllerTest {
         Assertions.assertThat(actualStatusCode).isEqualTo(expectedHttpResponseStatus.value());
 
         return SerializerDeserializer.deserialize(result.getResponse().getContentAsString());
+    }
+
+    //TESTING /register ROUTE:
+
+    //0) tests the case in which the request body has 'uid' already populated
+    @Test
+    @WithAnonymousUser
+    public void registerUser_ShouldReturnBadRequest_WhenUidIsPopulated() throws Exception {
+        user.setUid(100);
+
+        Response response = performRequestAndGetResponse("/register", user, HttpStatus.BAD_REQUEST);
+
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getMessage()).isNotNull();
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.ROUTE_REGISTER_MISUED.toString());
+
     }
 
     //1) tests the case in which the first name is empty
@@ -344,4 +362,95 @@ public class RegisterUserControllerTest {
         Assertions.assertThat(response.getMessage()).isNotNull();
         Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_REGISTER_SUCCESS.toString());
     }
+
+
+
+    //TESTING /updateUser route
+
+    //0) trying to access this route without logging in
+
+    @Test
+    @WithAnonymousUser
+    public void updateUser_ShouldReturn_Unauthorized_WhenAccessedWithoutLogginIn() throws Exception {
+
+        Response response = performRequestAndGetResponse("/api/updateUser", user, HttpStatus.UNAUTHORIZED);
+
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getMessage()).isNotNull();
+        Assertions.assertThat(response.getMessage()).contains(ResponseMessages.AUTHENTICATION_FAILED.toString());
+    }
+
+
+
+    //1. trying to not send any uid while performing update operations
+    @Test
+    @WithMockUser
+    public void updateUser_ShouldReturn_BadRequest_WhenNoUidIsPresent() throws Exception {
+        user.setUid(0);
+        Response response = performRequestAndGetResponse("/api/updateUser", user, HttpStatus.BAD_REQUEST);
+
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getMessage()).isNotNull();
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.ROUTE_UPDATE_USER_MISUSED.toString());
+    }
+
+
+
+    //2. trying to change some other user's data
+    @Test
+    @WithMockUser(username="username")
+    public void updateUser_ShouldReturn_BadRequest_WhenAUserTriesToUpdateOtherUsersData() throws Exception {
+        user.setUid(100);
+        Mockito.when(appUserService.loadUserByUsername("username")).thenReturn(user);
+
+        //some other user
+        AppUser newUser = AppUser.builder().uid(54).build();
+        Response response = performRequestAndGetResponse("/api/updateUser", newUser, HttpStatus.BAD_REQUEST);
+
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getMessage()).isNotNull();
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA.toString());
+    }
+
+
+
+    //3. trying to change the password
+    @Test
+    @WithMockUser(username="username")
+    public void updateUser_ShouldReturn_BadRequest_WhenAUserTriesToChangePassword() throws Exception {
+        user.setUid(100);
+        Mockito.when(appUserService.loadUserByUsername("username")).thenReturn(user);
+
+        //updated user:
+        AppUser newUser = AppUser.builder().uid(100).password("notOldPassword").build();
+        Response response = performRequestAndGetResponse("/api/updateUser", newUser, HttpStatus.BAD_REQUEST);
+
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getMessage()).isNotNull();
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD.toString());
+    }
+
+
+
+
+    //5. when the user with the given username does not exist on the database
+
+    //6 success case:
+
+    @Test
+    @WithMockUser(username="username")
+    public void updateUser_ShouldReturn_Ok_WhenEverythingIsFine() throws Exception {
+        user.setUid(100);
+        Mockito.when(appUserService.loadUserByUsername("username")).thenReturn(user);
+
+        //updated user
+        AppUser newUser = AppUser.builder().uid(100).firstName("newFirstName").lastName("newLastName").email("email@gmail.com").password("password").confirmPassword("password").username("username").build();
+
+        Response response = performRequestAndGetResponse("/api/updateUser", newUser, HttpStatus.OK);
+
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getMessage()).isNotNull();
+        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_UPDATION_SUCCESS.toString());
+    }
+
 }
