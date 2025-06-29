@@ -3,6 +3,7 @@ package com.sep.mmms_backend.controller;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.exceptions.UserDoesNotExist;
 import com.sep.mmms_backend.exceptions.UsernameAlreadyExistsException;
+import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
@@ -21,11 +22,11 @@ import java.util.HashMap;
 
 @RestController
 @Slf4j
-public class RegisterUserController {
+public class AppUserController {
     private final AppUserService appUserService;
     private final PasswordEncoder passwordEncoder;
 
-    RegisterUserController(AppUserService appUserService, PasswordEncoder passwordEncoder ) {
+    AppUserController(AppUserService appUserService, PasswordEncoder passwordEncoder ) {
         this.appUserService = appUserService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -83,41 +84,17 @@ public class RegisterUserController {
 
     //this route does not allow the users to change the password
     @PostMapping("/api/updateUser")
-    public ResponseEntity<Response> updateUser(@RequestBody @Valid AppUser appUser, Errors errors, Authentication authentication) {
-        //1. check if the uid is present in the request body
+    public ResponseEntity<Response> updateUser(@RequestBody AppUser appUser, Authentication authentication) {
+
+        //check if the uid is present in the request body
         if(appUser.getUid() <=0) {
             log.error("Improper request format: {}", ResponseMessages.ROUTE_UPDATE_USER_MISUSED);
             return ResponseEntity.badRequest().body(new Response(ResponseMessages.ROUTE_UPDATE_USER_MISUSED));
         }
 
-        //2. make sure that the user whose data to be updated is the current user
-        //use uid to do that instead of username as the username can also be changed
-        if(!(appUserService.loadUserByUsername(authentication.getName()).getUid() == appUser.getUid())) {
-            log.error(ResponseMessages.USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA.toString());
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA));
-        }
+        //save the user
+        appUserService.updateUser(appUser,authentication.getName());
 
-        //3. check whether the password is being changed or not
-        if(!(appUserService.loadUserByUsername(authentication.getName()).getPassword().equals(appUser.getPassword()))) {
-            log.error(ResponseMessages.ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD.toString().toString());
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD));
-        }
-
-        //4. check if there are any validation errors
-        if(errors.hasErrors()) {
-            HashMap<String, ArrayList<String>> errorMessages = getErrorMessagesAsHashMap(errors);
-
-            log.error("Validation Failed while updating user: {}", errorMessages);
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.USER_UPDATION_FAILED, errorMessages));
-        }
-
-        //5. save the user, the user save operation may fail if the user with the given username does not exist in the database for updation
-        try {
-            appUserService.updateUser(appUser);
-        } catch(UserDoesNotExist e) {
-            log.error("User with the username `{}` does not exist", appUser.getUsername());
-            return ResponseEntity.badRequest().body(new Response(e.getMessage()));
-        }
         return ResponseEntity.ok().body(new Response(ResponseMessages.USER_UPDATION_SUCCESS));
     }
 }

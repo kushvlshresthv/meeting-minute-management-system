@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.mmms_backend.config.SecurityConfiguration;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
+import com.sep.mmms_backend.exceptions.PasswordChangeNotAllowedException;
+import com.sep.mmms_backend.exceptions.UnauthorizedUpdateException;
 import com.sep.mmms_backend.exceptions.UsernameAlreadyExistsException;
 import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
-import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,11 +35,11 @@ import java.util.HashMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@WebMvcTest(controllers={RegisterUserController.class})
+@WebMvcTest(controllers={AppUserController.class})
 @Import(SecurityConfiguration.class)
 @Slf4j
 
-public class RegisterUserControllerTest {
+public class AppUserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -401,15 +402,15 @@ public class RegisterUserControllerTest {
     @WithMockUser(username="username")
     public void updateUser_ShouldReturn_BadRequest_WhenAUserTriesToUpdateOtherUsersData() throws Exception {
         user.setUid(100);
-        Mockito.when(appUserService.loadUserByUsername("username")).thenReturn(user);
+        Mockito.when(appUserService.updateUser(any(), any())).thenThrow(new UnauthorizedUpdateException(ExceptionMessages.USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA));
 
         //some other user
-        AppUser newUser = AppUser.builder().uid(54).build();
-        Response response = performRequestAndGetResponse("/api/updateUser", newUser, HttpStatus.BAD_REQUEST);
+        AppUser newUser = AppUser.builder().uid(54).firstName("firstName").lastName("lastName").build();
+        Response response = performRequestAndGetResponse("/api/updateUser", newUser, HttpStatus.FORBIDDEN);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA.toString());
+        Assertions.assertThat(response.getMessage()).contains(ExceptionMessages.USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA.toString());
     }
 
 
@@ -419,7 +420,7 @@ public class RegisterUserControllerTest {
     @WithMockUser(username="username")
     public void updateUser_ShouldReturn_BadRequest_WhenAUserTriesToChangePassword() throws Exception {
         user.setUid(100);
-        Mockito.when(appUserService.loadUserByUsername("username")).thenReturn(user);
+        Mockito.when(appUserService.updateUser(any(), any())).thenThrow(new PasswordChangeNotAllowedException(ExceptionMessages.ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD));
 
         //updated user:
         AppUser newUser = AppUser.builder().uid(100).password("notOldPassword").build();
@@ -427,7 +428,7 @@ public class RegisterUserControllerTest {
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD.toString());
+        Assertions.assertThat(response.getMessage()).isEqualTo(ExceptionMessages.ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD.toString());
     }
 
 

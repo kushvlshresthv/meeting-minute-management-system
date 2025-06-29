@@ -6,8 +6,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.RepositoryDefinition;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
-    public AppUser findByUsername(String username);
+    public Optional<AppUser> findByUsername(String username);
     public boolean existsByUsername(String username);
 }

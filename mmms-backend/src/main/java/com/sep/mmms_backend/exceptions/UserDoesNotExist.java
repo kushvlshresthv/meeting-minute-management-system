@@ -8,4 +8,8 @@ public class UserDoesNotExist extends RuntimeException{
     public UserDoesNotExist(ExceptionMessages message) {
         super(message.toString());
     }
+
+    public UserDoesNotExist() {
+        super();
+    }
 }
