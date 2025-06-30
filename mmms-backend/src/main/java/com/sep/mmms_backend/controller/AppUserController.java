@@ -1,9 +1,9 @@
 package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.entity.AppUser;
-import com.sep.mmms_backend.exceptions.UserDoesNotExist;
+import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.UsernameAlreadyExistsException;
-import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
+import com.sep.mmms_backend.exceptions.ValidationFailureException;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
@@ -31,24 +31,6 @@ public class AppUserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public HashMap<String, ArrayList<String>> getErrorMessagesAsHashMap(Errors errors) {
-        HashMap<String, ArrayList<String>> errorMessages = new HashMap<>();
-        errors.getFieldErrors().forEach(
-                error-> {
-                    //if the key is not already present in the Map, create the key as well as new ArrayList for the value
-                    if(!errorMessages.containsKey(error.getField())){
-                        ArrayList<String> list = new ArrayList<>();
-                        list.add(error.getDefaultMessage());
-                        errorMessages.put(error.getField(),list);
-                    } else {
-                        errorMessages.get(error.getField()).add(error.getDefaultMessage());
-                    }
-                }
-        );
-
-        return errorMessages;
-    }
-
 
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(@RequestBody @Valid AppUser appUser, Errors errors) {
@@ -58,11 +40,7 @@ public class AppUserController {
         }
 
         if(errors.hasErrors()){
-            HashMap<String, ArrayList<String>> errorMessages = getErrorMessagesAsHashMap(errors);
-
-            log.error("Validation Failed while registering user: {}", errorMessages);
-
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.USER_REGISTER_FAILED, errorMessages));
+            throw new ValidationFailureException(ExceptionMessages.USER_VALIDATION_FALIED, errors);
         }
 
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
@@ -82,7 +60,10 @@ public class AppUserController {
     }
 
 
+
+
     //this route does not allow the users to change the password
+    //validation for the incoming requestion body is performed inside the Service class
     @PostMapping("/api/updateUser")
     public ResponseEntity<Response> updateUser(@RequestBody AppUser appUser, Authentication authentication) {
 

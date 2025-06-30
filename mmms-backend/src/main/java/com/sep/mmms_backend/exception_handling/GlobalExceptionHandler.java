@@ -3,19 +3,24 @@ package com.sep.mmms_backend.exception_handling;
 
 import com.sep.mmms_backend.exceptions.PasswordChangeNotAllowedException;
 import com.sep.mmms_backend.exceptions.UnauthorizedUpdateException;
-import com.sep.mmms_backend.exceptions.UserDoesNotExist;
+import com.sep.mmms_backend.exceptions.UserDoesNotExistException;
+import com.sep.mmms_backend.exceptions.ValidationFailureException;
 import com.sep.mmms_backend.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(UserDoesNotExist.class)
-    public ResponseEntity<Response> handleUserDoesNotExist(UserDoesNotExist ex) {
+    @ExceptionHandler(UserDoesNotExistException.class)
+    public ResponseEntity<Response> handleUserDoesNotExist(UserDoesNotExistException ex) {
         log.error("Exception handled: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(ex.getMessage()));
     }
@@ -35,5 +40,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDataIntegrityViolation(Exception e) {
         return ResponseEntity.internalServerError().body(null);
+    }
+
+    //handles validation errors
+    @ExceptionHandler(ValidationFailureException.class)
+    public ResponseEntity<Object> handleConstraintViolation(ValidationFailureException ex) {
+        Errors errors = ex.getErrors();
+
+        HashMap<String, ArrayList<String>> errorMessages = new HashMap<>();
+        errors.getFieldErrors().forEach(
+                error-> {
+                    //if the key is not already present in the Map, create the key as well as new ArrayList for the value
+                    if(!errorMessages.containsKey(error.getField())){
+                        ArrayList<String> list = new ArrayList<>();
+                        list.add(error.getDefaultMessage());
+                        errorMessages.put(error.getField(),list);
+                    } else {
+                        errorMessages.get(error.getField()).add(error.getDefaultMessage());
+                    }
+                }
+        );
+
+       log.error("Exception Handled: {}: {}", ex.getMessage(), errorMessages);
+       return ResponseEntity.badRequest().body(new Response(ex.getMessage(), errorMessages));
     }
 }

@@ -8,6 +8,7 @@ public enum ExceptionMessages {
     USER_DOES_NOT_EXIST("User does not exist"),
     USER_CAN_ONLY_UPDATE_THEIR_OWN_DATA("A user can only update their own data"),
     ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD("This route can't be used to update password"),
+    USER_VALIDATION_FALIED("User data does not meet validation criterias")
     ;
 
     final private String message;

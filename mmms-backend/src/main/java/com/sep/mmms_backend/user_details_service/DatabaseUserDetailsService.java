@@ -1,7 +1,7 @@
 package com.sep.mmms_backend.user_details_service;
 
 import com.sep.mmms_backend.entity.AppUser;
-import com.sep.mmms_backend.exceptions.UserDoesNotExist;
+import com.sep.mmms_backend.exceptions.UserDoesNotExistException;
 import com.sep.mmms_backend.service.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -26,9 +26,9 @@ public class DatabaseUserDetailsService implements UserDetailsService {
                 UserDetails user = User.withUsername(username).password(registeredUser.getPassword()).build();
                 return user;
             } else {
-                throw new UserDoesNotExist();
+                throw new UserDoesNotExistException();
             }
-        } catch(UserDoesNotExist e) {
+        } catch(UserDoesNotExistException e) {
             throw new UsernameNotFoundException("@ " +username + "username not found");
         }
     }
