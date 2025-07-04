@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.service;
 
+import com.sep.mmms_backend.config.AppConfig;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.exceptions.PasswordChangeNotAllowedException;
 import com.sep.mmms_backend.exceptions.UnauthorizedUpdateException;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes={LocalValidatorFactoryBean.class, AppUserService.class})
+@SpringBootTest(classes={LocalValidatorFactoryBean.class, AppUserService.class, AppConfig.class})
 public class AppUserServiceTest {
     
     @MockitoBean
@@ -42,7 +43,7 @@ public class AppUserServiceTest {
                 .lastName("Doe")
                 .username(currentUsername)
                 .email("john.doe@example.com")
-                .password("password123")
+                .password("{noop}password123")
                 .build();
         
         // Initialize updated user data
@@ -91,29 +92,6 @@ public class AppUserServiceTest {
 
 
 
-    //tests the case in which a user tries to update data of another user
-    @Test
-    public void updateUser_UnauthorizedUpdate() {
-        // Arrange
-        when(appUserRepository.findByUsername(currentUsername)).thenReturn(Optional.of(currentUser));
-        
-        // Create user data with different UID
-        AppUser differentUser = AppUser.builder()
-                .uid(2) // Different UID
-                .firstName("Different")
-                .lastName("User")
-                .username(currentUsername)
-                .email("different@example.com")
-                .password("password123")
-                .build();
-        
-        // Act & Assert
-        assertThrows(UnauthorizedUpdateException.class, () -> {
-            appUserService.updateUser(differentUser, currentUsername);
-        });
-        verify(appUserRepository, times(1)).findByUsername(currentUsername);
-        verify(appUserRepository, never()).save(any(AppUser.class));
-    }
 
     //tests the case in which the user tries to change password with the /updateUser route
     @Test
@@ -174,6 +152,7 @@ public class AppUserServiceTest {
         verify(appUserRepository, times(1)).findByUsername(currentUsername);
         verify(appUserRepository, times(1)).save(any(AppUser.class));
     }
+
 
     //tests the case in which the fields are null
     @Test

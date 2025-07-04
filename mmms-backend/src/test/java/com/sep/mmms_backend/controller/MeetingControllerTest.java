@@ -11,7 +11,6 @@ import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.service.MeetingService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
-import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(controllers=MeetingController.class)

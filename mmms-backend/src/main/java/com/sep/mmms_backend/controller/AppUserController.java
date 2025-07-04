@@ -24,36 +24,18 @@ import java.util.HashMap;
 @Slf4j
 public class AppUserController {
     private final AppUserService appUserService;
-    private final PasswordEncoder passwordEncoder;
 
-    AppUserController(AppUserService appUserService, PasswordEncoder passwordEncoder ) {
+    AppUserController(AppUserService appUserService) {
         this.appUserService = appUserService;
-        this.passwordEncoder = passwordEncoder;
     }
 
 
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(@RequestBody @Valid AppUser appUser, Errors errors) {
-        if(appUser.getUid() > 0) {
-            log.error(ResponseMessages.ROUTE_REGISTER_MISUED.toString());
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.ROUTE_REGISTER_MISUED));
-        }
-
         if(errors.hasErrors()){
             throw new ValidationFailureException(ExceptionMessages.USER_VALIDATION_FALIED, errors);
         }
-
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        //save the data to the database
-        AppUser savedUser = null;
-
-        //validate that the username is unique
-        try {
-            savedUser = appUserService.saveNewUser(appUser);
-        } catch(UsernameAlreadyExistsException e) {
-            log.error("User with the username `{}` already exists", appUser.getUsername());
-            return ResponseEntity.badRequest().body(new Response(e.getMessage()));
-        }
+        AppUser savedUser = appUserService.saveNewUser(appUser);
 
         log.info("User with the username @{} registered successfully", appUser.getUsername());
         return ResponseEntity.ok().body(new Response(ResponseMessages.USER_REGISTER_SUCCESS));
@@ -62,20 +44,13 @@ public class AppUserController {
 
 
 
-    //this route does not allow the users to change the password
-    //validation for the incoming requestion body is performed inside the Service class
+    /**
+     * this route does not allow the users to change the password
+     * validation for the updated user data is performed inside the service class
+     */
     @PostMapping("/api/updateUser")
     public ResponseEntity<Response> updateUser(@RequestBody AppUser appUser, Authentication authentication) {
-
-        //check if the uid is present in the request body
-        if(appUser.getUid() <=0) {
-            log.error("Improper request format: {}", ResponseMessages.ROUTE_UPDATE_USER_MISUSED);
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.ROUTE_UPDATE_USER_MISUSED));
-        }
-
-        //save the user
         appUserService.updateUser(appUser,authentication.getName());
-
         return ResponseEntity.ok().body(new Response(ResponseMessages.USER_UPDATION_SUCCESS));
     }
 }

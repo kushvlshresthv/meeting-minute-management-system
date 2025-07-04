@@ -1,10 +1,9 @@
 package com.sep.mmms_backend.entity;
 
-import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep.mmms_backend.validators.annotations.FieldsValueMatch;
 import com.sep.mmms_backend.validators.annotations.UsernameFormat;
 import jakarta.persistence.*;
-import jakarta.validation.Validation;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -60,8 +59,12 @@ public class AppUser {
     @Transient
     String confirmPassword;
 
-    //TODO: add the joined meetings as well as the 'post' of the person in the institution
 
+    @OneToMany(mappedBy = "createdBy")
+    @JsonIgnore
+    private List<Committee> myCommittees;
+
+/*
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="user_attended_meetings",
         joinColumns = {
@@ -73,8 +76,9 @@ public class AppUser {
         }
     )
     List<Meeting> attendedMeetings;
+*/
 
-
+/*
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="user_unattended_meeting",
             joinColumns = {
@@ -86,6 +90,7 @@ public class AppUser {
             }
     )
     List<Meeting> unattendedMeetings;
+ */
 }
 
 /*

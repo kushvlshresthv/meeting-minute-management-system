@@ -86,11 +86,6 @@ public class SecurityConfiguration {
     }
 
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
 
     @Bean
     public UserDetailsService userDetailsService() {

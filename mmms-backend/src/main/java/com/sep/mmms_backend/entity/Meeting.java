@@ -16,17 +16,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity(name="app_meetings")
+@Entity(name="meetings")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//this registers the 'AuditingEntityListener' with the entity which automatically updates the auditing fields(like createdDate, lastModifiedDate etc), when lifecycle events such as creation or updation occurs
 @EntityListeners(AuditingEntityListener.class)
-//TODO: add 'Address' to the Meeting
-//TODO: add 'Attendes' and 'Absentes' field for Meeting
-
 public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,8 +61,8 @@ public class Meeting {
     private LocalDate updatedDate;
 
     @ManyToMany(mappedBy="attendedMeetings", fetch = FetchType.LAZY)
-    public List<AppUser> attendees;
+    public List<Member> attendees;
 
-    @ManyToMany(mappedBy="unattendedMeetings", fetch = FetchType.LAZY)
-    public List<AppUser> absentees;
+    @OneToMany(mappedBy="meeting")
+    private List<Decision> decisions;
 }

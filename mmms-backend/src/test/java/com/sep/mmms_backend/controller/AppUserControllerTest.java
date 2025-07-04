@@ -2,6 +2,7 @@ package com.sep.mmms_backend.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep.mmms_backend.config.AppConfig;
 import com.sep.mmms_backend.config.SecurityConfiguration;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
@@ -36,9 +37,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(controllers={AppUserController.class})
-@Import(SecurityConfiguration.class)
+@Import({SecurityConfiguration.class, AppConfig.class})
 @Slf4j
-
 public class AppUserControllerTest {
 
     @Autowired
@@ -75,19 +75,6 @@ public class AppUserControllerTest {
 
     //TESTING /register ROUTE:
 
-    //0) tests the case in which the request body has 'uid' already populated
-    @Test
-    @WithAnonymousUser
-    public void registerUser_ShouldReturnBadRequest_WhenUidIsPopulated() throws Exception {
-        user.setUid(100);
-
-        Response response = performRequestAndGetResponse("/register", user, HttpStatus.BAD_REQUEST);
-
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.ROUTE_REGISTER_MISUED.toString());
-
-    }
 
     //1) tests the case in which the first name is empty
     @Test
@@ -105,15 +92,7 @@ public class AppUserControllerTest {
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
         Assertions.assertThat(mainBody.containsKey("firstName"));
 
-        //filter out the `FIELD_CANNOT_BE_EMPTY` messages
-
-//        Assertions.assertThat(mainBody.get("firstName")).containsExactly(ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY);
-
         Assertions.assertThat(mainBody.get("firstName")).filteredOn(e->e.equals(ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)).hasSize(1);
-
-//        List<String> errorMessages = mainBody.get("firstName").stream().filter(errorMessage->errorMessage.equals(ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)).toList();
-
-//        Assertions.assertThat(errorMessages.size()).isEqualTo(1);
     }
 
 
@@ -195,7 +174,7 @@ public class AppUserControllerTest {
     @Test
     @WithAnonymousUser
     public void registerUser_ShouldReturnBadRequest_WhenUsernameAlreadyExists() throws Exception {
-        Mockito.when(appUserService.saveNewUser(any())).thenThrow(new UsernameAlreadyExistsException(ExceptionMessages.USERNAME_ALREADY_EXISTS.toString()));
+        Mockito.when(appUserService.saveNewUser(any())).thenThrow(new UsernameAlreadyExistsException(ExceptionMessages.USERNAME_ALREADY_EXISTS.toString(), user.getUsername()));
 
         //create the request body with invalid user
         user.setUsername("username");
@@ -368,7 +347,7 @@ public class AppUserControllerTest {
 
     //TESTING /updateUser route
 
-    //0) trying to access this route without logging in
+    //1) trying to access this route without logging in
 
     @Test
     @WithAnonymousUser
@@ -381,19 +360,6 @@ public class AppUserControllerTest {
         Assertions.assertThat(response.getMessage()).contains(ResponseMessages.AUTHENTICATION_FAILED.toString());
     }
 
-
-
-    //1. trying to not send any uid while performing update operations
-    @Test
-    @WithMockUser
-    public void updateUser_ShouldReturn_BadRequest_WhenNoUidIsPresent() throws Exception {
-        user.setUid(0);
-        Response response = performRequestAndGetResponse("/api/updateUser", user, HttpStatus.BAD_REQUEST);
-
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getMessage()).isNotNull();
-        Assertions.assertThat(response.getMessage()).isEqualTo(ResponseMessages.ROUTE_UPDATE_USER_MISUSED.toString());
-    }
 
 
 
@@ -432,9 +398,7 @@ public class AppUserControllerTest {
     }
 
 
-
-
-    //5. when the user with the given username does not exist on the database
+    //5. TODO: when the user with the given username does not exist on the database
 
     //6 success case:
 

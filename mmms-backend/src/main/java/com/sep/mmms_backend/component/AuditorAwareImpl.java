@@ -13,12 +13,6 @@ import java.util.Optional;
 
 @Component("auditAwareImpl")
 public class AuditorAwareImpl implements AuditorAware<String> {
-   private final AppUserService appUserService;
-
-   public AuditorAwareImpl(AppUserService appUserService) {
-       this.appUserService = appUserService;
-   }
-
     @Override
     public Optional<String> getCurrentAuditor() {
 

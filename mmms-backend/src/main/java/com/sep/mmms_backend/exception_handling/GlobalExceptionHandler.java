@@ -1,10 +1,7 @@
 package com.sep.mmms_backend.exception_handling;
 
 
-import com.sep.mmms_backend.exceptions.PasswordChangeNotAllowedException;
-import com.sep.mmms_backend.exceptions.UnauthorizedUpdateException;
-import com.sep.mmms_backend.exceptions.UserDoesNotExistException;
-import com.sep.mmms_backend.exceptions.ValidationFailureException;
+import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,11 +34,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(ex.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleDataIntegrityViolation(Exception e) {
-        return ResponseEntity.internalServerError().body(null);
-    }
-
     //handles validation errors
     @ExceptionHandler(ValidationFailureException.class)
     public ResponseEntity<Object> handleConstraintViolation(ValidationFailureException ex) {
@@ -63,5 +55,11 @@ public class GlobalExceptionHandler {
 
        log.error("Exception Handled: {}: {}", ex.getMessage(), errorMessages);
        return ResponseEntity.badRequest().body(new Response(ex.getMessage(), errorMessages));
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<Response> usernameAlreadyExists(UsernameAlreadyExistsException ex) {
+        log.error("User with the username `{}` already exists", ex.getUsername());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
     }
 }
