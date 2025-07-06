@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.mmms_backend.validators.annotations.FieldsValueMatch;
 import com.sep.mmms_backend.validators.annotations.UsernameFormat;
 import jakarta.persistence.*;
@@ -52,6 +53,7 @@ public class AppUser {
 
     @NotBlank(message = FIELD_CANNOT_BE_EMPTY)
     @Column(name="password")
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min=5, message= CHOOSE_STRONGER_PASSWORD)
     String password;
 

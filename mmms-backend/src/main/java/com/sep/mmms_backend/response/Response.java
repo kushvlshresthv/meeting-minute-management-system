@@ -13,6 +13,10 @@ public class Response {
     String message;
     Object mainBody;
 
+    public Response(Object mainBody) {
+        this.mainBody = mainBody;
+    }
+
     public Response(String message) {
         this.message = message;
     }

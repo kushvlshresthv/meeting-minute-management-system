@@ -1,6 +1,319 @@
 
 # Latest Changes
 
+## [1] Implemented /api/createCommittee (POST)
+
+- createCommittee route accepts the request body of the following format: 
+
+``` json
+{
+  "committeeName": "New Committee",
+  "committeeDescription": "Committee formed to handle stuffs",
+  "memberships": [
+    {
+      "member": {
+        "memberId": 1
+      }, 
+      "role": "SECRETARY"
+    },
+    {
+      "member": {
+        "memberId": 2
+      },
+      "role": "MEMBER"
+    }
+  ]
+}
+```
+
+- Here, the memberId must be present in the database. So the frontend should first request to the available members, and only populate the 'memberships' field, it should not populate the memberships field randomly. 
+
+- Other than committeeName, the other fields are optional. A committee can be created with just a Committee Name
+
+- If the memberships field has members, the members must have a valid memberId and a `valid ROLE` 
+
+
+### Examples: 
+
+
+### 1. Valid request
+
+#### Request Body
+
+``` json
+{
+  "committeeName": "New Committee",
+  "committeeDescription": "Committee formed to handle stuffs",
+  "memberships": [
+    {
+      "member": {
+        "memberId": 1
+      }, 
+      "role": "SECRETARY"
+    },
+    {
+      "member": {
+        "memberId": 2
+      },
+      "role": "MEMBER"
+    }
+  ]
+}
+```
+
+
+####  Response Body
+
+`HTTP OK`
+
+``` json 
+{
+    "message": "Committee created successfully",
+    "mainBody": null
+}
+```
+
+
+### 2. Committee Name is missing
+
+``` json
+{
+  "committeeDescription": "Committee formed to handle stuffs",
+  "memberships": [
+    {
+      "member": {
+        "memberId": 1
+      }, 
+      "role": "SECRETARY"
+    },
+    {
+      "member": {
+        "memberId": 2
+      },
+      "role": "MEMBER"
+    }
+  ]
+}
+```
+
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "Some necessary fileds are missing",
+    "mainBody": {
+        "committeeName": [
+            "must not be blank"
+        ]
+    }
+}
+```
+
+
+### 3. Role is missing in Membership
+
+
+``` json
+{
+  "committeeDescription": "Committee formed to handle stuffs",
+  "memberships": [
+    {
+      "member": {
+        "memberId": 1
+      }
+    },
+    {
+      "member": {
+        "memberId": 2
+      },
+      "role": "MEMBER"
+    }
+  ]
+}
+```
+
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "Invalid membership",
+    "mainBody": {
+        "role": [
+            "Role must be defined when adding the users to a committee"
+        ]
+    }
+}
+```
+
+
+
+### 4. MemberId not existing in the database is sent
+
+``` json
+{
+  "committeeName": "New Committee",
+  "committeeDescription": "Committee formed to handle stuffs",
+  "memberships": [
+    {
+      "member": {
+        "memberId": 100
+      }, 
+      "role": "SECRETARY"
+    },
+    {
+      "member": {
+        "memberId": 2
+      },
+      "role": "MEMBER"
+    }
+  ]
+}
+```
+
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "The specified member does not exist",
+    "mainBody": null
+}
+```
+
+
+## [1] Implemented /api/searchMembersByName (POST)
+
+- This route takes the name based on which search operation is performed as a query parameter. So, the request url should look like below: 
+
+	`/api/searchMembersByName?name=Sita`
+
+- If the name is a single keyword, all the entites that have the keyword as a substring in firstname or last name is returned. 
+
+- If the name is a white space separate values, the first two strings are treated as two separate keyword and all the entites that have the keyword as a substring in firstname or last name is returned
+
+
+### Example: 
+
+### 1. Single key search 
+
+`/api/searchMembersByName?name=Sita`
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": [
+        {
+            "memberId": 3,
+            "firstName": "Sita",
+            "lastName": "Thapa",
+            "institution": "Pokhara University",
+            "post": "Coordinator",
+            "qualitifcation": "MBA",
+            "email": "sita.thapa@example.com",
+            "createdDate": [
+                2025,
+                7,
+                3
+            ]
+        },
+        {
+            "memberId": 4,
+            "firstName": "Mel",
+            "lastName": "Sitara",
+            "institution": "Pokhara University",
+            "post": "Coordinator",
+            "qualitifcation": "MBA",
+            "email": "sita.thapa@example.com",
+            "createdDate": [
+                2025,
+                7,
+                3
+            ]
+        }
+    ]
+}
+```
+
+
+### 2. Double Key Search
+
+`/api/searchMembersByName?name=Sita Tha`
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": [
+        {
+            "memberId": 1,
+            "firstName": "Anita",
+            "lastName": "Shrestha",
+            "institution": "Tribhuvan University",
+            "post": "Lecturer",
+            "qualitifcation": "MSc Physics",
+            "email": "anita.shrestha@example.com",
+            "createdDate": [
+                2025,
+                7,
+                1
+            ]
+        },
+        {
+            "memberId": 3,
+            "firstName": "Sita",
+            "lastName": "Thapa",
+            "institution": "Pokhara University",
+            "post": "Coordinator",
+            "qualitifcation": "MBA",
+            "email": "sita.thapa@example.com",
+            "createdDate": [
+                2025,
+                7,
+                3
+            ]
+        },
+        {
+            "memberId": 4,
+            "firstName": "Mel",
+            "lastName": "Sitara",
+            "institution": "Pokhara University",
+            "post": "Coordinator",
+            "qualitifcation": "MBA",
+            "email": "sita.thapa@example.com",
+            "createdDate": [
+                2025,
+                7,
+                3
+            ]
+        }
+    ]
+}
+```
+
+
+### 3. No Match Found
+
+`/api/searchMembersByName?name=ageatae`
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": []
+}
+```
+
+
+
+
+# Previous Changes
+
 ## [1] Implemented /api/createMeeting (POST)
 
 - At this stage of the application, to create a meeting, a user has to submit the following details: 

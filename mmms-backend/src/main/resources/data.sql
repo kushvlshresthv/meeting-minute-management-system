@@ -17,4 +17,9 @@ INSERT INTO members (
       (
           'Sita', 'Thapa', 'Pokhara University', 'Coordinator', 'MBA', 'sita.thapa@example.com',
           'admin', '2025-07-03', 'admin', '2025-07-03'
-      );
+      ),
+      (
+          'Mel', 'Sitara', 'Pokhara University', 'Coordinator', 'MBA', 'sita.thapa@example.com',
+          'admin', '2025-07-03', 'admin', '2025-07-03'
+      )
+;

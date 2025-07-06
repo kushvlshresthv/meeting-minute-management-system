@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -44,25 +45,29 @@ public class Member {
 
     @Column(name = "created_by", updatable = false, nullable = false)
     @CreatedBy
+    @JsonIgnore
     private String createdBy;
 
     @Column(name = "created_date", updatable = false, nullable = false)
     @CreatedDate
     private LocalDate createdDate;
 
-
+    @JsonIgnore
     @Column(name = "modified_by",  nullable = false)
     @CreatedBy
     private String modifiedBy;
 
+    @JsonIgnore
     @Column(name = "modified_date", nullable = false)
     @CreatedDate
     private LocalDate modifiedDate;
 
+    @JsonIgnore
     @OneToMany(mappedBy="member")
     private Set<CommitteeMembership> memberships;
 
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="meeting_attendees",
             joinColumns = {
