@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -31,7 +33,6 @@ public class Committee {
     private String committeeName;
 
     @Column(name="committee_description")
-    @NotBlank
     private String committeeDescription;
 
     @ManyToOne
@@ -50,6 +51,6 @@ public class Committee {
     @LastModifiedDate
     private LocalDate modifiedDate;
 
-    @OneToMany(mappedBy = "committee")
-    private Set<CommitteeMembership> memberships;
+    @OneToMany(mappedBy = "committee", cascade = CascadeType.ALL)
+    private List<CommitteeMembership> memberships;
 }

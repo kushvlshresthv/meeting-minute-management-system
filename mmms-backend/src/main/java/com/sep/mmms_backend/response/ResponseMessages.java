@@ -22,6 +22,8 @@ public enum ResponseMessages {
     ROUTE_UPDATE_USER_MISUSED("Valid uid field is required as this route can only be used to update existing users"),
     ROUTE_REGISTER_MISUED("This route can't be used to update an existing user"),
 
+    //COMMITTEE RELATED:
+    COMMITTEE_CREATION_SUCCESS("Committee created successfully"),
     ;
 
 

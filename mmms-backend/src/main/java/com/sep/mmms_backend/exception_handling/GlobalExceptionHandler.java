@@ -62,4 +62,10 @@ public class GlobalExceptionHandler {
         log.error("User with the username `{}` already exists", ex.getUsername());
         return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
     }
+
+    @ExceptionHandler(MemberDoesNotExistException.class)
+    public ResponseEntity<Response> memberDoesNotExists(MemberDoesNotExistException ex) {
+        log.error("Member with the memberId `{}` does not exist", ex.getMemberId());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
 }

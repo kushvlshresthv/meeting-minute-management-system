@@ -11,7 +11,7 @@ CREATE TABLE app_users
     password  VARCHAR(100)
 );
 
-CREATE TABLE committee (
+CREATE TABLE committees (
            committee_id INT AUTO_INCREMENT PRIMARY KEY,
            committee_name VARCHAR(255) NOT NULL,
            committee_description TEXT,
@@ -43,7 +43,7 @@ CREATE TABLE committee_memberships (
            member_id INT NOT NULL,
            role VARCHAR(255) NOT NULL,
            PRIMARY KEY (committee_id, member_id),
-           FOREIGN KEY (committee_id) REFERENCES committee(committee_id),
+           FOREIGN KEY (committee_id) REFERENCES committees(committee_id),
            FOREIGN KEY (member_id) REFERENCES members(member_id)
 );
 

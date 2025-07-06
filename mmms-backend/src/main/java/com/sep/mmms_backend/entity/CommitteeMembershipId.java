@@ -13,8 +13,8 @@ import lombok.*;
 
 public class CommitteeMembershipId {
     @Column(name="committee_id")
-    private Long committeeId;
+    private int committeeId;
 
     @Column(name="member_id")
-    private Long memberId;
+    private int memberId;
 }
