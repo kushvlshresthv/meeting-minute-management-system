@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.entity.AppUser;
+import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.UsernameAlreadyExistsException;
 import com.sep.mmms_backend.exceptions.ValidationFailureException;
@@ -13,12 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -42,8 +45,6 @@ public class AppUserController {
     }
 
 
-
-
     /**
      * this route does not allow the users to change the password
      * validation for the updated user data is performed inside the service class
@@ -52,5 +53,12 @@ public class AppUserController {
     public ResponseEntity<Response> updateUser(@RequestBody AppUser appUser, Authentication authentication) {
         appUserService.updateUser(appUser,authentication.getName());
         return ResponseEntity.ok().body(new Response(ResponseMessages.USER_UPDATION_SUCCESS));
+    }
+
+
+    @GetMapping("/api/getCommittees")
+    public ResponseEntity<Response> getCommittees(Authentication authentication) {
+        List<Committee> committees =  appUserService.getCommittees(authentication.getName());
+        return ResponseEntity.ok().body(new Response(committees));
     }
 }

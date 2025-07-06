@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.entity.AppUser;
+import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.repository.AppUserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -114,4 +116,11 @@ public class AppUserService {
 
         return appUserRepository.save(currentUser);
     }
+
+
+    public List<Committee> getCommittees(String username) {
+        AppUser currentUser = loadUserByUsername(username);
+        return currentUser.getMyCommittees();
+    }
 }
+

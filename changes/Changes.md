@@ -183,9 +183,9 @@
 ```
 
 
-## [1] Implemented /api/searchMembersByName (POST)
+## [2] Implemented /api/searchMembersByName (GET)
 
-- This route takes the name based on which search operation is performed as a query parameter. So, the request url should look like below: 
+- This route takes the name as a query parameter based on which search operation is performed.  So, the request url should look like below: 
 
 	`/api/searchMembersByName?name=Sita`
 
@@ -310,7 +310,59 @@
 ```
 
 
+# [3] Implemented /getCommittees  (GET)
 
+- This returns all the Committees created by the logged in user. 
+
+### Example
+
+### 1. When no committee has been created: 
+
+`/api/getCommittees`
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": []
+}
+```
+
+
+### 2. When  committee is present in the database
+
+`/api/getCommittees`
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": [
+        {
+            "committeeId": 1,
+            "committeeName": "New Committee",
+            "committeeDescription": "Committee formed to handle stuffs",
+            "createdDate": [
+                2025,
+                7,
+                6
+            ]
+        },
+        {
+            "committeeId": 2,
+            "committeeName": "New Committee",
+            "committeeDescription": "Committee formed to handle stuffs",
+            "createdDate": [
+                2025,
+                7,
+                6
+            ]
+        }
+    ]
+}
+```
 
 # Previous Changes
 

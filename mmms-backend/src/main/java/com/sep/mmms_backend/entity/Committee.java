@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ public class Committee {
 
     @ManyToOne
     @JoinColumn(name="created_by", referencedColumnName="uid", nullable=false)
+    @JsonIgnore
     private AppUser createdBy;
 
     @Column(name = "created_date")
@@ -45,12 +47,15 @@ public class Committee {
 
     @Column(name = "modified_by")
     @LastModifiedBy
+    @JsonIgnore
     private String modifiedBy;
 
     @Column(name = "modified_date")
     @LastModifiedDate
+    @JsonIgnore
     private LocalDate modifiedDate;
 
     @OneToMany(mappedBy = "committee", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<CommitteeMembership> memberships;
 }
