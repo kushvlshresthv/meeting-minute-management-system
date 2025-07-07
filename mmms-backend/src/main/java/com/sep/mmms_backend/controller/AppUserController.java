@@ -36,7 +36,7 @@ public class AppUserController {
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(@RequestBody @Valid AppUser appUser, Errors errors) {
         if(errors.hasErrors()){
-            throw new ValidationFailureException(ExceptionMessages.USER_VALIDATION_FALIED, errors);
+            throw new ValidationFailureException(ExceptionMessages.VALIDATION_FAILED, errors);
         }
         AppUser savedUser = appUserService.saveNewUser(appUser);
 

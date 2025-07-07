@@ -2,6 +2,7 @@ package com.sep.mmms_backend.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,16 +12,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="members")
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +40,7 @@ public class Member {
 
     private String institution;  //example: Pulchowk Campus, IOE
     private String post; //example: professor
-    private String qualitifcation; //example: Dr
+    private String qualification; //example: Dr
 
     @Column
     @Email
@@ -62,9 +65,9 @@ public class Member {
     @CreatedDate
     private LocalDate modifiedDate;
 
-    @JsonIgnore
-    @OneToMany(mappedBy="member")
-    private Set<CommitteeMembership> memberships;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy="member", cascade=CascadeType.PERSIST)
+    private List<CommitteeMembership> memberships = new ArrayList<>();
 
 
     @JsonIgnore
@@ -78,5 +81,5 @@ public class Member {
                     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
             }
     )
-    List<Meeting> attendedMeetings;
+    List<Meeting> attendedMeetings = new ArrayList<>();
 }

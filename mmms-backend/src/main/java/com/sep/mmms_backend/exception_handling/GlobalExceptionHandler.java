@@ -68,4 +68,16 @@ public class GlobalExceptionHandler {
         log.error("Member with the memberId `{}` does not exist", ex.getMemberId());
         return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
     }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Response> invalidRequest(InvalidRequestException ex) {
+        log.error("Invalid Request- Request criteria not met: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CommitteeDoesNotExistException.class)
+    public ResponseEntity<Response> committeeDoesNotExists(CommitteeDoesNotExistException ex) {
+        log.error("Committee with the committeeId `{}` does not exist", ex.getCommitteeId());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
 }

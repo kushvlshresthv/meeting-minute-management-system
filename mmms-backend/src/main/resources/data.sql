@@ -3,7 +3,7 @@ VALUES ('username', '{noop}password', 'username@gmail.com', 'admin', 'admin');
 
 
 INSERT INTO members (
-    first_name, last_name, institution, post, qualitifcation, email,
+    first_name, last_name, institution, post, qualification, email,
     created_by, created_date, modified_by, modified_date
 ) VALUES
       (

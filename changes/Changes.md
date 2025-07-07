@@ -1,6 +1,162 @@
 
 # Latest Changes
 
+## [1] Implemented /api/createMember (POST)
+
+- /createMember route accepts the request body of the following format: 
+
+``` json
+{
+
+  "firstName": "Rajesh",
+  "lastName": "Dahal",
+  "institution": "Tribhuvan University",
+  "post": "Professor",
+  "qualification": "Er",
+  "email": "dahalrajesh@gmail.com",
+  "memberships": [
+    {
+      "role": "SECRETARY"
+    }
+  ]
+}
+```
+
+- `Furthermore, the committeeId to which the Member will be assocated with must be provided in the query parameter as follows: `
+
+	`/api/createMember?committeeId=1`
+
+
+- Some validations that are applied to the Member 
+
+	1. firstname and last name can't be blank
+	2. the 'role' must be specified for the memberships
+
+- The rest of the fields are optional for now, but some may be made mandatory in future changes. 
+
+
+## Example: 
+
+## 1. Valid Request
+
+``` json
+{
+  "firstName": "Rajesh",
+  "lastName": "Dahal",
+  "institution": "Tribhuvan University",
+  "post": "Professor",
+  "qualification": "Er",
+  "email": "dahalrajesh@gmail.com",
+  "memberships": [
+    {
+      "role": "SECRETARY"
+    }
+  ]
+}
+```
+
+`HTTP OK`
+
+``` json
+{
+    "message": "Member created successfully",
+    "mainBody": null
+}
+```
+
+
+## 2. First Name and Last Name Missing
+
+``` json
+{
+  "institution": "Tribhuvan University",
+  "post": "Professor",
+  "qualification": "Er",
+  "email": "dahalrajesh@gmail.com",
+  "memberships": [
+    {
+      "role": "SECRETARY"
+    }
+  ]
+}
+```
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "Validation Failed",
+    "mainBody": {
+        "firstName": [
+            "must not be blank"
+        ],
+        "lastName": [
+            "must not be blank"
+        ]
+    }
+}
+```
+
+
+## 3. Membership not specified
+
+``` json
+{
+  "firstName": "Rajesh",
+  "lastName": "Dahal",
+  "institution": "Tribhuvan University",
+  "post": "Professor",
+  "qualification": "Er",
+  "email": "dahalrajesh@gmail.com"
+}
+```
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "No valid membership",
+    "mainBody": null
+}
+```
+
+
+
+### 4. No Role mentioned in the membership
+
+``` json
+{
+  "firstName": "Rajesh",
+  "lastName": "Dahal",
+  "institution": "Tribhuvan University",
+  "post": "Professor",
+  "qualification": "Er",
+  "email": "dahalrajesh@gmail.com",
+  "memberships": [
+    {
+
+    }
+  ]
+}
+```
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "Validation Failed",
+    "mainBody": {
+        "role": [
+            "Role must be defined when adding the users to a committee"
+        ]
+    }
+}
+```
+
+
+
+# Previous Changes
+
 ## [1] Implemented /api/createCommittee (POST)
 
 - createCommittee route accepts the request body of the following format: 
@@ -101,7 +257,7 @@
 
 ``` json
 {
-    "message": "Some necessary fileds are missing",
+    "message": "Validation Failed",
     "mainBody": {
         "committeeName": [
             "must not be blank"
@@ -116,6 +272,7 @@
 
 ``` json
 {
+  "committeeName": "New Committee",
   "committeeDescription": "Committee formed to handle stuffs",
   "memberships": [
     {

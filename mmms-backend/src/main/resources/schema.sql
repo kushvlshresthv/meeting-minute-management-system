@@ -29,7 +29,7 @@ CREATE TABLE members (
              last_name VARCHAR(255) NOT NULL,
              institution VARCHAR(255),
              post VARCHAR(255),
-             qualitifcation VARCHAR(255),
+             qualification VARCHAR(255),
              email VARCHAR(255),
              created_by VARCHAR(255) NOT NULL,
              created_date DATE NOT NULL,

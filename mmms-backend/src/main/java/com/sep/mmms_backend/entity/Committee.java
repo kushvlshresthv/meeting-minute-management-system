@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,6 +58,6 @@ public class Committee {
     private LocalDate modifiedDate;
 
     @OneToMany(mappedBy = "committee", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<CommitteeMembership> memberships;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<CommitteeMembership> memberships = new ArrayList<>();
 }

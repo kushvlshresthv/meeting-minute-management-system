@@ -11,7 +11,10 @@ public enum ExceptionMessages {
     USER_VALIDATION_FALIED("User data does not meet validation criterias"),
     MEMBER_DOES_NOT_EXIST("The specified member does not exist"),
     INVALID_MEMBERSHIP("Invalid membership"),
-    COMMITTEE_VALIDATION_FAILED("Some necessary fileds are missing"),
+    VALIDATION_FAILED("Validation Failed"),
+    COMMITTEE_DOES_NOT_EXIST("The specified committee does not exist"),
+    NO_VALID_MEMBERSHIP("No valid membership"),
+    COMMITTEE_NOT_ACCESSIBLE("Specified committee is not accessible")
     ;
 
 

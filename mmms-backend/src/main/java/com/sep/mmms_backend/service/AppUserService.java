@@ -111,7 +111,7 @@ public class AppUserService {
         validator.validate(currentUser, bindingResult);
 
         if(bindingResult.hasErrors()) {
-            throw new ValidationFailureException(ExceptionMessages.USER_VALIDATION_FALIED, bindingResult);
+            throw new ValidationFailureException(ExceptionMessages.VALIDATION_FAILED, bindingResult);
         }
 
         return appUserRepository.save(currentUser);
