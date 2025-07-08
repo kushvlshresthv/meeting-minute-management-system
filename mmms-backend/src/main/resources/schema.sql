@@ -24,19 +24,18 @@ CREATE TABLE committees (
 
 
 CREATE TABLE members (
-             member_id INT AUTO_INCREMENT PRIMARY KEY,
-             first_name VARCHAR(255) NOT NULL,
-             last_name VARCHAR(255) NOT NULL,
-             institution VARCHAR(255),
-             post VARCHAR(255),
-             qualification VARCHAR(255),
-             email VARCHAR(255),
-             created_by VARCHAR(255) NOT NULL,
-             created_date DATE NOT NULL,
-             modified_by VARCHAR(255) NOT NULL,
-             modified_date DATE NOT NULL
+                         member_id INT AUTO_INCREMENT PRIMARY KEY,
+                         first_name VARCHAR(255) NOT NULL,
+                         last_name VARCHAR(255) NOT NULL,
+                         institution VARCHAR(255),
+                         post VARCHAR(255),
+                         qualification VARCHAR(255),
+                         email VARCHAR(255),
+                         created_by VARCHAR(255) NOT NULL,
+                         created_date DATE NOT NULL,
+                         modified_by VARCHAR(255) NOT NULL,
+                         modified_date DATE NOT NULL
 );
-
 
 CREATE TABLE committee_memberships (
            committee_id INT NOT NULL,
@@ -56,8 +55,12 @@ CREATE TABLE meetings (
           created_by VARCHAR(255) NOT NULL,
           updated_by VARCHAR(255) NOT NULL,
           created_date DATE NOT NULL,
-          updated_date DATE NOT NULL
+          updated_date DATE NOT NULL,
+
+          committee_id INT NOT NULL,  -- Now NOT NULL
+          FOREIGN KEY (committee_id) REFERENCES committees(committee_id)
 );
+
 
 
 CREATE TABLE meeting_attendees (

@@ -1,5 +1,7 @@
 package com.sep.mmms_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,8 +22,10 @@ public class Decision {
 
     @ManyToOne
     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id")
+    @JsonIgnore
     private Meeting meeting;
 
     @Column(name =  "decision")
+    @JsonIgnore
     private String decision;
 }

@@ -5,9 +5,8 @@
 
 - /createMember route accepts the request body of the following format: 
 
-``` json
+```json
 {
-
   "firstName": "Rajesh",
   "lastName": "Dahal",
   "institution": "Tribhuvan University",
@@ -150,6 +149,82 @@
             "Role must be defined when adding the users to a committee"
         ]
     }
+}
+```
+
+
+# [2] /api/getCommitteeDetails (GET)
+
+- This method returns full information about the committee. To specify which committee, add the committeeId in the query parameter as follows: 
+
+	`/api/getCommitteeDetails?committeeId=1`
+
+- In the response body json, inside the mainBody json object, it returns a `committee` json object with committee details, and `members` json array of all the members assocated with the committee
+
+## Example: 
+
+## 1. Valid Request (when the specified committee is available in the database)
+
+`/api/getCommitteeDetails?committeeId=1`
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": {
+        "committee": {
+            "committeeId": 1,
+            "committeeName": "Finance Committee",
+            "committeeDescription": "Handles all financial matters of the organization",
+            "createdDate": [
+                2025,
+                7,
+                8
+            ],
+            "meetings": [
+                {
+                    "meetingId": 1,
+                    "meetingName": "Budget Planning Meeting",
+                    "meetingDescription": "Meeting to discuss the budget allocation for the next fiscal year",
+                    "meetingHeldDate": [
+                        2025,
+                        7,
+                        8
+                    ],
+                    "attendees": []
+                }
+            ]
+        },
+        "members": [
+            {
+                "memberId": 1,
+                "firstName": "Anita",
+                "lastName": "Shrestha",
+                "institution": "Tribhuvan University",
+                "post": "Lecturer",
+                "qualification": "MSc Physics",
+                "createdDate": [
+                    2025,
+                    7,
+                    1
+                ]
+            }
+        ]
+    }
+}
+```
+
+
+## 2. Invalid Request(when the committee requested is not available in the database)
+
+`/api/getCommitteeDetails?committeeId=1`
+
+`HTTP BAD REQUEST`
+```json
+{
+    "message": "The specified committee does not exist",
+    "mainBody": null
 }
 ```
 

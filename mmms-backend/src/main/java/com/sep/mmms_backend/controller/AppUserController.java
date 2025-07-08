@@ -54,11 +54,4 @@ public class AppUserController {
         appUserService.updateUser(appUser,authentication.getName());
         return ResponseEntity.ok().body(new Response(ResponseMessages.USER_UPDATION_SUCCESS));
     }
-
-
-    @GetMapping("/api/getCommittees")
-    public ResponseEntity<Response> getCommittees(Authentication authentication) {
-        List<Committee> committees =  appUserService.getCommittees(authentication.getName());
-        return ResponseEntity.ok().body(new Response(committees));
-    }
 }

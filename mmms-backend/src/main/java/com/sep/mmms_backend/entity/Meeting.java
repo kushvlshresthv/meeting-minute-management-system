@@ -33,7 +33,7 @@ public class Meeting {
     @Column(name="meeting_name")
     private String meetingName;
 
-    @Column(name="metting_description")
+    @Column(name="meeting_description")
     private String meetingDescription;
 
     @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
@@ -60,9 +60,15 @@ public class Meeting {
     @Column(name="updated_date", nullable = false)
     private LocalDate updatedDate;
 
+    @ManyToOne
+    @JoinColumn(name = "committee_id", referencedColumnName="committee_id")
+    @JsonIgnore
+    Committee committee;
+
     @ManyToMany(mappedBy="attendedMeetings", fetch = FetchType.LAZY)
     public List<Member> attendees;
 
     @OneToMany(mappedBy="meeting")
+    @JsonIgnore
     private List<Decision> decisions;
 }

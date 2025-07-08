@@ -116,11 +116,5 @@ public class AppUserService {
 
         return appUserRepository.save(currentUser);
     }
-
-
-    public List<Committee> getCommittees(String username) {
-        AppUser currentUser = loadUserByUsername(username);
-        return currentUser.getMyCommittees();
-    }
 }
 

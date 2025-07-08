@@ -57,6 +57,9 @@ public class Committee {
     @JsonIgnore
     private LocalDate modifiedDate;
 
+    @OneToMany(mappedBy="committee")
+    private List<Meeting> meetings;
+
     @OneToMany(mappedBy = "committee", cascade = CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<CommitteeMembership> memberships = new ArrayList<>();
