@@ -1,6 +1,177 @@
 
 # Latest Changes
 
+# [1] Implements /api/committee/createMeeting (POST)
+
+- /committee/createMeeting creates a meeting for a particular committee
+- to specify which committee, the committeeId must be provided as a query parameter as follows: 
+
+	`/api/committee/createMeeting?committeeId=1`
+
+- Following fields are mandatory: 
+	i. meetingTitle
+	ii. meetingHeldDate
+	iii. meetingHeldTime
+	iv. meetingHeldPlace
+
+
+`NOTE: this route returns the saved meeting in the response body`
+## Examples
+
+## 1. Valid Request
+
+### Request Body
+
+```json
+	{
+      "meetingTitle": "Meeting to discuss budget",
+      "meetingDescription": "This meeting discussed the finances for the next fiscal year",
+      "meetingHeldDate": "2025-07-09",
+      "meetingHeldPlace": "Kathmandu, Nepal",
+      "meetingHeldTime": "14:30:00",
+      "attendees": [
+        {
+          "memberId": 1
+        }
+      ],
+      "decisions": [
+        {
+          "decision": "Approved annual budget."
+        },
+        {
+          "decision": "Scheduled next meeting for August."
+        }
+      ]
+    }
+```
+
+
+`HTTP OK`
+
+``` json
+{
+    "message": null,
+    "mainBody": {
+        "meetingId": 2,
+        "meetingTitle": "Meeting to discuss budget",
+        "meetingDescription": "This meeting discussed the finances for the next fiscal year",
+        "meetingHeldDate": [
+            2025,
+            7,
+            9
+        ],
+        "meetingHeldTime": [
+            14,
+            30
+        ],
+        "meetingHeldPlace": "Kathmandu, Nepal",
+        "createdDate": [
+            2025,
+            7,
+            9
+        ]
+    }
+}
+```
+
+
+
+### 2. Mandatory Fields Are Missing
+
+``` json
+    {
+      "meetingDescription": "This meeting discussed the finances for the next fiscal year",
+      "attendees": [
+        {
+          "memberId": 1
+        }
+      ],
+      "decisions": [
+        {
+          "decision": "Approved annual budget."
+        },
+        {
+          "decision": "Scheduled next meeting for August."
+        }
+      ]
+    }
+
+```
+
+`HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "Validation Failed",
+    "mainBody": {
+        "meetingHeldDate": [
+            "This field cannot be empty"
+        ],
+        "meetingHeldPlace": [
+            "This field cannot be empty"
+        ],
+        "meetingTitle": [
+            "This field cannot be empty"
+        ],
+        "meetingHeldTime": [
+            "This field cannot be empty"
+        ]
+    }
+}
+```
+
+
+### 3. a non existent member id is provided in 'attendees'
+
+``` json
+    {
+      "meetingTitle": "Meeting to discuss budget",
+      "meetingDescription": "This meeting discussed the finances for the next fiscal year",
+      "meetingHeldDate": "2025-07-09",
+      "meetingHeldPlace": "Kathmandu, Nepal",
+      "meetingHeldTime": "14:30:00",
+      "attendees": [
+        {
+          "memberId": 10000
+        }
+      ],
+      "decisions": [
+        {
+          "decision": "Approved annual budget."
+        },
+        {
+          "decision": "Scheduled next meeting for August."
+        }
+      ]
+    }
+```
+ `HTTP BAD REQUEST`
+
+``` json
+{
+    "message": "The specified member does not exist",
+    "mainBody": null
+}
+```
+
+
+### 4. a non existent committee is provided in the query
+
+`/api/committee/createMeeting?committeeId=1000`
+
+`HTTP BAD REQUEST`
+```json
+{
+    "message": "The specified committee does not exist",
+    "mainBody": null
+}
+```
+
+
+
+
+# Previous Changes
+
 ## [1] Implemented /api/createMember (POST)
 
 - /createMember route accepts the request body of the following format: 

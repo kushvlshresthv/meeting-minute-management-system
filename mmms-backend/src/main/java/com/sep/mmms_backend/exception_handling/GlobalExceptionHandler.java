@@ -80,4 +80,11 @@ public class GlobalExceptionHandler {
         log.error("Committee with the committeeId `{}` does not exist", ex.getCommitteeId());
         return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
     }
+
+
+    @ExceptionHandler(MemberNotInCommitteeException.class)
+    public ResponseEntity<Response> memberNotInCommittee(MemberNotInCommitteeException ex) {
+        log.error("MemberId: {} does not belong to CommitteeId: {}  ", ex.getMemberId(), ex.getCommitteeId());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
 }

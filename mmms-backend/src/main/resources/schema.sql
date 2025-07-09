@@ -48,19 +48,19 @@ CREATE TABLE committee_memberships (
 
 CREATE TABLE meetings (
           meeting_id INT AUTO_INCREMENT PRIMARY KEY,
-          meeting_name VARCHAR(255) NOT NULL,
+          meeting_title VARCHAR(255) NOT NULL,
           meeting_description TEXT,
           meeting_held_date DATE NOT NULL,
+          meeting_held_time TIME NOT NULL,  -- Added this line for LocalTime
           meeting_held_place VARCHAR(255) NOT NULL,
           created_by VARCHAR(255) NOT NULL,
           updated_by VARCHAR(255) NOT NULL,
           created_date DATE NOT NULL,
           updated_date DATE NOT NULL,
 
-          committee_id INT NOT NULL,  -- Now NOT NULL
+          committee_id INT NOT NULL,
           FOREIGN KEY (committee_id) REFERENCES committees(committee_id)
 );
-
 
 
 CREATE TABLE meeting_attendees (

@@ -2,6 +2,7 @@ package com.sep.mmms_backend.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity(name="meetings")
@@ -30,8 +32,8 @@ public class Meeting {
     private int meetingId;
 
     @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
-    @Column(name="meeting_name")
-    private String meetingName;
+    @Column(name="meeting_title")
+    private String meetingTitle;
 
     @Column(name="meeting_description")
     private String meetingDescription;
@@ -39,6 +41,14 @@ public class Meeting {
     @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_date")
     private LocalDate meetingHeldDate;
+
+    @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
+    @Column(name="meeting_held_time")
+    private LocalTime meetingHeldTime;
+
+    @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
+    @Column(name="meeting_held_place")
+    private String meetingHeldPlace;
 
     @JsonIgnore
     @CreatedBy
@@ -50,7 +60,7 @@ public class Meeting {
     @Column(name="updated_by")
     private String updatedBy;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @CreatedDate
     @Column(name="created_date", updatable=false, nullable = false)
     private LocalDate createdDate;
@@ -65,10 +75,21 @@ public class Meeting {
     @JsonIgnore
     Committee committee;
 
-    @ManyToMany(mappedBy="attendedMeetings", fetch = FetchType.LAZY)
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name="meeting_attendees",
+            inverseJoinColumns = {
+                    @JoinColumn(name="member_id", referencedColumnName = "member_id"),
+            },
+
+            joinColumns = {
+                    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
+            }
+    )
     public List<Member> attendees;
 
-    @OneToMany(mappedBy="meeting")
+    @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<Decision> decisions;
 }

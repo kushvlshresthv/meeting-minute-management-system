@@ -2,10 +2,7 @@ package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Member;
-import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
-import com.sep.mmms_backend.exceptions.ExceptionMessages;
-import com.sep.mmms_backend.exceptions.IllegalOperationException;
-import com.sep.mmms_backend.exceptions.InvalidRequestException;
+import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
@@ -85,5 +82,14 @@ public class MemberService {
         member.getMemberships().getFirst().setMember(member);
 
         memberRepository.save(member);
+    }
+
+
+    public boolean existsById(int memberId) {
+        return memberRepository.existsById(memberId);
+    }
+
+    public List<Member> findAllById(List<Integer> memberIds) {
+        return memberRepository.findAllById(memberIds);
     }
 }

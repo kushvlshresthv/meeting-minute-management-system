@@ -69,17 +69,7 @@ public class Member {
     @OneToMany(mappedBy="member", cascade=CascadeType.PERSIST)
     private List<CommitteeMembership> memberships = new ArrayList<>();
 
-
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="meeting_attendees",
-            joinColumns = {
-                    @JoinColumn(name="member_id", referencedColumnName = "member_id"),
-            },
-
-            inverseJoinColumns = {
-                    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
-            }
-    )
+    @ManyToMany(mappedBy = "attendees", fetch = FetchType.LAZY)
     List<Meeting> attendedMeetings = new ArrayList<>();
 }

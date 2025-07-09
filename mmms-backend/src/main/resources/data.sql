@@ -46,10 +46,11 @@ SET @committeeId = LAST_INSERT_ID();
 
 -- Insert a new meeting linked to the newly inserted committee
 INSERT INTO meetings (
-    meeting_name,
+    meeting_title,
     meeting_description,
     meeting_held_date,
     meeting_held_place,
+    meeting_held_time,
     created_by,
     updated_by,
     created_date,
@@ -60,6 +61,7 @@ INSERT INTO meetings (
              'Meeting to discuss the budget allocation for the next fiscal year',
              '2025-07-08',
              'Conference Hall A',
+            '10:30:00',
              'username',
              'username',
              CURDATE(),
