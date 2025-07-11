@@ -1,6 +1,5 @@
 package com.sep.mmms_backend.dto;
 
-import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class MemberDto {
     private LocalDate createdDate;
 
     public MemberDto(Member member) {
-        this.memberId = member.getMemberId();
+        this.memberId = member.getId();
         this.firstName = member.getFirstName();
         this.lastName = member.getLastName();
         this.institution = member.getInstitution();

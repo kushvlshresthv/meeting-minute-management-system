@@ -59,7 +59,9 @@ CREATE TABLE meetings (
           updated_date DATE NOT NULL,
 
           committee_id INT NOT NULL,
-          FOREIGN KEY (committee_id) REFERENCES committees(committee_id)
+          coordinator INT NOT NULL,
+          FOREIGN KEY (committee_id) REFERENCES committees(committee_id),
+          FOREIGN KEY (coordinator) REFERENCES members(member_id)
 );
 
 

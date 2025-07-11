@@ -1,5 +1,168 @@
 
-# Latest Changes
+Some field names have been changed: 
+
+
+| Old                     | New         |
+| ----------------------- | ----------- |
+| 1. committeeName        | name        |
+| 2. committeeDescription | description |
+| 3. committeeId          | id          |
+| 4. meetingId            | id          |
+| 5. meetingTitle         | title       |
+| 6. meetingDescription   | description |
+| 7. meetingHeldDate      | heldDate    |
+| 8. meetingHeldTime      | heldTime    |
+| 9. meetingHeldPlace     | heldPlace   |
+| 10. memberId            | id          |
+
+## With these changes: 
+
+
+1. For /createCommittee the request body should look like: 
+
+``` json
+{
+  "name": "New Committee",
+  "description": "Committee formed to handle stuffs",
+  "memberships": [
+    {
+      "member": {
+        "id": 3
+      }, 
+      "role": "SECRETARY"
+    },
+    {
+      "member": {
+        "id": 2
+      },
+      "role": "MEMBER"
+    }
+  ]
+}
+```
+
+
+2. /getCommittees will return: 
+
+``` json
+{
+    "message": null,
+    "mainBody": [
+        {
+            "id": 1,
+            "name": "Academic Committee",
+            "description": "Oversees academic policies and curriculum development.",
+            "createdDate": [
+                2025,
+                7,
+                11
+            ],
+            "meetings": null
+        },
+        {
+            "id": 2,
+            "name": "Events Committee",
+            "description": "Plans and organizes all institutional events and seminars.",
+            "createdDate": [
+                2025,
+                7,
+                11
+            ],
+            "meetings": null
+        },
+```
+
+
+3. getCommitteeDetails will return:
+
+``` json
+{
+    "message": null,
+    "mainBody": {
+        "committee": {
+            "id": 2,
+            "name": "Events Committee",
+            "description": "Plans and organizes all institutional events and seminars.",
+            "createdDate": [
+                2025,
+                7,
+                11
+            ],
+            "meetings": [
+                {
+                    "id": 5,
+                    "title": "Canteen and Hostel Feedback Session",
+                    "description": "Discussing feedback from students on facilities.",
+                    "heldDate": [
+                        2025,
+                        7,
+                        29
+                    ],
+                    "heldTime": [
+                        15,
+                        0
+                    ],
+                    "heldPlace": "Student Lounge",
+                    "createdDate": [
+                        2025,
+                        7,
+                        23
+                    ]
+                },
+            ]
+        },
+        "members": [
+            {
+                "memberId": 9,
+                "firstName": "Ramesh",
+                "lastName": "Karki",
+                "institution": "Nepal Telecom",
+                "post": "IT Officer",
+                "qualification": "BSc CSIT",
+                "createdDate": [
+                    2025,
+                    7,
+                    16
+                ]
+            },
+        ]
+    }
+}
+```
+
+
+4. createMeeting will look like this: 
+
+
+``` json
+    {
+      "title": "Meeting to discuss budget",
+      "description": "This meeting discussed the finances for the next fiscal year",
+      "heldDate": "2025-07-09",
+      "heldPlace": "Kathmandu, Nepal",
+      "heldTime": "14:30:00",
+      "coordinator": {
+        "id":2
+      },
+      "attendees": [
+        {
+          "id": 1
+        }
+      ],
+      "decisions": [
+        {
+          "decision": "Approved annual budget."
+        },
+        {
+          "decision": "Scheduled next meeting for August."
+        }
+      ]
+    }
+
+```
+
+
+# Previous Changes
 
 # [1] Implements /api/committee/createMeeting (POST)
 
@@ -29,7 +192,10 @@
       "meetingHeldDate": "2025-07-09",
       "meetingHeldPlace": "Kathmandu, Nepal",
       "meetingHeldTime": "14:30:00",
-      "attendees": [
+      "coordinator": {
+        "memberId":2
+      },
+	  "attendees": [
         {
           "memberId": 1
         }
@@ -81,6 +247,9 @@
 ``` json
     {
       "meetingDescription": "This meeting discussed the finances for the next fiscal year",
+	  "coordinator": {
+        "memberId":2
+      },
       "attendees": [
         {
           "memberId": 1
@@ -127,6 +296,9 @@
     {
       "meetingTitle": "Meeting to discuss budget",
       "meetingDescription": "This meeting discussed the finances for the next fiscal year",
+	  "coordinator": {
+        "memberId":2
+      }, 
       "meetingHeldDate": "2025-07-09",
       "meetingHeldPlace": "Kathmandu, Nepal",
       "meetingHeldTime": "14:30:00",

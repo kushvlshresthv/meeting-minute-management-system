@@ -33,24 +33,37 @@ public class MeetingService {
         this.entityValidator.validate(meeting);
         Committee committee = committeeService.findCommitteeById(committeeId, username);
 
+        Member coordinator = memberService.findById(meeting.getCoordinator().getId());
+
+
         //populating the meetings
         if(!meeting.getAttendees().isEmpty()) {
-            List<Integer> attendeeMemberIds = meeting.getAttendees().stream().map(Member::getMemberId).toList();
+            List<Integer> attendeeMemberIds = meeting.getAttendees().stream().map(Member::getId).toList();
             List<Member> attendees = memberService.findAllById(attendeeMemberIds);
 
+
+            //when some attendee Ids are missing from the datbase
             if(attendees.size() != attendeeMemberIds.size()) {
-                List<Integer> foundMembers = attendees.stream().map(Member::getMemberId).toList();
+                List<Integer> foundMembers = attendees.stream().map(Member::getId).toList();
                 List<Integer> missingMembers = attendeeMemberIds.stream().filter(memberId -> !foundMembers.contains(memberId)).toList();
                 throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, missingMembers.getFirst());
             }
 
+            //check if all the attendees are in the committee
             List<Member> committeeMemberList = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
             for(Member attendee: attendees) {
                 if(!committeeMemberList.contains(attendee)) {
-                    throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, attendee.getMemberId(), committeeId);
+                    throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, attendee.getId(), committeeId);
                 }
             }
+
+            //check if the coordinator is in the committee
+            if(!committeeMemberList.contains(coordinator)) {
+                throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, coordinator.getId(), committeeId) ;
+            }
+
             meeting.setAttendees(attendees);
+            meeting.setCoordinator(coordinator);
         }
 
         meeting.setCommittee(committee);
@@ -58,15 +71,19 @@ public class MeetingService {
     }
 
     public Meeting updateMeeting(Meeting meeting) {
-        if(meetingRepository.existsById(meeting.getMeetingId())) {
-            Meeting existingMeeting = meetingRepository.findMeetingByMeetingId(meeting.getMeetingId());
+        if(meetingRepository.existsById(meeting.getId())) {
+            Meeting existingMeeting = meetingRepository.findMeetingById(meeting.getId());
             //update the data
-            existingMeeting.setMeetingTitle(meeting.getMeetingTitle());
-            existingMeeting.setMeetingDescription(meeting.getMeetingDescription());
-            existingMeeting.setMeetingHeldDate(meeting.getMeetingHeldDate());
+            existingMeeting.setTitle(meeting.getTitle());
+            existingMeeting.setDescription(meeting.getDescription());
+            existingMeeting.setHeldDate(meeting.getHeldDate());
 
             return meetingRepository.save(existingMeeting);
         }
         throw new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST);
+    }
+
+    public Meeting getMeetingById(int meetingId) {
+        return meetingRepository.findById(meetingId).orElseThrow(() -> new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST));
     }
 }

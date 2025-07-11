@@ -29,26 +29,26 @@ public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="meeting_id")
-    private int meetingId;
+    private int id;
 
     @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_title")
-    private String meetingTitle;
+    private String title;
 
     @Column(name="meeting_description")
-    private String meetingDescription;
+    private String description;
 
     @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_date")
-    private LocalDate meetingHeldDate;
+    private LocalDate heldDate;
 
     @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_time")
-    private LocalTime meetingHeldTime;
+    private LocalTime heldTime;
 
     @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_place")
-    private String meetingHeldPlace;
+    private String heldPlace;
 
     @JsonIgnore
     @CreatedBy
@@ -92,4 +92,10 @@ public class Meeting {
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<Decision> decisions;
+
+    @OneToOne
+    @JoinColumn(name="coordinator", referencedColumnName = "member_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotNull(message = "meeting coordinator should be specified")
+    private Member coordinator;
 }

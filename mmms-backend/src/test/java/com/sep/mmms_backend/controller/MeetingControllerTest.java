@@ -53,7 +53,7 @@ public class MeetingControllerTest {
     @BeforeEach
     public void init() {
         //a valid meeting:
-        meeting = Meeting.builder().meetingName("Meeting11").meetingHeldDate(LocalDate.now()).build();
+        meeting = Meeting.builder().title("Meeting11").heldDate(LocalDate.now()).build();
     }
 
     private Response performRequestAndGetResponse(String destination, Object body, HttpStatus expectedHttpResponseStatus) throws Exception {
@@ -68,7 +68,7 @@ public class MeetingControllerTest {
     @Test
     @WithAnonymousUser
     public void createMeeting_ShouldReturnUnauthorized_WhenRequestIsMadeByAnonymousUser() throws Exception {
-        meeting.setMeetingName(null);
+        meeting.setTitle(null);
         Response response = performRequestAndGetResponse("/api/createMeeting", meeting, HttpStatus.UNAUTHORIZED);
     }
 
@@ -77,7 +77,7 @@ public class MeetingControllerTest {
     @Test
     @WithMockUser()
     public void createMeeting_ShouldReturnBadRequest_WhenMeetingNameIsBlank() throws Exception {
-        meeting.setMeetingName(null);
+        meeting.setTitle(null);
         Response response = performRequestAndGetResponse("/api/createMeeting", meeting, HttpStatus.BAD_REQUEST);
 
         Assertions.assertThat(response).isNotNull();
@@ -99,7 +99,7 @@ public class MeetingControllerTest {
     @Test
     @WithMockUser()
     public void createMeeting_ShouldReturnBadRequest_WhenMeetingHeldDateIsEmpty() throws Exception {
-        meeting.setMeetingHeldDate(null);
+        meeting.setHeldDate(null);
         Response response = performRequestAndGetResponse("/api/createMeeting", meeting, HttpStatus.BAD_REQUEST);
 
         Assertions.assertThat(response).isNotNull();

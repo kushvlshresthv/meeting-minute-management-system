@@ -15,7 +15,6 @@ import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class CommitteeService {
 
         committee.getMemberships().forEach(membership-> {
             membership.setCommittee(committee);
-            int memberId = membership.getMember().getMemberId();
+            int memberId = membership.getMember().getId();
             Optional<Member> member = memberRepository.findById(memberId);
             membership.setMember(member.orElseThrow(()->
                     new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, memberId)
@@ -78,7 +77,7 @@ public class CommitteeService {
      */
     public List<MemberDto> getMembersOfCommittee(Committee committee) {
         List<Integer> memberIds = committee.getMemberships().stream()
-                .map(membership->membership.getMember().getMemberId())
+                .map(membership->membership.getMember().getId())
                 .collect(Collectors.toList());
 
         List<Member> members = memberRepository.findAllById(memberIds);

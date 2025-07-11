@@ -92,4 +92,9 @@ public class MemberService {
     public List<Member> findAllById(List<Integer> memberIds) {
         return memberRepository.findAllById(memberIds);
     }
+
+    public Member findById(int memberId) {
+        return memberRepository.findById(memberId).orElseThrow(()->
+                new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, memberId));
+    }
 }

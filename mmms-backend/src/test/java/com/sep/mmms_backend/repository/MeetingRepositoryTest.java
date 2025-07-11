@@ -61,7 +61,7 @@ public class MeetingRepositoryTest {
     @BeforeEach
     public void init() {
         //a valid meeting:
-        meeting = Meeting.builder().meetingName("Meeting").meetingHeldDate(LocalDate.now()).build();
+        meeting = Meeting.builder().title("Meeting").heldDate(LocalDate.now()).build();
 
         //mocking the SecurityContext as the AuditorAwareImpl uses this
 
@@ -109,7 +109,7 @@ public class MeetingRepositoryTest {
     public void saveMeeting_ShouldSetAuditingFields() {
         Meeting savedMeeting = meetingRepository.save(meeting);
 
-        Meeting foundMeeting = meetingRepository.findById(savedMeeting.getMeetingId()).orElse(null);
+        Meeting foundMeeting = meetingRepository.findById(savedMeeting.getId()).orElse(null);
         Assertions.assertThat(foundMeeting).isNotNull();
 
         //a) verify that the @CreatedBy and @UpdatedBy fields are set
@@ -135,20 +135,20 @@ public class MeetingRepositoryTest {
     public void updateMeeting_ShouldUpdateAuditingFields() {
        meetingRepository.save(meeting);
 
-       Meeting initialSavedMeeting = meetingRepository.findById(meeting.getMeetingId()).orElse(null);
+       Meeting initialSavedMeeting = meetingRepository.findById(meeting.getId()).orElse(null);
        Assertions.assertThat(initialSavedMeeting).isNotNull();
 
 
        //changing the SecurityContext>Authentication's username
        //this also changes the 'savedTestUser'
        setUpSecurityContext("updatedUsername");
-       initialSavedMeeting.setMeetingName("updateMeeting");
+       initialSavedMeeting.setTitle("updateMeeting");
        meetingRepository.save(initialSavedMeeting);
 
        //check if the Meeting is updated, not resaved
        Assertions.assertThat(meetingRepository.count()).isEqualTo(1);
 
-       Meeting updatedMeeting = meetingRepository.findById(initialSavedMeeting.getMeetingId()).orElse(null);
+       Meeting updatedMeeting = meetingRepository.findById(initialSavedMeeting.getId()).orElse(null);
        Assertions.assertThat(updatedMeeting).isNotNull();
 
        //CreatedBy and CreatedDate should not change

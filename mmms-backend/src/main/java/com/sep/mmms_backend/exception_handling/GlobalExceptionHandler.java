@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MemberDoesNotExistException.class)
     public ResponseEntity<Response> memberDoesNotExists(MemberDoesNotExistException ex) {
         log.error("Member with the memberId `{}` does not exist", ex.getMemberId());
-        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()+ " [id: " + ex.getMemberId() + "]"));
     }
 
     @ExceptionHandler(InvalidRequestException.class)
