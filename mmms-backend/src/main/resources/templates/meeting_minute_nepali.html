@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang = "en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Meeting Minute</title>
+    <link rel="stylesheet" th:href="@{/css/meeting_minute.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Martel:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="nepali">
+<div class="a4-box">
+    <div class="introduction justify-text">
+        <p>
+            आज मिति <span th:text="${meetingHeldDate}">Date</span>,
+            <span th:text="${meetingHeldDay}">Day</span>
+            <span th:text="${partOfDay}">Part of Day</span>
+            <span th:text="${meetingHeldTime}"></span> बजे,
+            <span th:text="${meetingHeldPlace}"></span> मा
+            <span th:text="${meetingTitle}"></span> का लागि गठित
+            <span th:text="${committeeName}"></span> को
+            संयोजक <span th:text="${coordinatorFullName}">coordinator name</span> को
+            अध्यक्षतामा बैठक बसेको थियो। बैठकबाट देहाय अनुसारका छलफल तथा निर्णयहरू गरियो।
+        </p>
+    </div>
+
+
+    <h5 class="heading">उपस्थितिः</h5>
+    <table border="2" cellspacing="0" cellpadding="5">
+        <thead>
+        <tr>
+            <th>क्र.सं.</th>
+            <th>नाम</th>
+            <th>पद</th>
+            <th>हस्ताक्षर</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="membership, iterStat : ${membershipsOfAttendees}">
+            <td th:text="${iterStat.index + 1}">1</td>
+            <td th:text="${membership.member.firstName + ' ' + membership.member.lastName}"></td>
+            <td th:text="${membership.role}">संयोजक</td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h5 class="heading"><b>निर्णयहरूः</b></h5>
+    <ol>
+        <li th:each="decision : ${decisions}" th:text="${decision.decision}" class="decision">No Decisions</li>
+    </ol>
+
+    <p>
+    बैठक समापन:
+    </p>
+</div>
+
+</body>
+</html>

@@ -108,5 +108,18 @@ public class CommitteeService {
         });
         return committees;
     }
+
+
+    public boolean existsById(int committeeId) {
+        return committeeRepository.existsById(committeeId);
+    }
+
+    /**
+     * if the committee is not found, the caller is responsible to check it and handle it
+     */
+
+    public Optional<Committee> findByIdNoException(int committeeId) {
+        return committeeRepository.findById(committeeId);
+    }
 }
 

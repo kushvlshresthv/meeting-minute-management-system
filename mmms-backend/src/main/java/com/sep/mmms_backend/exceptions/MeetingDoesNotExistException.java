@@ -9,4 +9,8 @@ public class MeetingDoesNotExistException extends RuntimeException{
     public MeetingDoesNotExistException(ExceptionMessages message) {
         super(message.toString());
     }
+
+    public MeetingDoesNotExistException() {
+
+    }
 }

@@ -50,14 +50,14 @@ INSERT INTO meetings (
 )
 VALUES
     -- meetings for committee 1
-    (1, 'Syllabus Update Discussion',         'Discussing proposed updates to the engineering syllabus.',             '2025-07-18', 'Room 302',       '14:30:00', 'username', 'username', '2025-07-13', '2025-07-13', 1),
+    (1, 'Syllabus Update Discussion',         'Discussing proposed updates to the engineering syllabus.',             '2025-07-18', 'Pulchowk Campus',       '14:30:00', 'username', 'username', '2025-07-13', '2025-07-13', 1),
     (1, 'Annual Seminar Planning',            'Organizing the annual institutional seminar.',                        '2025-07-22', 'Auditorium',     '11:00:00', 'username', 'username', '2025-07-14', '2025-07-14',1),
     (1, 'Research Grant Proposals Review',    'Assessment of new research funding requests.',                        '2025-07-25', 'Innovation Hub', '13:00:00', 'username', 'username', '2025-07-21', '2025-07-21', 1),
     (1, 'Review of Recent Incidents',         'Addressing recent disciplinary cases and policy updates.',            '2025-07-28', 'Admin Office 1', '10:00:00', 'username', 'username', '2025-07-22', '2025-07-22', 1),
 
     -- meetings for committee 2
-    (2, 'Canteen and Hostel Feedback Session','Discussing feedback from students on facilities.',                    '2025-07-29', 'Student Lounge', '15:00:00', 'username', 'username', '2025-07-23', '2025-07-23', 1),
-    (2, 'Campus Wi-Fi Upgrade Plan',          'Finalizing the plan to upgrade network infrastructure.',              '2025-08-01', 'IT Department',  '11:00:00', 'username', 'username', '2025-07-25', '2025-07-25', 1);
+    (2, 'Canteen and Hostel Feedback Session','Discussing feedback from students on facilities.',                    '2025-07-29', 'Student Lounge', '15:00:00', 'username', 'username', '2025-07-23', '2025-07-23', 9),
+    (2, 'Campus Wi-Fi Upgrade Plan',          'Finalizing the plan to upgrade network infrastructure.',              '2025-08-01', 'IT Department',  '11:00:00', 'username', 'username', '2025-07-25', '2025-07-25', 9);
 
 -- Insert Decisions
 INSERT INTO decisions (meeting_id, decision)
@@ -130,38 +130,41 @@ VALUES
 
 INSERT INTO meeting_attendees (member_id, meeting_id)
 VALUES
-    -- Meeting 1 attendees
+    -- Meeting 1 attendees. meeting 1 belongs to committee 1, so only members belonging to committee 1 should be present
+
+    -- Furthermore while populatig the meeting_attendees, make sure that the meeting coordinator is part of the meeting_attendee
     (1, 1),
     (2, 1),
+    (3, 1),
     (4, 1),
-    (6, 1),
 
     -- Meeting 2 attendees
+    (3, 2),
+    (1, 2),
+    (4, 2),
+    (5, 2),
     (7, 2),
-    (8, 2),
-    (10, 2),
-    (12, 2),
 
     -- Meeting 3 attendees
     (5, 3),
-    (9, 3),
-    (11, 3),
-    (13, 3),
+    (8, 3),
+    (1, 3),
+    (2, 3),
 
     -- Meeting 4 attendees
+    (1, 4),
     (2, 4),
-    (3, 4),
-    (15, 4),
-    (16, 4),
+    (7, 4),
+    (8, 4),
 
     -- Meeting 5 attendees
-    (6, 5),
-    (8, 5),
-    (14, 5),
-    (17, 5),
+    (9, 5),
+    (10, 5),
+    (11, 5),
+    (12, 5),
 
     -- Meeting 6 attendees
-    (7, 6),
-    (11, 6),
-    (13, 6),
-    (16, 6);
+    (10, 6),
+    (12, 6),
+    (9, 6),
+    (11, 6);

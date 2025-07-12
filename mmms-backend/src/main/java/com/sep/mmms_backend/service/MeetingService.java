@@ -13,6 +13,7 @@ import com.sep.mmms_backend.validators.EntityValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MeetingService {
@@ -83,7 +84,11 @@ public class MeetingService {
         throw new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST);
     }
 
-    public Meeting getMeetingById(int meetingId) {
+    public Meeting findMeetingById(int meetingId) {
         return meetingRepository.findById(meetingId).orElseThrow(() -> new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST));
+    }
+
+    public Optional<Meeting> findMeetingByIdNoException(int meetingId) {
+        return meetingRepository.findById(meetingId);
     }
 }

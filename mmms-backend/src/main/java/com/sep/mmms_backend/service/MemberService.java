@@ -1,6 +1,8 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.entity.Committee;
+import com.sep.mmms_backend.entity.CommitteeMembership;
+import com.sep.mmms_backend.entity.CommitteeMembershipId;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.repository.CommitteeRepository;
@@ -19,11 +21,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CommitteeRepository committeeRepository;
     private final EntityValidator entityValidator;
+    private final CommitteeMembershipIdRepository committeeMembershipIdRepository;
 
-    public MemberService(MemberRepository memberRepository,CommitteeRepository committeeRepository,  EntityValidator entityValidator) {
+    public MemberService(MemberRepository memberRepository, CommitteeRepository committeeRepository, EntityValidator entityValidator, CommitteeMembershipIdRepository committeeMembershipIdRepository) {
         this.memberRepository = memberRepository;
         this.committeeRepository = committeeRepository;
         this.entityValidator = entityValidator;
+        this.committeeMembershipIdRepository = committeeMembershipIdRepository;
     }
 
     /**
@@ -96,5 +100,21 @@ public class MemberService {
     public Member findById(int memberId) {
         return memberRepository.findById(memberId).orElseThrow(()->
                 new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, memberId));
+    }
+
+    /**
+     *
+     * @param member: shouldn't be null
+     * @param committeeId: committeeId for which the member's role is required
+     * @return returns role of the user in the committee if found, else returns null
+     */
+    public CommitteeMembership getMembership(Member member, int committeeId) {
+        List<CommitteeMembership> memberships = member.getMemberships();
+        for(CommitteeMembership membership : memberships) {
+            if(membership.getId().getCommitteeId() == committeeId) {
+                return membership;
+            }
+        }
+        return null;
     }
 }

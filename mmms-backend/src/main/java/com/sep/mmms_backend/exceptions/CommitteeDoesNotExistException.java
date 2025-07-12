@@ -10,6 +10,10 @@ public class CommitteeDoesNotExistException extends RuntimeException {
         this.committeeId = committeeId;
     }
 
+    public CommitteeDoesNotExistException() {
+        super();
+    }
+
     public int getCommitteeId() {
         return committeeId;
     }
