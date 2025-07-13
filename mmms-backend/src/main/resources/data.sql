@@ -1,5 +1,6 @@
 INSERT INTO app_users (username, password, email, firstname, lastname)
-VALUES ('username', '{noop}password', 'username@gmail.com', 'admin', 'admin');
+VALUES ('username', '{noop}password', 'username@gmail.com', 'admin', 'admin'),
+       ('not_username', '{noop}password', 'username@gmail.com', 'admin', 'admin');
 
 
 INSERT INTO members (
@@ -40,7 +41,7 @@ VALUES
     ('Research and Development Committee', 'Promotes research and innovation.', 1, CURDATE(), 'username', CURDATE()),
     ('Disciplinary Committee',             'Handles student and staff disciplinary issues.', 1, CURDATE(), 'username', CURDATE()),
     ('Student Welfare Committee',          'Addresses student concerns and well-being.', 1, CURDATE(), 'username', CURDATE()),
-    ('IT and Infrastructure Committee',    'Manages IT resources and campus infrastructure.', 1, CURDATE(), 'username', CURDATE());
+    ('IT and Infrastructure Committee',    'Manages IT resources and campus infrastructure.', 2, CURDATE(), 'username', CURDATE());
 
 -- Insert Meetings
 INSERT INTO meetings (

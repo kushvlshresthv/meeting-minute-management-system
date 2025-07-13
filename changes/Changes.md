@@ -1,4 +1,64 @@
 
+# Latest Changes: 
+
+# 1. Implemented /addAttendeesToMeeting(Post)
+
+- it accepts the comitteeId and meetingId of the meeting to which the attendees are to be added in the query parameters 
+
+- It accepts the list of ids of the attendee in the request body
+
+## Example: 
+
+`/api/addAttendeesToMeeting?committeeId=1&meetingId=1`
+
+## Request Body
+
+``` json
+[5, 6]
+```
+
+## Response Body
+
+``` json
+{
+    "message": null,
+    "mainBody": [
+        {
+            "id": 5,
+            "firstName": "Kamal",
+            "lastName": "Pandey",
+            "institution": "Pulchowk Campus",
+            "post": "Associate Professor",
+            "qualification": "PhD Civil Engineering",
+            "email": "kamal.pandey@example.com",
+            "createdDate": [
+                2025,
+                7,
+                12
+            ]
+        },
+        {
+            "id": 6,
+            "firstName": "Deepa",
+            "lastName": "Gurung",
+            "institution": "Patan College for Professional Studies",
+            "post": "HR Manager",
+            "qualification": "MBS",
+            "email": "deepa.gurung@example.com",
+            "createdDate": [
+                2025,
+                7,
+                13
+            ]
+        }
+    ]
+}
+```
+
+
+
+# Previous Changes: 
+
 Some field names have been changed: 
 
 

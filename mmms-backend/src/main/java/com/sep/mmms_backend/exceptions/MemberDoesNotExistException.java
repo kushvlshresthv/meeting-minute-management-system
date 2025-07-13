@@ -1,13 +1,22 @@
 package com.sep.mmms_backend.exceptions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MemberDoesNotExistException extends RuntimeException {
-    final int memberId;
+    final Set<Integer> memberIds = new HashSet<>();
     public MemberDoesNotExistException(ExceptionMessages message, int memberId){
         super(message.toString());
-        this.memberId = memberId;
+        this.memberIds.add(memberId);
     }
 
-    public int getMemberId(){
-        return memberId;
+
+    public MemberDoesNotExistException(ExceptionMessages message, Set<Integer> memberIds){
+        super(message.toString());
+        this.memberIds.addAll(memberIds);
+    }
+
+    public Set<Integer> getMemberIds(){
+        return memberIds;
     }
 }

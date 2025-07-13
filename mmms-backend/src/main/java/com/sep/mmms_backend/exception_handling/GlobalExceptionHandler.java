@@ -65,8 +65,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MemberDoesNotExistException.class)
     public ResponseEntity<Response> memberDoesNotExists(MemberDoesNotExistException ex) {
-        log.error("Member with the memberId `{}` does not exist", ex.getMemberId());
-        return ResponseEntity.badRequest().body(new Response(ex.getMessage()+ " [id: " + ex.getMemberId() + "]"));
+        log.error("Member with the memberId `{}` does not exist", ex.getMemberIds());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()+ " [id: " + ex.getMemberIds() + "]"));
     }
 
     @ExceptionHandler(InvalidRequestException.class)
@@ -86,5 +86,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response> memberNotInCommittee(MemberNotInCommitteeException ex) {
         log.error("MemberId: {} does not belong to CommitteeId: {}  ", ex.getMemberId(), ex.getCommitteeId());
         return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
+
+
+    @ExceptionHandler(IllegalOperationException.class)
+    public ResponseEntity<Response> illegalOperation(IllegalOperationException ex) {
+        log.error("Illegal Operation Attempted: {} ", ex.getMessage());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
+
+
+    @ExceptionHandler(MeetingDoesNotExistException.class)
+    public ResponseEntity<Response> meetingDoesNotExist(MeetingDoesNotExistException ex) {
+        log.error("Meeting with id {} does not exist", ex.getMeetingId() );
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()+ " [id: " + ex.getMeetingId() + "]"));
     }
 }

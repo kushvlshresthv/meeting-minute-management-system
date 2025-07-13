@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
@@ -31,4 +32,22 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
             @Param("key1") String key1,
             @Param("key2") String key2
     );
+
+
+    /*
+        This query acts as join table in SQL.
+
+        It selects a member and joins member with each committee membership the member has. Now, for every member, we're examining all their committee memberships
+
+        Then we filter the members to those whose Ids are in the given list. Then filter only those who have at least one membership in the given committee
+     */
+
+    /**
+     *
+     * @param memberIds the ids of the member that need to be fetched
+     * @param committeeId the id of the committee to which the member should belong to
+     * @return set of member objects
+     */
+    @Query("SELECT m FROM members m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId")
+    Set<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId);
 }

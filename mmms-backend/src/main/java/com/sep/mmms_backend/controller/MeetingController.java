@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.entity.Meeting;
+import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.MeetingAlreadyExistsException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.response.Response;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api")
@@ -59,13 +62,22 @@ public class MeetingController {
     }
 
 
+    /**
+     * The received attendees are not well populated, only the memberId is populated
+     */
+    @PostMapping("addAttendeesToMeeting")
+    public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody Set<Integer> newAttendeeIds, Authentication authentication) {
+        Set<Member> newAttendees = meetingService.addAttendeesToMeeting(newAttendeeIds, committeeId, meetingId, authentication.getName());
+        return ResponseEntity.ok(new Response(newAttendees));
+    }
+
+
     @PostMapping("/updateMeeting")
     public ResponseEntity<Response> updateMeeting(@RequestBody @Valid Meeting meeting, Errors errors) {
 
         //Validation failed:
         if(errors.hasErrors()) {
             HashMap<String, ArrayList<String>> errorMessages = new HashMap<>();
-
             errors.getFieldErrors().forEach(
                     config-> {
                         if(errorMessages.containsKey(config.getField())) {
@@ -86,7 +98,6 @@ public class MeetingController {
         } catch(MeetingDoesNotExistException e) {
             return ResponseEntity.badRequest().body(new Response(e.getMessage()));
         }
-
         return ResponseEntity.ok().body(new Response(ResponseMessages.MEETING_CREATION_SUCCESSFUL));
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name="meetings")
 @Getter
@@ -87,7 +88,7 @@ public class Meeting {
                     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
             }
     )
-    public List<Member> attendees;
+    public Set<Member> attendees;
 
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     @JsonIgnore
@@ -98,4 +99,10 @@ public class Meeting {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "meeting coordinator should be specified")
     private Member coordinator;
+
+    public boolean equals(Meeting meeting) {
+        if(this == meeting) return true;
+        if(meeting == null) return false;
+        return id == meeting.getId();
+    }
 }

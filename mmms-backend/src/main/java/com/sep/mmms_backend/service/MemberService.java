@@ -1,11 +1,12 @@
 package com.sep.mmms_backend.service;
 
+import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
-import com.sep.mmms_backend.entity.CommitteeMembershipId;
 import com.sep.mmms_backend.entity.Member;
-import com.sep.mmms_backend.exceptions.*;
-import com.sep.mmms_backend.repository.CommitteeRepository;
+import com.sep.mmms_backend.exceptions.ExceptionMessages;
+import com.sep.mmms_backend.exceptions.InvalidRequestException;
+import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
@@ -13,21 +14,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final CommitteeRepository committeeRepository;
+    private final CommitteeService committeeService;
     private final EntityValidator entityValidator;
-    private final CommitteeMembershipIdRepository committeeMembershipIdRepository;
 
-    public MemberService(MemberRepository memberRepository, CommitteeRepository committeeRepository, EntityValidator entityValidator, CommitteeMembershipIdRepository committeeMembershipIdRepository) {
+    public MemberService(MemberRepository memberRepository, CommitteeService committeeService, EntityValidator entityValidator)  {
         this.memberRepository = memberRepository;
-        this.committeeRepository = committeeRepository;
         this.entityValidator = entityValidator;
-        this.committeeMembershipIdRepository = committeeMembershipIdRepository;
+        this.committeeService = committeeService;
     }
 
     /**
@@ -61,19 +62,10 @@ public class MemberService {
 
     //TODO: check whether the Committee belongs to this particular user;
     @Transactional
+    @CheckCommitteeAccess
     public void saveNewMember(Member member, int committeeId, String username) {
-
         entityValidator.validate(member);
-
-        Committee committee = committeeRepository.findById(committeeId).orElseThrow(() ->
-            new CommitteeDoesNotExistException(ExceptionMessages.COMMITTEE_DOES_NOT_EXIST, committeeId)
-        );
-
-        //check if the committee is created by the username
-        if(!committee.getCreatedBy().getUsername().equals(username)) {
-            throw new IllegalOperationException(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE);
-        }
-
+        Committee committee = committeeService.findCommitteeById(committeeId);
         if(member.getMemberships() == null || member.getMemberships().isEmpty()) {
             throw new InvalidRequestException(ExceptionMessages.NO_VALID_MEMBERSHIP);
         }
@@ -97,6 +89,11 @@ public class MemberService {
         return memberRepository.findAllById(memberIds);
     }
 
+
+    public Set<Member> findAllById(Set<Integer> memberIds) {
+        return new HashSet(memberRepository.findAllById(memberIds));
+    }
+
     public Member findById(int memberId) {
         return memberRepository.findById(memberId).orElseThrow(()->
                 new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, memberId));
@@ -116,5 +113,17 @@ public class MemberService {
             }
         }
         return null;
+    }
+
+
+    /**
+     * This method returns all the Member entites from the list of ids that belong to the provided committee id
+     *
+     * @param memberIds the ids of the member that need to be fetched
+     * @param committeeId the id of the committee to which the member should belong to
+     * @return set of member objects
+     */
+    public Set<Member> findExistingMembersInCommittee(Set<Integer> memberIds, int committeeId) {
+        return memberRepository.findExistingMembersInCommittee(memberIds, committeeId);
     }
 }

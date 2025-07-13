@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.service;
 
+import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.dto.CommitteeDetailsDto;
 import com.sep.mmms_backend.dto.MemberDto;
 import com.sep.mmms_backend.entity.AppUser;
@@ -61,15 +62,18 @@ public class CommitteeService {
     /**
      *
      * @param committeeId the id of the committee to be loaded from the database
-     * @param username to check whether username has accesss to this committee
      */
-    public Committee findCommitteeById(int committeeId, String username) {
-        Committee committee =  committeeRepository.findById(committeeId).orElseThrow(()-> new CommitteeDoesNotExistException(ExceptionMessages.COMMITTEE_DOES_NOT_EXIST, committeeId));
-
-        if(!committee.getCreatedBy().getUsername().equals(username)) {
-            throw new IllegalOperationException(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE);
+    public Committee findCommitteeById(int committeeId) {
+        Optional<Committee> committee =  committeeRepository.findById(committeeId);
+        if(committee.isEmpty()){
+            throw new CommitteeDoesNotExistException(ExceptionMessages.COMMITTEE_DOES_NOT_EXIST, committeeId);
         }
-        return committee;
+
+        return committee.get();
+    }
+
+    public Optional<Committee> findCommitteeByIdNoException(int committeeId) {
+        return committeeRepository.findById(committeeId);
     }
 
     /**
@@ -92,8 +96,10 @@ public class CommitteeService {
      *
      * NOTE: membership is populated in the Members object, not in the committee object
      */
+
+    @CheckCommitteeAccess
     public CommitteeDetailsDto getCommitteeDetails(int committeeId, String username) {
-        Committee committee = this.findCommitteeById(committeeId, username);
+        Committee committee = this.findCommitteeById(committeeId);
         List<MemberDto> members = this.getMembersOfCommittee(committee);
         committee.setMemberships(null);  //membership details is already present in members object
         return new CommitteeDetailsDto(committee, members);
