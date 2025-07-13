@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -75,5 +76,12 @@ public class CommitteeController {
     public ResponseEntity<Response> getCommitteeDetails(@RequestParam int committeeId, Authentication authentication) {
         CommitteeDetailsDto committeeDetails = committeeService.getCommitteeDetails(committeeId, authentication.getName());
         return ResponseEntity.ok().body(new Response(committeeDetails));
+    }
+
+    @PostMapping("/addMembersToCommittee")
+    public ResponseEntity<Response> addMembersToCommittee(@RequestParam int committeeId, @RequestBody Set<Integer> newMemberIds, Authentication authentication) {
+
+
+        return null;
     }
 }

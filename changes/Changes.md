@@ -1,5 +1,103 @@
 
-# Latest Changes: 
+# All the routes till now: 
+
+
+| REQUEST URL                                          | Description                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| /api/getMeetingDetails?committeeId=1&meetingId=1<br> | returns the details of the meeting                                                                                                                                                                                                                                                                                                          |
+| /api/addAttendeesToMeeting?committeeId=1&meetingId=1 | adds the attendees mentioned in the request body <br><br>Request body should be of the format:<br><br>[5, 6]<br>                                                                                                                                                                                                                            |
+| /api/committee/createMeeting?committeeId=1           | creates a meeting for a particular committee                                                                                                                                                                                                                                                                                                |
+| /api/createMember?committeeId=1                      | creates a member for a particular committee                                                                                                                                                                                                                                                                                                 |
+| /api/getCommitteeDetails?committeeId=1               | returns the details of the committee                                                                                                                                                                                                                                                                                                        |
+| /api/createCommittee                                 | creates a new committee                                                                                                                                                                                                                                                                                                                     |
+| /api/searchMembersByName?name=Sita Tha               | If the name is a single keyword, all the entites that have the keyword as a substring in firstname or last name is returned.<br><br> If the name is a white space separate values, the first two strings are treated as two separate keyword and all the entites that have the keyword as a substring in firstname or last name is returned |
+| /getCommittees                                       | returns the committees for the user                                                                                                                                                                                                                                                                                                         |
+| /register                                            | registers new user                                                                                                                                                                                                                                                                                                                          |
+| /login                                               |                                                                                                                                                                                                                                                                                                                                             |
+| /logout                                              |                                                                                                                                                                                                                                                                                                                                             |
+| /isAuthenticated                                     |                                                                                                                                                                                                                                                                                                                                             |
+
+
+
+
+
+
+
+
+
+
+# Latest Changes
+
+# 1. Implemented /getMeetingDetails (GET)
+
+- It accepts the committee id and meeting id and returns the meeting details in the response body
+
+## Exmaple
+`/api/getMeetingDetails?committeeId=1&meetingId=1`
+
+## Response
+
+```json
+	{
+    "message": null,
+    "mainBody": {
+        "id": 1,
+        "title": "Syllabus Update Discussion",
+        "description": "Discussing proposed updates to the engineering syllabus.",
+        "heldDate": [
+            2025,
+            7,
+            18
+        ],
+        "heldTime": [
+            14,
+            30
+        ],
+        "heldPlace": "Pulchowk Campus",
+        "createdDate": [
+            2025,
+            7,
+            13
+        ],
+        "updatedDate": [
+            2025,
+            7,
+            13
+        ],
+        "attendees": [
+            {
+                "memberId": 1,
+                "firstName": "Hari",
+                "lastName": "Bahadur",
+                "membership": {
+                    "role": "Chairperson"
+                }
+            }
+        ],
+        "decision": [
+            {
+                "decisionId": 1,
+                "decision": "New module on Renewable Energy to be added to the curriculum."
+            },
+            {
+                "decisionId": 2,
+                "decision": "The existing Data Structures course is to be updated with new materials."
+            },
+        ],
+        "coordinator": {
+            "memberId": 1,
+            "firstName": "Hari",
+            "lastName": "Bahadur",
+            "membership": {
+                "role": "Chairperson"
+            }
+        }
+    }
+}
+```
+
+
+# Previous Changes: 
 
 # 1. Implemented /addAttendeesToMeeting(Post)
 
@@ -75,151 +173,7 @@ Some field names have been changed:
 | 9. meetingHeldPlace     | heldPlace   |
 | 10. memberId            | id          |
 
-## With these changes: 
 
-
-1. For /createCommittee the request body should look like: 
-
-``` json
-{
-  "name": "New Committee",
-  "description": "Committee formed to handle stuffs",
-  "memberships": [
-    {
-      "member": {
-        "id": 3
-      }, 
-      "role": "SECRETARY"
-    },
-    {
-      "member": {
-        "id": 2
-      },
-      "role": "MEMBER"
-    }
-  ]
-}
-```
-
-
-2. /getCommittees will return: 
-
-``` json
-{
-    "message": null,
-    "mainBody": [
-        {
-            "id": 1,
-            "name": "Academic Committee",
-            "description": "Oversees academic policies and curriculum development.",
-            "createdDate": [
-                2025,
-                7,
-                11
-            ],
-            "meetings": null
-        },
-        {
-            "id": 2,
-            "name": "Events Committee",
-            "description": "Plans and organizes all institutional events and seminars.",
-            "createdDate": [
-                2025,
-                7,
-                11
-            ],
-            "meetings": null
-        },
-```
-
-
-3. getCommitteeDetails will return:
-
-``` json
-{
-    "message": null,
-    "mainBody": {
-        "committee": {
-            "id": 2,
-            "name": "Events Committee",
-            "description": "Plans and organizes all institutional events and seminars.",
-            "createdDate": [
-                2025,
-                7,
-                11
-            ],
-            "meetings": [
-                {
-                    "id": 5,
-                    "title": "Canteen and Hostel Feedback Session",
-                    "description": "Discussing feedback from students on facilities.",
-                    "heldDate": [
-                        2025,
-                        7,
-                        29
-                    ],
-                    "heldTime": [
-                        15,
-                        0
-                    ],
-                    "heldPlace": "Student Lounge",
-                    "createdDate": [
-                        2025,
-                        7,
-                        23
-                    ]
-                },
-            ]
-        },
-        "members": [
-            {
-                "memberId": 9,
-                "firstName": "Ramesh",
-                "lastName": "Karki",
-                "institution": "Nepal Telecom",
-                "post": "IT Officer",
-                "qualification": "BSc CSIT",
-                "createdDate": [
-                    2025,
-                    7,
-                    16
-                ]
-            },
-        ]
-    }
-}
-```
-
-
-4. createMeeting will look like this: 
-
-
-``` json
-    {
-      "title": "Meeting to discuss budget",
-      "description": "This meeting discussed the finances for the next fiscal year",
-      "heldDate": "2025-07-09",
-      "heldPlace": "Kathmandu, Nepal",
-      "heldTime": "14:30:00",
-      "coordinator": {
-        "id":2
-      },
-      "attendees": [
-        {
-          "id": 1
-        }
-      ],
-      "decisions": [
-        {
-          "decision": "Approved annual budget."
-        },
-        {
-          "decision": "Scheduled next meeting for August."
-        }
-      ]
-    }
-
-```
 
 
 # Previous Changes
@@ -556,7 +510,7 @@ Some field names have been changed:
 ```
 
 
-# [2] /api/getCommitteeDetails (GET)
+# [2] Implemented /api/getCommitteeDetails (GET)
 
 - This method returns full information about the committee. To specify which committee, add the committeeId in the query parameter as follows: 
 

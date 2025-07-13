@@ -39,7 +39,7 @@ public class MeetingService {
 
 
         //populating the meetings
-        if(!meeting.getAttendees().isEmpty()) {
+        if(meeting.getAttendees() != null && !meeting.getAttendees().isEmpty()) {
             List<Integer> attendeeMemberIds = meeting.getAttendees().stream().map(Member::getId).toList();
             Set<Member> attendees = new HashSet<>(memberService.findAllById(attendeeMemberIds));
 
@@ -129,4 +129,11 @@ public class MeetingService {
     public Optional<Meeting> findMeetingByIdNoException(int meetingId) {
         return meetingRepository.findById(meetingId);
     }
+
+    @CheckCommitteeAccess(shouldValidateMeeting=true)
+    public Meeting getMeetingDetails(int committeeId, int meetingId, String username) {
+        Meeting meeting = this.findMeetingById(meetingId);
+        return meeting;
+    }
+
 }

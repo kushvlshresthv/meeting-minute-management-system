@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,8 +87,8 @@ public class CommitteeService {
 
         List<Member> members = memberRepository.findAllById(memberIds);
 
-        return members.stream().map(MemberDto::new)
-                .collect(Collectors.toList()); //this uses a constructor whcih accepts Member object to create List<MemberDto>
+        return members.stream().map(member-> new MemberDto(member, committee.getId()))
+                .collect(Collectors.toList());
     }
 
 
@@ -100,9 +101,7 @@ public class CommitteeService {
     @CheckCommitteeAccess
     public CommitteeDetailsDto getCommitteeDetails(int committeeId, String username) {
         Committee committee = this.findCommitteeById(committeeId);
-        List<MemberDto> members = this.getMembersOfCommittee(committee);
-        committee.setMemberships(null);  //membership details is already present in members object
-        return new CommitteeDetailsDto(committee, members);
+        return new CommitteeDetailsDto(committee);
     }
 
     //TODO: This method also loads all the meetings associated with a committee which isn't required
@@ -126,6 +125,13 @@ public class CommitteeService {
 
     public Optional<Committee> findByIdNoException(int committeeId) {
         return committeeRepository.findById(committeeId);
+    }
+
+
+    @CheckCommitteeAccess
+    public Set<Member> addMembersToCommittee(int committeeId, Set<Integer> newMemberIds, String username) {
+
+        return null;
     }
 }
 

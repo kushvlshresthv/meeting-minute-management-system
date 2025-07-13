@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.controller;
 
+import com.sep.mmms_backend.dto.MeetingDetailsDto;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.MeetingAlreadyExistsException;
@@ -69,6 +70,14 @@ public class MeetingController {
     public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody Set<Integer> newAttendeeIds, Authentication authentication) {
         Set<Member> newAttendees = meetingService.addAttendeesToMeeting(newAttendeeIds, committeeId, meetingId, authentication.getName());
         return ResponseEntity.ok(new Response(newAttendees));
+    }
+
+    @GetMapping("getMeetingDetails")
+    public ResponseEntity<Response> getMeetingDetails(@RequestParam int committeeId, @RequestParam int meetingId, Authentication authentication) {
+        Meeting meeting = meetingService.getMeetingDetails(committeeId, meetingId, authentication.getName());
+
+        MeetingDetailsDto meetingDto = new MeetingDetailsDto(meeting);
+        return ResponseEntity.ok(new Response(meetingDto));
     }
 
 
