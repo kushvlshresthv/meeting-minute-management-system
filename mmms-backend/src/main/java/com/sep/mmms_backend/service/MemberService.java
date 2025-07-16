@@ -7,28 +7,26 @@ import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.InvalidRequestException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
+import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final CommitteeService committeeService;
     private final EntityValidator entityValidator;
+    private final CommitteeRepository committeeRepository;
 
-    public MemberService(MemberRepository memberRepository, CommitteeService committeeService, EntityValidator entityValidator)  {
+    public MemberService(MemberRepository memberRepository, CommitteeRepository committeeRepository, EntityValidator entityValidator)  {
         this.memberRepository = memberRepository;
         this.entityValidator = entityValidator;
-        this.committeeService = committeeService;
+        this.committeeRepository = committeeRepository;
     }
 
     /**
@@ -65,17 +63,18 @@ public class MemberService {
     @CheckCommitteeAccess
     public void saveNewMember(Member member, int committeeId, String username) {
         entityValidator.validate(member);
-        Committee committee = committeeService.findCommitteeById(committeeId);
-        if(member.getMemberships() == null || member.getMemberships().isEmpty()) {
-            throw new InvalidRequestException(ExceptionMessages.NO_VALID_MEMBERSHIP);
+        Committee committee = committeeRepository.findCommitteeById(committeeId);
+        if(member.getMemberships() == null || member.getMemberships().size() != 1) {
+            throw new InvalidRequestException(ExceptionMessages.INVALID_MEMBERSHIP_FOR_NEW_MEMBER);
         }
 
-        //validate that the ROLE fiels is populated
+        //validate that the ROLE fields is populated
         member.getMemberships().forEach(entityValidator::validate);
 
         //even if there are multiple memberships, only the first one is considered the valid one
-        member.getMemberships().getFirst().setCommittee(committee);
-        member.getMemberships().getFirst().setMember(member);
+        CommitteeMembership membership = member.getMemberships().iterator().next();
+        membership.setCommittee(committee);
+        membership.setMember(member);
 
         memberRepository.save(member);
     }
@@ -85,14 +84,6 @@ public class MemberService {
         return memberRepository.existsById(memberId);
     }
 
-    public List<Member> findAllById(List<Integer> memberIds) {
-        return memberRepository.findAllById(memberIds);
-    }
-
-
-    public Set<Member> findAllById(Set<Integer> memberIds) {
-        return new HashSet(memberRepository.findAllById(memberIds));
-    }
 
     public Member findById(int memberId) {
         return memberRepository.findById(memberId).orElseThrow(()->
@@ -106,24 +97,12 @@ public class MemberService {
      * @return returns role of the user in the committee if found, else returns null
      */
     public CommitteeMembership getMembership(Member member, int committeeId) {
-        List<CommitteeMembership> memberships = member.getMemberships();
+        Set <CommitteeMembership> memberships = member.getMemberships();
         for(CommitteeMembership membership : memberships) {
             if(membership.getId().getCommitteeId() == committeeId) {
                 return membership;
             }
         }
         return null;
-    }
-
-
-    /**
-     * This method returns all the Member entites from the list of ids that belong to the provided committee id
-     *
-     * @param memberIds the ids of the member that need to be fetched
-     * @param committeeId the id of the committee to which the member should belong to
-     * @return set of member objects
-     */
-    public Set<Member> findExistingMembersInCommittee(Set<Integer> memberIds, int committeeId) {
-        return memberRepository.findExistingMembersInCommittee(memberIds, committeeId);
     }
 }

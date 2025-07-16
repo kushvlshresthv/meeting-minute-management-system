@@ -5,10 +5,9 @@ import com.sep.mmms_backend.dto.CommitteeDetailsDto;
 import com.sep.mmms_backend.dto.MemberDto;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.entity.Committee;
+import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Member;
-import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
-import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
@@ -16,6 +15,7 @@ import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -25,15 +25,16 @@ import java.util.stream.Collectors;
 public class CommitteeService {
 
     private final CommitteeRepository committeeRepository;
-    private final MemberRepository memberRepository;
     private final EntityValidator entityValidator;
     private final AppUserService appUserService;
+    private final MemberRepository memberRepository;
 
-    public CommitteeService(CommitteeRepository committeeRepository, MemberRepository memberRepository,AppUserService appUserService, EntityValidator entityValidator) {
+
+    public CommitteeService(CommitteeRepository committeeRepository,  AppUserService appUserService, EntityValidator entityValidator, MemberRepository memberRepository) {
        this.committeeRepository = committeeRepository;
-       this.memberRepository = memberRepository;
        this.appUserService = appUserService;
        this.entityValidator = entityValidator;
+       this.memberRepository = memberRepository;
     }
 
     /**
@@ -50,28 +51,12 @@ public class CommitteeService {
         committee.getMemberships().forEach(membership-> {
             membership.setCommittee(committee);
             int memberId = membership.getMember().getId();
-            Optional<Member> member = memberRepository.findById(memberId);
-            membership.setMember(member.orElseThrow(()->
-                    new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, memberId)
-            ));
+            membership.setMember(memberRepository.findMemberById(memberId));
             entityValidator.validate(membership);
         });
         committeeRepository.save(committee);
     }
 
-
-    /**
-     *
-     * @param committeeId the id of the committee to be loaded from the database
-     */
-    public Committee findCommitteeById(int committeeId) {
-        Optional<Committee> committee =  committeeRepository.findById(committeeId);
-        if(committee.isEmpty()){
-            throw new CommitteeDoesNotExistException(ExceptionMessages.COMMITTEE_DOES_NOT_EXIST, committeeId);
-        }
-
-        return committee.get();
-    }
 
     public Optional<Committee> findCommitteeByIdNoException(int committeeId) {
         return committeeRepository.findById(committeeId);
@@ -100,7 +85,7 @@ public class CommitteeService {
 
     @CheckCommitteeAccess
     public CommitteeDetailsDto getCommitteeDetails(int committeeId, String username) {
-        Committee committee = this.findCommitteeById(committeeId);
+        Committee committee = committeeRepository.findCommitteeById(committeeId);
         return new CommitteeDetailsDto(committee);
     }
 
@@ -119,19 +104,32 @@ public class CommitteeService {
         return committeeRepository.existsById(committeeId);
     }
 
-    /**
-     * if the committee is not found, the caller is responsible to check it and handle it
-     */
-
-    public Optional<Committee> findByIdNoException(int committeeId) {
-        return committeeRepository.findById(committeeId);
-    }
-
 
     @CheckCommitteeAccess
-    public Set<Member> addMembersToCommittee(int committeeId, Set<Integer> newMemberIds, String username) {
+    //TODO: this method does not check whether the membership already exists, if it does, it simply throws NotUniqueObjectException
+    public Set<Member> addMembershipsToCommittee(int committeeId, Set<CommitteeMembership> newMemberships, String username) {
+    Committee committee = committeeRepository.findCommitteeById(committeeId);
+    Set<Integer> newMemberIds = newMemberships.stream().map(membership->  {
+       entityValidator.validate(membership);
+       membership.setCommittee(committee);
+       return membership.getMember().getId();
+    }).collect(Collectors.toSet());
 
-        return null;
+        Set<Member> validNewMembers = memberRepository.findAllMembersById(newMemberIds);
+
+        if(validNewMembers.size() != newMemberIds.size()) {
+            Set<Integer> foundIds = validNewMembers.stream().map(Member::getId).collect(Collectors.toSet());
+
+            Set<Integer> mssingOrInvalidIds = new HashSet<>(newMemberIds);
+            mssingOrInvalidIds.removeAll(foundIds);
+
+            throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, mssingOrInvalidIds);
+        }
+
+        committee.getMemberships().addAll(newMemberships);
+        committeeRepository.save(committee);
+
+        return validNewMembers;
     }
 }
 

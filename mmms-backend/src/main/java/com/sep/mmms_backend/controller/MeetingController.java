@@ -77,7 +77,7 @@ public class MeetingController {
         Meeting meeting = meetingService.getMeetingDetails(committeeId, meetingId, authentication.getName());
 
         MeetingDetailsDto meetingDto = new MeetingDetailsDto(meeting);
-        return ResponseEntity.ok(new Response(meetingDto));
+        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS, meetingDto));
     }
 
 

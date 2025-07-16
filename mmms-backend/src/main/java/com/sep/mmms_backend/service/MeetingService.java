@@ -6,7 +6,9 @@ import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.*;
+import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MeetingRepository;
+import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
 import org.springframework.stereotype.Service;
 
@@ -20,28 +22,29 @@ import java.util.stream.Collectors;
 public class MeetingService {
 
     private final MeetingRepository meetingRepository;
-    private final CommitteeService committeeService;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final EntityValidator entityValidator;
+    private final CommitteeRepository committeeRepository;
 
-    public MeetingService(MeetingRepository meetingRepository, CommitteeService committeeService, MemberService memberService, EntityValidator entityValidator) {
+
+    public MeetingService(MeetingRepository meetingRepository, CommitteeRepository committeeRepository, MemberRepository memberRepository, EntityValidator entityValidator) {
         this.meetingRepository = meetingRepository;
-        this.committeeService = committeeService;
-        this.memberService = memberService;
         this.entityValidator = entityValidator;
+        this.committeeRepository = committeeRepository;
+        this.memberRepository = memberRepository;
     }
 
     @CheckCommitteeAccess
     public Meeting saveNewMeeting(Meeting meeting, int committeeId, String username) {
         this.entityValidator.validate(meeting);
-        Committee committee = committeeService.findCommitteeById(committeeId);
-        Member coordinator = memberService.findById(meeting.getCoordinator().getId());
+        Committee committee = committeeRepository.findCommitteeById(committeeId);
+        Member coordinator = memberRepository.findMemberById(meeting.getCoordinator().getId());
 
 
         //populating the meetings
         if(meeting.getAttendees() != null && !meeting.getAttendees().isEmpty()) {
             List<Integer> attendeeMemberIds = meeting.getAttendees().stream().map(Member::getId).toList();
-            Set<Member> attendees = new HashSet<>(memberService.findAllById(attendeeMemberIds));
+            Set<Member> attendees = new HashSet<>(memberRepository.findAllMembersById(attendeeMemberIds));
 
             //when some attendee Ids are missing from the datbase
             if(attendees.size() != attendeeMemberIds.size()) {
@@ -97,11 +100,11 @@ public class MeetingService {
 
     @CheckCommitteeAccess(shouldValidateMeeting=true)
     public Set<Member> addAttendeesToMeeting(Set<Integer> newAttendeeIds, int committeeId, int meetingId, String username) {
-        Committee committee = committeeService.findCommitteeById(committeeId);
+        Committee committee = committeeRepository.findCommitteeById(committeeId);
         Meeting meeting = this.findMeetingById(meetingId);
 
         //1. find the members exists in the database and part of the committee
-        Set<Member> validNewAttendees = memberService.findExistingMembersInCommittee(newAttendeeIds, committeeId);
+        Set<Member> validNewAttendees = memberRepository.findExistingMembersInCommittee(newAttendeeIds, committeeId);
 
         if(validNewAttendees.size() != newAttendeeIds.size()) {
             Set<Integer> foundIds = validNewAttendees.stream()

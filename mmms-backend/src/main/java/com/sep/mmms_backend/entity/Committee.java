@@ -12,7 +12,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -58,5 +60,5 @@ public class Committee {
 
     @OneToMany(mappedBy = "committee", cascade = CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<CommitteeMembership> memberships = new ArrayList<>();
+    private Set<CommitteeMembership> memberships = new HashSet<>();
 }

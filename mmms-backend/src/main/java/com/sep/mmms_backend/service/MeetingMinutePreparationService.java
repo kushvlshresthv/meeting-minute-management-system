@@ -7,6 +7,7 @@ import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
+import com.sep.mmms_backend.repository.CommitteeRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -19,13 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class MeetingMinutePreparationService {
     private final MeetingService meetingService;
-    private final CommitteeService committeeService;
+    private final CommitteeRepository committeeRepository;
     private final MemberService memberService;
 
-    public MeetingMinutePreparationService(MeetingService meetingService, CommitteeService committeeService, MemberService memberService) {
+    public MeetingMinutePreparationService(MeetingService meetingService, CommitteeRepository committeeRepository, MemberService memberService) {
         this.meetingService = meetingService;
-        this.committeeService = committeeService;
         this.memberService = memberService;
+        this.committeeRepository = committeeRepository;
     }
 
     /**
@@ -43,7 +44,7 @@ public class MeetingMinutePreparationService {
     public Map<String, Object> prepareMeetingMinuteData(int committeeId, int meetingId, String username) {
 
         //1. validate committee is accessible by the user
-        Committee committee = committeeService.findByIdNoException(committeeId).orElseThrow(CommitteeDoesNotExistException::new);
+        Committee committee = committeeRepository.findByIdNoException(committeeId).orElseThrow(CommitteeDoesNotExistException::new);
 
         if (!committee.getCreatedBy().getUsername().equals(username)) {
             throw new IllegalOperationException();

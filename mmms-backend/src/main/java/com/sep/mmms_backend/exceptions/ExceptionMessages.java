@@ -14,7 +14,7 @@ public enum ExceptionMessages {
     INVALID_MEMBERSHIP("Invalid membership"),
     VALIDATION_FAILED("Validation Failed"),
     COMMITTEE_DOES_NOT_EXIST("The specified committee does not exist"),
-    NO_VALID_MEMBERSHIP("No valid membership"),
+    INVALID_MEMBERSHIP_FOR_NEW_MEMBER("The new member must have single membership"),
     COMMITTEE_NOT_ACCESSIBLE("Specified committee is not accessible"),
     MEMBER_NOT_IN_COMMITTEE("The specified member is not associated with the committee"),
     ;

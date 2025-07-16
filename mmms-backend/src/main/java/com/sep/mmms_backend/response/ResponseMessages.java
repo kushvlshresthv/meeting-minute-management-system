@@ -15,6 +15,7 @@ public enum ResponseMessages {
     //MEETING RELATED:
     MEETING_CREATION_FAILED("Failed to create meeting"),
     MEETING_CREATION_SUCCESSFUL("Meeting registered successfully"),
+    MEETING_ATTENDEE_ADDITION_SUCCESS("New attendees added to the meeting successfully"),
 
 
     //ROUTES MISUSED:
@@ -24,6 +25,7 @@ public enum ResponseMessages {
 
     //COMMITTEE RELATED:
     COMMITTEE_CREATION_SUCCESS("Committee created successfully"),
+    COMMITTEE_MEMBER_ADDITION_SUCCESS("New member added to the committee successfully"),
 
     MEMBER_CREATION_SUCCESS("Member created successfully"),
     ;

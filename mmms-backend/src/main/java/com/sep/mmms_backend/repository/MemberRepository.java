@@ -1,12 +1,16 @@
 package com.sep.mmms_backend.repository;
 
 import com.sep.mmms_backend.entity.Member;
+import com.sep.mmms_backend.exceptions.ExceptionMessages;
+import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -43,6 +47,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
      */
 
     /**
+     * This method returns all the Member entites from the list of ids that belong to the provided committee id
      *
      * @param memberIds the ids of the member that need to be fetched
      * @param committeeId the id of the committee to which the member should belong to
@@ -50,4 +55,32 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
      */
     @Query("SELECT m FROM members m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId")
     Set<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId);
+
+
+
+    default Member findMemberById(int memberId) {
+        Optional<Member> member = this.findById(memberId);
+        if(member.isEmpty()) {
+            throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, memberId);
+        }
+        return member.get();
+    }
+
+
+    default Optional<Member> findMemberByIdNoException(int memberId) {
+        return this.findById(memberId);
+    }
+
+
+    /**
+     * returns the set of members. If no elements are available, it returns an empty set, never null
+     */
+    default Set<Member> findAllMembersById(Set<Integer> memberIds) {
+        return new HashSet<>(findAllById(memberIds));
+    }
+
+
+    default List<Member> findAllMembersById(List<Integer> memberIds) {
+        return this.findAllById(memberIds);
+    }
 }
