@@ -4,12 +4,18 @@ import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.service.MeetingMinutePreparationService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Controller
@@ -20,19 +26,43 @@ public class MeetingMinuteController {
             this.meetingMinutePreparationService = meetingMinutePreparationService;
         }
         @GetMapping("api/previewMeetingMinute")
-        public String holiday(Model model, @RequestParam int committeeId, @RequestParam int meetingId, @RequestParam(required=false) String lang, Authentication authentication) {
+        public Object holiday(Model model,
+                              @RequestParam int committeeId,
+                              @RequestParam int meetingId,
+                              @RequestParam(required=false) String lang,
+                              @RequestParam(required=false) String download,
+                              Authentication authentication)
+                {
             try {
-                String username = authentication.getName();
-                Map<String, Object> meetingMinuteData = meetingMinutePreparationService.prepareMeetingMinuteData(committeeId, meetingId, username);
 
-                // Add all prepared data to the model
-                model.addAllAttributes(meetingMinuteData);
-
-                if (lang != null && lang.equalsIgnoreCase("en")) {
-                    return "meeting_minute_english";
+                String templateName = null;
+                if(lang != null && lang.equalsIgnoreCase("en")) {
+                    templateName = "meeting_minute_english";
+                } else {
+                    templateName = "meeting_minute_nepali";
                 }
-                return "meeting_minute_nepali";
-            } catch (MeetingDoesNotExistException | CommitteeDoesNotExistException | IllegalOperationException e) {
+
+
+                Map<String, Object> meetingMinuteData = meetingMinutePreparationService.prepareMeetingMinuteData(committeeId, meetingId, authentication.getName());
+
+                if(download != null && download.equalsIgnoreCase("docx")) {
+                    meetingMinuteData.put("download", true);
+                    String htmlContent = meetingMinutePreparationService.renderHtmlTemplate(templateName, meetingMinuteData);
+                    byte[] docxBytes = meetingMinutePreparationService.createWordDocumentFromHtml(htmlContent);
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+                    String filename = "MeetingMinutes_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".docx";
+                    headers.setContentDispositionFormData("attachment", filename);
+                    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+                    return new ResponseEntity<>(docxBytes, headers, HttpStatus.OK);
+                }
+
+                meetingMinuteData.put("download", false);
+                model.addAllAttributes(meetingMinuteData);
+                return templateName;
+            } catch (Exception e) {
                 return "committee_not_accessible";
             }
         }

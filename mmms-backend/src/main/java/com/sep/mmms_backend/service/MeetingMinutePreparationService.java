@@ -1,4 +1,5 @@
 package com.sep.mmms_backend.service;
+import org.apache.poi.xwpf.usermodel.*;
 
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
@@ -8,13 +9,18 @@ import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.repository.CommitteeRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,11 +28,13 @@ public class MeetingMinutePreparationService {
     private final MeetingService meetingService;
     private final CommitteeRepository committeeRepository;
     private final MemberService memberService;
+    private final TemplateEngine templateEngine;
 
-    public MeetingMinutePreparationService(MeetingService meetingService, CommitteeRepository committeeRepository, MemberService memberService) {
+    public MeetingMinutePreparationService(MeetingService meetingService, CommitteeRepository committeeRepository, MemberService memberService, TemplateEngine templateEngine) {
         this.meetingService = meetingService;
         this.memberService = memberService;
         this.committeeRepository = committeeRepository;
+        this.templateEngine = templateEngine;
     }
 
     /**
@@ -126,4 +134,197 @@ public class MeetingMinutePreparationService {
 
         memberships.sort(Comparator.comparingInt(m -> rolePriority.getOrDefault(m.getRole(), Integer.MAX_VALUE)));
     }
+
+    public String renderHtmlTemplate(String templateName, Map<String, Object> dataModel) {
+        Context context = new Context();
+        dataModel.forEach(context::setVariable);
+        return templateEngine.process(templateName, context);
+    }
+
+    /*
+    Possible classes that our templates can have:
+    1. introduction -> signifies sections
+    2. justify-text -> styling
+    3. heading -> styling
+    4. attendees -> signifies sections
+    5. decisions -> signifies sections
+
+    Structure of the template:
+
+    #a4-box
+        #introduction
+            #introduction-body
+        #attendees
+            #heading-attendees
+            #attendee-table
+        #decisions
+            #heading-decisions
+            #decisions-list
+    */
+
+    public byte[] createWordDocumentFromHtml(String htmlContent) throws Exception {
+        System.out.println(htmlContent);
+        try (XWPFDocument document = new XWPFDocument()) {
+            Document html = Jsoup.parse(htmlContent);
+
+            XWPFParagraph paragraph = null;
+            XWPFRun run = null;
+            Element a4_box = html.getElementById("a4-box");
+            if(a4_box == null) {
+                throw new Exception();
+            }
+
+
+
+            for(Element element: a4_box.children()) {
+                if(element.className().contains("introduction")) {
+
+                    //rest of the classes(which are used for styling)
+                    List<String> stylings = Arrays.asList(element.className().split("\\s+"));
+
+                    Elements children = element.children();
+                    for(Element child: children) {
+                        if(child.className().equals("introduction-body")) {
+                            paragraph = document.createParagraph();
+                            paragraph.setSpacingAfter(100);
+                            run = paragraph.createRun();
+                            run.setText(element.text());
+
+                            if(stylings.contains("justify-text")) {
+                                styleJustifyText(paragraph);
+                            }
+                        }
+                    }
+                }
+
+                else if (element.className().contains("attendees")) {
+                    Elements children = element.children();
+
+                    //attendee has two children, a heading, and the table
+                    for(Element child: children) {
+
+                        if(child.className().contains("heading")) {
+                            paragraph = document.createParagraph();
+                            paragraph.setSpacingBefore(100);
+                            paragraph.setSpacingAfter(200);
+                            styleHeading(paragraph.createRun(), child);
+                        }
+
+                        if(child.nodeName().equals("table")) {
+                            XWPFTable newTable = document.createTable();
+                            final int PADDING_LEFT = 100;
+                            final int PADDING_TOP = 100;
+                            newTable.setCellMargins(PADDING_TOP, PADDING_LEFT, 0,0 );
+                            newTable.setWidth(XWPFTable.DEFAULT_PERCENTAGE_WIDTH);
+
+                            copyTable(newTable, child);
+                        }
+                    }
+                }
+
+                else if(element.className().contains("decisions")) {
+                    Elements children = element.children();
+
+                    //deicisions has two children, a heading, and a list
+                    for(Element child: children) {
+                        if(child.className().contains("heading")) {
+                            paragraph = document.createParagraph();
+                            paragraph.setSpacingBefore(200);
+                            paragraph.setSpacingAfter(200);
+                            run = paragraph.createRun();
+                            styleHeading(run, child);
+                        }
+
+                        if(child.nodeName().equals("ol")) {
+                            Elements decisions = child.children();
+                            int count = 1;
+                            final int DECISION_SPACING = 17;
+
+                            for(Element decision: decisions) {
+                                paragraph = document.createParagraph();
+                                paragraph.setSpacingBetween(DECISION_SPACING, LineSpacingRule.EXACT);
+                                run = paragraph.createRun();
+                                run.setText("  " +count + ".  " + decision.text());
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.write(out);
+            byte[] bytes = out.toByteArray();
+            return bytes;
+        } catch(Exception e) {
+            throw e;
+        }
+    }
+
+
+    public void styleJustifyText(XWPFParagraph paragraph) {
+        paragraph.setAlignment(ParagraphAlignment.BOTH);
+    }
+
+    public void styleHeading(XWPFRun run, Element element) {
+        run.setText(element.text());
+        run.setBold(true);
+        run.setUnderline(UnderlinePatterns.SINGLE);
+    }
+
+
+
+    public void copyTable(XWPFTable newTable, Element oldTable) {
+        //getting all the rows
+        Elements oldRows = oldTable.select("tr");
+
+        //iterate through the rows
+        for(int i = 0; i<oldRows.size(); i++) {
+            Element oldRow = oldRows.get(i);
+
+            //getting the individual cells
+            Elements oldCells = oldRow.select("th, td");
+
+            //create new row(skip first because Apache POI creates one by default)
+            XWPFTableRow newTableRow = (i==0) ? newTable.getRow(0): newTable.createRow();
+
+
+            //set the min-height of the table row
+            final int ROW_HEIGHT = 600;
+            newTableRow.setHeight(ROW_HEIGHT);
+            newTableRow.setHeightRule(TableRowHeightRule.AT_LEAST);
+
+            //get the data from each cell and populate the XWPFTableRow
+            for(int j = 0; j<oldCells.size(); j++) {
+                String oldCellText = oldCells.get(j).text();
+                //remove the first cell in the first row which is pre-built by the framework
+                if(i==0 && j==0) {
+                    newTableRow.removeCell(0);
+                }
+
+                XWPFTableCell cell = null;
+                //only create new cells, if jth cell does not exist
+                if(newTableRow.getTableCells().size()< j+1) {
+                    cell = newTableRow.createCell();
+                } else {
+                    cell = newTableRow.getCell(j);
+                }
+
+                //remove the pre-built paragraph
+                cell.removeParagraph(0);
+                XWPFParagraph para = cell.addParagraph();
+                XWPFRun run = para.createRun();
+                run.setText(oldCellText);
+
+                if(j==0) {
+                    newTableRow.getCell(j).setWidth("5%");
+                } else if(j==1 || j==2) {
+                    newTableRow.getCell(j).setWidth("30%");
+                } else if(j==3) {
+                    newTableRow.getCell(j).setWidth("35%");
+                }
+            }
+        }
+    }
 }
+
+

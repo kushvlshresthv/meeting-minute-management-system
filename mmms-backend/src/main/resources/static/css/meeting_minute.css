@@ -20,7 +20,7 @@ body.nepali {
     font-family: 'martel', 'Times New Roman', sans-serif;
 }
 
-.a4-box {
+#a4-box {
     width: 210mm;
     height: 297mm;
     margin: 0 auto;
@@ -55,7 +55,6 @@ td:last-child {
 }
 
 .heading {
-    margin-top: 2rem;
     font-weight: bold;
     text-decoration: underline;
 }
@@ -69,7 +68,24 @@ ol {
     text-justify: inter-word;
 }
 
+
 .decision {
-    margin-top:5px;
-    margin-bottom:5px;
+    margin-top:0;
+    margin-bottom:8px;
+}
+
+p {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+
+.introduction, .decisions, .attendees {
+    margin: 8px;
+}
+
+li,ol {
+    margin: 0;
 }
