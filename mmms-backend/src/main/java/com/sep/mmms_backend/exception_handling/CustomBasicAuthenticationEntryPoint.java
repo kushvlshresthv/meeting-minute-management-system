@@ -19,6 +19,7 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
+        String requestedUri = request.getRequestURI();
         Response errorResponse = new Response();
 
         errorResponse.setMessage(ResponseMessages.AUTHENTICATION_FAILED.toString() + ": " + authException.getMessage());
@@ -26,6 +27,6 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), errorResponse);
 
-        log.error("{}: {}", ResponseMessages.AUTHENTICATION_FAILED.toString() , authException.getMessage());
+        log.error("{} for {} : {}", ResponseMessages.AUTHENTICATION_FAILED.toString(), requestedUri , authException.getMessage());
     }
 }

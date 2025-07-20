@@ -8,6 +8,7 @@ import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
+import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
@@ -107,6 +108,8 @@ public class CommitteeService {
 
     @CheckCommitteeAccess
     //TODO: this method does not check whether the membership already exists, if it does, it simply throws NotUniqueObjectException
+    //TODO: thie method also does not check whether the newMemberships has the same member id, it simply throws NotUniqueObjectException in this case as well
+    //NOTE: this method also tests whether the members are accessible to the current user with 'createdBy' field
     public Set<Member> addMembershipsToCommittee(int committeeId, Set<CommitteeMembership> newMemberships, String username) {
     Committee committee = committeeRepository.findCommitteeById(committeeId);
     Set<Integer> newMemberIds = newMemberships.stream().map(membership->  {
@@ -118,7 +121,12 @@ public class CommitteeService {
         Set<Member> validNewMembers = memberRepository.findAllMembersById(newMemberIds);
 
         if(validNewMembers.size() != newMemberIds.size()) {
-            Set<Integer> foundIds = validNewMembers.stream().map(Member::getId).collect(Collectors.toSet());
+            Set<Integer> foundIds = validNewMembers.stream().map(validNewMember ->{
+                if(!validNewMember.getCreatedBy().equals(username)) {
+                    throw new IllegalOperationException(ExceptionMessages.MEMBER_NOT_ACCESSIBLE);
+                }
+                return validNewMember.getId();
+            }).collect(Collectors.toSet());
 
             Set<Integer> mssingOrInvalidIds = new HashSet<>(newMemberIds);
             mssingOrInvalidIds.removeAll(foundIds);

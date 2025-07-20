@@ -26,7 +26,6 @@ public class MeetingService {
     private final EntityValidator entityValidator;
     private final CommitteeRepository committeeRepository;
 
-
     public MeetingService(MeetingRepository meetingRepository, CommitteeRepository committeeRepository, MemberRepository memberRepository, EntityValidator entityValidator) {
         this.meetingRepository = meetingRepository;
         this.entityValidator = entityValidator;
@@ -39,6 +38,7 @@ public class MeetingService {
         this.entityValidator.validate(meeting);
         Committee committee = committeeRepository.findCommitteeById(committeeId);
         Member coordinator = memberRepository.findMemberById(meeting.getCoordinator().getId());
+        List<Member> committeeMemberList = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
 
 
         //populating the meetings
@@ -54,21 +54,30 @@ public class MeetingService {
             }
 
             //check if all the attendees are in the committee
-            List<Member> committeeMemberList = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
             for(Member attendee: attendees) {
                 if(!committeeMemberList.contains(attendee)) {
                     throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, attendee.getId(), committeeId);
                 }
             }
 
-            //check if the coordinator is in the committee
-            if(!committeeMemberList.contains(coordinator)) {
-                throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, coordinator.getId(), committeeId) ;
-            }
-
+            //don't do getAttendees().addAll() because the attendees from the request body still lives in that container
             meeting.setAttendees(attendees);
-            meeting.setCoordinator(coordinator);
         }
+
+        //check if the coordinator is in the committee
+        if(!committeeMemberList.contains(coordinator)) {
+            throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, coordinator.getId(), committeeId) ;
+        }
+
+        //ASSERTION: coordinator is also an attendee
+        if(meeting.getAttendees() == null) {
+            meeting.setAttendees(new HashSet<>());
+        }
+        meeting.getAttendees().add(coordinator);
+        meeting.setCoordinator(coordinator);
+
+        //add the current meeting instance to all the decisions
+        meeting.getDecisions().forEach(decision->decision.setMeeting(meeting));
 
         meeting.setCommittee(committee);
         return meetingRepository.save(meeting);
@@ -104,6 +113,7 @@ public class MeetingService {
         Meeting meeting = this.findMeetingById(meetingId);
 
         //1. find the members exists in the database and part of the committee
+        //ASSERTION: attendees and meeting must belong to the same committee
         Set<Member> validNewAttendees = memberRepository.findExistingMembersInCommittee(newAttendeeIds, committeeId);
 
         if(validNewAttendees.size() != newAttendeeIds.size()) {

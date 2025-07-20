@@ -21,12 +21,14 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
        response.setContentType("application/json;charset=utf-8");
        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
+       String requestedUri = request.getRequestURI();
+
        Response errorResponse = new Response();
        errorResponse.setMessage(ResponseMessages.ACCESS_DENIED +": " + accessDeniedException.getMessage());
 
        ObjectMapper mapper = new ObjectMapper();
        mapper.writeValue(response.getWriter(), errorResponse);
 
-        log.error("{}: {} ", ResponseMessages.ACCESS_DENIED , accessDeniedException.getMessage());
+       log.error("{} for {}: {} ", ResponseMessages.ACCESS_DENIED , requestedUri ,accessDeniedException.getMessage());
     }
 }

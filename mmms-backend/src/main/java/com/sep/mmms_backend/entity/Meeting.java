@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -88,10 +89,10 @@ public class Meeting {
                     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
             }
     )
-    public Set<Member> attendees;
+    public Set<Member> attendees = new HashSet<>();
 
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Decision> decisions;
 
     @OneToOne

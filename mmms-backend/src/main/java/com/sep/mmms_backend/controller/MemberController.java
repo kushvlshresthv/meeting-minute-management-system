@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.controller;
 
+import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
@@ -52,6 +53,21 @@ public class MemberController {
     public ResponseEntity<Response> createMember(@RequestParam(required = true) int committeeId, @RequestBody(required=true) Member member, Authentication authentication) {
         memberService.saveNewMember(member, committeeId, authentication.getName());
         return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS));
+    }
+
+    /** IMPORTANT NOTE:
+
+     * whether a particular member is acceesbile by a particular user is checked by comparing username
+
+     * if the username is made changeable in the future, this has to be updated as well
+
+     * the resason the 'created_by' section was not choosen to be 'id' is because, to retreive the 'id' of the current user, a database operation is required, which flushes the context to save the entity before the 'created_by' section is populated in the entity causing an error
+     */
+    @GetMapping("/getMemberDetails")
+    public ResponseEntity<Response> getMemberDetails(@RequestParam(required=true) int memberId, Authentication authentication) {
+        MemberDetailsDto memberDetailsDto = memberService.getMemberDetails(memberId, authentication.getName());
+
+        return ResponseEntity.ok(new Response(memberDetailsDto));
     }
 }
 

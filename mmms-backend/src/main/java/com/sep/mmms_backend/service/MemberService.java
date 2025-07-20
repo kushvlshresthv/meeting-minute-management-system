@@ -1,10 +1,13 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
+import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
+import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
+import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.InvalidRequestException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.repository.CommitteeRepository;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
@@ -104,5 +108,39 @@ public class MemberService {
             }
         }
         return null;
+    }
+
+
+
+    public MemberDetailsDto getMemberDetails(int memberId, String username) {
+        Member member = memberRepository.findMemberById(memberId);
+        if(!member.getCreatedBy().equals(username)) {
+            throw new IllegalOperationException(ExceptionMessages.MEMBER_NOT_ACCESSIBLE);
+        }
+
+        Set<Committee> committees = member.getMemberships().stream().map(CommitteeMembership::getCommittee).collect(Collectors.toSet());
+
+
+        Set<Meeting> attendedMeetings = member.getAttendedMeetings();
+        List<MemberDetailsDto.CommitteeWithMeetings> committeeWithMeetings = new ArrayList<>();
+
+
+        for(Committee committee : committees) {
+            Set<Meeting> allMeetingsOfCommittee = committee.getMeetings();
+
+            String role = this.getMembership(member, committee.getId()).getRole();
+            MemberDetailsDto.CommitteeInfo committeeInfo = new MemberDetailsDto.CommitteeInfo(committee.getId(), committee.getName(), committee.getDescription(), role);
+
+
+            List<MemberDetailsDto.MeetingInfo> meetingInfos = new ArrayList<>();
+            committee.getMeetings().forEach(meeting-> {
+                MemberDetailsDto.MeetingInfo meetingInfo = new MemberDetailsDto.MeetingInfo(meeting.getId(), meeting.getTitle(), meeting.getDescription(), attendedMeetings.contains(meeting));
+                meetingInfos.add(meetingInfo);
+            });
+
+            committeeWithMeetings.add(new MemberDetailsDto.CommitteeWithMeetings(committeeInfo, meetingInfos));
+        }
+
+        return new MemberDetailsDto(member, committeeWithMeetings);
     }
 }

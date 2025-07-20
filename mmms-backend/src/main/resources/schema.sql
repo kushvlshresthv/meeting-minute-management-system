@@ -76,7 +76,7 @@ CREATE TABLE meeting_attendees (
 
 CREATE TABLE decisions (
         decision_id INT AUTO_INCREMENT PRIMARY KEY,
-        meeting_id INT,
+        meeting_id INT NOT NULL,
         decision TEXT,
         FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 );

@@ -21,11 +21,11 @@ public class Decision {
     private int decisionId;
 
     @ManyToOne
-    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id")
-    @JsonIgnore
+    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id", nullable=false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Meeting meeting;
 
     @Column(name =  "decision")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String decision;
 }

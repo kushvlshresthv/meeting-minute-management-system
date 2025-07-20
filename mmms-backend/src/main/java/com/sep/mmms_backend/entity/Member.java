@@ -31,15 +31,19 @@ public class Member {
     private int id;
 
     @Column(name="first_name", nullable=false)
-    @NotBlank
+    @NotBlank(message="member's first name can't be blank")
     private String firstName;
 
     @Column(name="last_name", nullable=false)
-    @NotBlank
+    @NotBlank(message="member's last name can't be blank")
     private String lastName;
 
     private String institution;  //example: Pulchowk Campus, IOE
+
+    @NotBlank(message="member's post can't be blank")
     private String post; //example: professor
+
+    @NotBlank(message="member's qualification can't be blank")
     private String qualification; //example: Dr
 
     @Column
@@ -71,5 +75,5 @@ public class Member {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "attendees", fetch = FetchType.LAZY)
-    List<Meeting> attendedMeetings = new ArrayList<>();
+    Set<Meeting> attendedMeetings = new HashSet<>();
 }

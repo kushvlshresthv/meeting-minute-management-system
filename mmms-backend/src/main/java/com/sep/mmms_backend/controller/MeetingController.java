@@ -3,7 +3,6 @@ package com.sep.mmms_backend.controller;
 import com.sep.mmms_backend.dto.MeetingDetailsDto;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
-import com.sep.mmms_backend.exceptions.MeetingAlreadyExistsException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 @RestController
