@@ -13,8 +13,8 @@ import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -95,10 +95,12 @@ public class MemberService {
     }
 
     /**
-     *
+
      * @param member: shouldn't be null
      * @param committeeId: committeeId for which the member's role is required
      * @return returns role of the user in the committee if found, else returns null
+
+     * NOTE: this method iterates through all the memberships for a particular member to get the membership associated with a particular committeeId
      */
     public CommitteeMembership getMembership(Member member, int committeeId) {
         Set <CommitteeMembership> memberships = member.getMemberships();
@@ -112,6 +114,7 @@ public class MemberService {
 
 
 
+    @Transactional(readOnly = true)  //this makes the session/connection stays open for lazy loading, disables auto commmit mode and optimizes for reads
     public MemberDetailsDto getMemberDetails(int memberId, String username) {
         Member member = memberRepository.findMemberById(memberId);
         if(!member.getCreatedBy().equals(username)) {
@@ -124,23 +127,33 @@ public class MemberService {
         Set<Meeting> attendedMeetings = member.getAttendedMeetings();
         List<MemberDetailsDto.CommitteeWithMeetings> committeeWithMeetings = new ArrayList<>();
 
+        Map<Integer, String> committeeIdToRoleMap = member.getMemberships().stream().collect(Collectors.toMap(
+                membership-> membership.getCommittee().getId(),
+                CommitteeMembership::getRole
+        ));
 
         for(Committee committee : committees) {
             Set<Meeting> allMeetingsOfCommittee = committee.getMeetings();
 
-            String role = this.getMembership(member, committee.getId()).getRole();
+            String role = committeeIdToRoleMap.get(committee.getId());
             MemberDetailsDto.CommitteeInfo committeeInfo = new MemberDetailsDto.CommitteeInfo(committee.getId(), committee.getName(), committee.getDescription(), role);
 
 
             List<MemberDetailsDto.MeetingInfo> meetingInfos = new ArrayList<>();
             committee.getMeetings().forEach(meeting-> {
-                MemberDetailsDto.MeetingInfo meetingInfo = new MemberDetailsDto.MeetingInfo(meeting.getId(), meeting.getTitle(), meeting.getDescription(), attendedMeetings.contains(meeting));
+
+                boolean hasAttendedMeeting = false;
+                if(attendedMeetings != null && attendedMeetings.contains(meeting)) {
+                    hasAttendedMeeting = true;
+                }
+
+                MemberDetailsDto.MeetingInfo meetingInfo = new MemberDetailsDto.MeetingInfo(meeting.getId(), meeting.getTitle(), meeting.getDescription(),hasAttendedMeeting );
+
                 meetingInfos.add(meetingInfo);
             });
 
             committeeWithMeetings.add(new MemberDetailsDto.CommitteeWithMeetings(committeeInfo, meetingInfos));
         }
-
         return new MemberDetailsDto(member, committeeWithMeetings);
     }
 }

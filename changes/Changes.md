@@ -4,6 +4,8 @@
 
 | REQUEST URL                                          | Description                                                                                                                                                                                                                                                                                                                                 |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| /api/getMemberDetails?memberId=1                     | gets the details about the specified user                                                                                                                                                                                                                                                                                                   |
+| /api/addMembersToCommittee?committeeId=2             | adds the specified member to the committee<br><br>request format: <br><br>[<br>    {<br>        "member":{<br>           "id":1<br>        },<br>        "role":"New Role"<br>    }<br>]                                                                                                                                                    |
 | /api/getMeetingDetails?committeeId=1&meetingId=1<br> | returns the details of the meeting                                                                                                                                                                                                                                                                                                          |
 | /api/addAttendeesToMeeting?committeeId=1&meetingId=1 | adds the attendees mentioned in the request body <br><br>Request body should be of the format:<br><br>[5, 6]<br>                                                                                                                                                                                                                            |
 | /api/committee/createMeeting?committeeId=1           | creates a meeting for a particular committee                                                                                                                                                                                                                                                                                                |
@@ -21,12 +23,170 @@
 
 
 
+# Latest Changes: 
+
+## 1. Implemented /getMemberDetails(GET)
+
+
+- Fetches the member details of the member specified in the query paramter
+- For the request to be successful: 
+
+	i. The member should exist in the database
+	ii. The member should be accessible to the current user(ie the current user must have created that member)
+
+
+`request: /api/getMemberDetails?memberId=1`
+
+`response body:  `
+``` json 
+{
+    "message": null,
+    "mainBody": {
+        "memberId": 1,
+        "firstName": "Hari",
+        "lastName": "Bahadur",
+        "institution": "Nepal Engineering College",
+        "post": "Assistant Professor",
+        "qualification": "MSc IT",
+        "committeeWithMeetings": [
+            {
+                "committeeInfo": {
+                    "id": 2,
+                    "committeeName": "Events Committee",
+                    "committeeDescription": "Plans and organizes all institutional events and seminars.",
+                    "role": "New Role"
+                },
+                "meetingInfos": [
+                    {
+                        "id": 6,
+                        "meetingName": "Campus Wi-Fi Upgrade Plan",
+                        "meetingDescription": "Finalizing the plan to upgrade network infrastructure.",
+                        "hasAttendedMeeting": false
+                    },
+                    {
+                        "id": 5,
+                        "meetingName": "Canteen and Hostel Feedback Session",
+                        "meetingDescription": "Discussing feedback from students on facilities.",
+                        "hasAttendedMeeting": false
+                    }
+                ]
+            },
+
+            {
+                "committeeInfo": {
+                    "id": 1,
+                    "committeeName": "Academic Committee",
+                    "committeeDescription": "Oversees academic policies and curriculum development.",
+                    "role": "Chairperson"
+                },
+
+                "meetingInfos": [
+                    {
+                        "id": 1,
+                        "meetingName": "Syllabus Update Discussion",
+                        "meetingDescription": "Discussing proposed updates to the engineering syllabus.",
+                        "hasAttendedMeeting": true
+                    },
+					
+                    {
+                        "id": 2,
+                        "meetingName": "Annual Seminar Planning",
+                        "meetingDescription": "Organizing the annual institutional seminar.",
+                        "hasAttendedMeeting": true
+                    },
+                    {
+                        "id": 3,
+                        "meetingName": "Research Grant Proposals Review",
+                        "meetingDescription": "Assessment of new research funding requests.",
+                        "hasAttendedMeeting": true
+                    },
+
+                    {
+                        "id": 4,
+                        "meetingName": "Review of Recent Incidents",
+                        "meetingDescription": "Addressing recent disciplinary cases and policy updates.",
+                        "hasAttendedMeeting": true
+                    }
+                ]
+            }
+        ]
+    }
+```
+
+
+
+## 2. Implemented /addMembersToCommittee(POST)
+
+- adds the specified members in the request body to the committee
+
+	i. The member's role must also be specified, else it will return validation error
+	ii. The committee should exist and be accessible by the request sender
+	iii. The meeting should exist and be be accessible by the request sender
+	iv. The members to be added must exist and be accessible by the request sender
+
+`/api/addMembersToCommittee?committeeId=2`
+
+`request body: `
+
+``` json
+[
+    {
+        "member":{
+            "id":9
+        },
+        "role":"New Role"
+    },
+        {
+        "member":{
+            "id":10
+        },
+        "role":"New Role"
+    }
+]
+```
+
+`response body:`
+
+``` json
+{
+    "message": "New member added to the committee successfully",
+    "mainBody": [
+        {
+            "id": 9,
+            "firstName": "Ramesh",
+            "lastName": "Karki",
+            "institution": "Nepal Telecom",
+            "post": "IT Officer",
+            "qualification": "BSc CSIT",
+            "email": "ramesh.karki@example.com",
+            "createdDate": [
+                2025,
+                7,
+                16
+            ]
+        },
+        {
+            "id": 10,
+            "firstName": "Sita",
+            "lastName": "Basnet",
+            "institution": "Kathmandu University",
+            "post": "Research Fellow",
+            "qualification": "PhD Biotechnology",
+            "email": "sita.basnet@example.com",
+            "createdDate": [
+                2025,
+                7,
+                17
+            ]
+        }
+    ]
+}
+```
 
 
 
 
-
-# Latest Changes
+# Previous Changes
 
 # 1. Implemented /getMeetingDetails (GET)
 

@@ -22,6 +22,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
            return Optional.empty();
        }
 
+       System.out.println("Auditor Aware Executed");
        return Optional.ofNullable(authentication.getName());
     }
 }

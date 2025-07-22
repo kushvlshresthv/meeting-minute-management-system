@@ -6,15 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -24,6 +23,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Entity(name="members")
 @EntityListeners(AuditingEntityListener.class)
+@Builder
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,6 +71,7 @@ public class Member {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy="member", cascade=CascadeType.PERSIST)
+    @NotEmpty
     private Set<CommitteeMembership> memberships = new HashSet<>();
 
     @JsonIgnore

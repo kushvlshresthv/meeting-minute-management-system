@@ -65,34 +65,6 @@ public class AppUser {
     @OneToMany(mappedBy = "createdBy")
     @JsonIgnore
     private List<Committee> myCommittees;
-
-/*
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="user_attended_meetings",
-        joinColumns = {
-            @JoinColumn(name="user_id", referencedColumnName = "uid"),
-        },
-
-        inverseJoinColumns = {
-            @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
-        }
-    )
-    List<Meeting> attendedMeetings;
-*/
-
-/*
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="user_unattended_meeting",
-            joinColumns = {
-                    @JoinColumn(name="user_id", referencedColumnName = "uid"),
-            },
-
-            inverseJoinColumns = {
-                    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
-            }
-    )
-    List<Meeting> unattendedMeetings;
- */
 }
 
 /*

@@ -10,7 +10,10 @@ import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MeetingRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +63,7 @@ public class MeetingService {
                 }
             }
 
-            //don't do getAttendees().addAll() because the attendees from the request body still lives in that container
+            //NOTE: don't do getAttendees().addAll() because the attendees from the request body still lives in that container
             meeting.setAttendees(attendees);
         }
 
@@ -77,6 +80,7 @@ public class MeetingService {
         meeting.setCoordinator(coordinator);
 
         //add the current meeting instance to all the decisions
+        //this is impoprtant because meeting is in the inverse side of the relationship
         meeting.getDecisions().forEach(decision->decision.setMeeting(meeting));
 
         meeting.setCommittee(committee);
@@ -108,9 +112,14 @@ public class MeetingService {
      */
 
     @CheckCommitteeAccess(shouldValidateMeeting=true)
+    @Transactional
     public Set<Member> addAttendeesToMeeting(Set<Integer> newAttendeeIds, int committeeId, int meetingId, String username) {
-        Committee committee = committeeRepository.findCommitteeById(committeeId);
-        Meeting meeting = this.findMeetingById(meetingId);
+
+        //The committee and meeting is fetched and stored in the RCH by @CheckCommitteeAccess
+
+        Committee committee = (Committee) RequestContextHolder.currentRequestAttributes().getAttribute("committee", RequestAttributes.SCOPE_REQUEST);
+        Meeting meeting = (Meeting) RequestContextHolder.currentRequestAttributes().getAttribute("meeting", RequestAttributes.SCOPE_REQUEST);
+
 
         //1. find the members exists in the database and part of the committee
         //ASSERTION: attendees and meeting must belong to the same committee
@@ -148,5 +157,4 @@ public class MeetingService {
         Meeting meeting = this.findMeetingById(meetingId);
         return meeting;
     }
-
 }

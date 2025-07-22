@@ -53,7 +53,7 @@ public class MeetingControllerTest {
     @BeforeEach
     public void init() {
         //a valid meeting:
-        meeting = Meeting.builder().title("Meeting11").heldDate(LocalDate.now()).build();
+       meeting = Meeting.builder().title("Meeting11").heldDate(LocalDate.now()).build();
     }
 
     private Response performRequestAndGetResponse(String destination, Object body, HttpStatus expectedHttpResponseStatus) throws Exception {

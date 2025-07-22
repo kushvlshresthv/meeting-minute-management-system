@@ -11,9 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -58,7 +56,7 @@ public class Committee {
     @OneToMany(mappedBy="committee")
     private Set<Meeting> meetings;
 
-    @OneToMany(mappedBy = "committee", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "committee", cascade = CascadeType.PERSIST)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<CommitteeMembership> memberships = new HashSet<>();
 }

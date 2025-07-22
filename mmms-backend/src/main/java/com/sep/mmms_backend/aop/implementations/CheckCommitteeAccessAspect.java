@@ -16,6 +16,8 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Aspect
 @Component
@@ -68,6 +70,9 @@ public class CheckCommitteeAccessAspect {
         //checking access for the committee
         Committee committee = committeeService.findCommitteeByIdNoException(committeeId).orElseThrow(()-> new CommitteeDoesNotExistException(ExceptionMessages.COMMITTEE_DOES_NOT_EXIST, comId));
 
+        //storing data in the RCH to be used by the actual method
+        RequestContextHolder.currentRequestAttributes().setAttribute("committee", committee, RequestAttributes.SCOPE_REQUEST);
+
         if(!committee.getCreatedBy().getUsername().equals(username)) {
             throw new IllegalOperationException(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE);
         }
@@ -76,6 +81,8 @@ public class CheckCommitteeAccessAspect {
         if(checkCommitteeAccess.shouldValidateMeeting()) {
             final int meetId = meetingId;
             Meeting meeting = meetingService.findMeetingByIdNoException(meetingId).orElseThrow(()-> new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST, meetId));
+
+            RequestContextHolder.currentRequestAttributes().setAttribute("meeting", meeting, RequestAttributes.SCOPE_REQUEST);
 
             if(!committee.getMeetings().contains(meeting)) {
                 throw new IllegalOperationException(ExceptionMessages.MEETING_NOT_IN_COMMITTEE);

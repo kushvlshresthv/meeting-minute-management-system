@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -48,18 +49,18 @@ public class Meeting {
     @Column(name="meeting_held_time")
     private LocalTime heldTime;
 
-    @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
+    @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_place")
     private String heldPlace;
 
     @JsonIgnore
     @CreatedBy
-    @Column(name="created_by", updatable = false)
+    @Column(name="created_by", updatable = false, nullable = false)
     private String createdBy;
 
     @JsonIgnore
     @LastModifiedBy
-    @Column(name="updated_by")
+    @Column(name="updated_by", nullable = false)
     private String updatedBy;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -75,11 +76,12 @@ public class Meeting {
     @ManyToOne
     @JoinColumn(name = "committee_id", referencedColumnName="committee_id")
     @JsonIgnore
+    @NotNull(message = "committee should be specified")
     Committee committee;
 
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="meeting_attendees",
             inverseJoinColumns = {
                     @JoinColumn(name="member_id", referencedColumnName = "member_id"),
@@ -89,10 +91,12 @@ public class Meeting {
                     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
             }
     )
+    @NotEmpty
     public Set<Member> attendees = new HashSet<>();
 
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotEmpty
     private List<Decision> decisions;
 
     @OneToOne

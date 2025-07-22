@@ -1,5 +1,7 @@
 package com.sep.mmms_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.mmms_backend.entity.Member;
 import lombok.Getter;
 
@@ -85,5 +87,29 @@ public class MemberDetailsDto {
         this.post = member.getPost();
         this.qualification = member.getQualification();
         this.committeeWithMeetings = List.copyOf(committeeWithMeetings);
+    }
+
+
+
+    //this constructor is for testing purposes only
+    //with this constructor, ObjectMapper can reconstruct a MemberDetailsDto from json
+    //used in MemberControllerTests
+    @JsonCreator
+    public MemberDetailsDto(
+            @JsonProperty("memberId") int memberId,
+            @JsonProperty("firstName") String firstName,
+            @JsonProperty("lastName") String lastName,
+            @JsonProperty("institution") String institution,
+            @JsonProperty("post") String post,
+            @JsonProperty("qualification") String qualification,
+            @JsonProperty("committeeWithMeetings") List<CommitteeWithMeetings> committeeWithMeetings
+    ) {
+        this.memberId = memberId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.institution = institution;
+        this.post = post;
+        this.qualification = qualification;
+        this.committeeWithMeetings = committeeWithMeetings;
     }
 }
