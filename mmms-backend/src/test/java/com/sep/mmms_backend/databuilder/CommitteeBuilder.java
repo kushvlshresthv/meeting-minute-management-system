@@ -21,7 +21,9 @@ public class CommitteeBuilder {
     private Set<CommitteeMembership> memberships = new HashSet<>();
     private AppUser createdBy;
 
-    //must reference a saved 'createdBy' AppUser entity
+    /**
+     *must reference a saved 'createdBy' AppUser entity
+     */
     public static CommitteeBuilder builder() {
         return new CommitteeBuilder();
     }

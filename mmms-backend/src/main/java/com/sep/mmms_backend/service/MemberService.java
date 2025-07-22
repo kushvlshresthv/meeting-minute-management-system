@@ -65,6 +65,10 @@ public class MemberService {
     //TODO: check whether the Committee belongs to this particular user;
     @Transactional
     @CheckCommitteeAccess
+    //NOTE: this method does not save the 'attendedMeetings' for a new Member. The attendedMeetings has to be populated through a separate route, not while creating a new User.
+
+    //If 'attendedMeetings' is provided, it will simply be removed(this is because to add meetings, we also have to verify that meetings exist in the database first).
+
     public void saveNewMember(Member member, int committeeId, String username) {
         entityValidator.validate(member);
         Committee committee = committeeRepository.findCommitteeById(committeeId);
@@ -79,6 +83,9 @@ public class MemberService {
         CommitteeMembership membership = member.getMemberships().iterator().next();
         membership.setCommittee(committee);
         membership.setMember(member);
+
+        //clear the attended meetings
+        member.getAttendedMeetings().clear();
 
         memberRepository.save(member);
     }

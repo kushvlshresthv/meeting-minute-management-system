@@ -9,6 +9,9 @@ public class CommitteeMembershipBuilder {
     private Member member;
     private String role="member";
 
+    /**
+     * if we are building membership for a member, valid committee must be referenced in this object and vice-versa
+     */
     public static CommitteeMembershipBuilder builder() {
         return new CommitteeMembershipBuilder();
     }

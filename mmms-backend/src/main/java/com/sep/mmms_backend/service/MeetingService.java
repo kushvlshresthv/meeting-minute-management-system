@@ -37,8 +37,8 @@ public class MeetingService {
     }
 
     @CheckCommitteeAccess
+    //TODO: the coordinator does not need to be fetched separately, it is fetched alsongside committee as one of the members
     public Meeting saveNewMeeting(Meeting meeting, int committeeId, String username) {
-        this.entityValidator.validate(meeting);
         Committee committee = committeeRepository.findCommitteeById(committeeId);
         Member coordinator = memberRepository.findMemberById(meeting.getCoordinator().getId());
         List<Member> committeeMemberList = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
@@ -84,6 +84,7 @@ public class MeetingService {
         meeting.getDecisions().forEach(decision->decision.setMeeting(meeting));
 
         meeting.setCommittee(committee);
+        this.entityValidator.validate(meeting);
         return meetingRepository.save(meeting);
     }
 
