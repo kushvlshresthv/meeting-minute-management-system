@@ -81,8 +81,10 @@ public class MemberBuilder {
         member.setPost(this.post);
         member.setQualification(this.qualification);
         member.setEmail(this.email);
-        for(CommitteeMembership membership: memberships) {
-            membership.setMember(member);
+        if(memberships != null && !memberships.isEmpty()) {
+            for(CommitteeMembership membership: memberships) {
+                membership.setMember(member);
+            }
         }
         member.setMemberships(this.memberships);
         member.setAttendedMeetings(this.attendedMeetings);

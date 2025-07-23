@@ -22,7 +22,7 @@ public class CommitteeBuilder {
     private AppUser createdBy;
 
     /**
-     *must reference a saved 'createdBy' AppUser entity
+     *must reference a saved 'createdBy' AppUser entity. A committee can also have 'membership' but not compulsary
      */
     public static CommitteeBuilder builder() {
         return new CommitteeBuilder();
