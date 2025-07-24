@@ -87,10 +87,10 @@ public class MeetingControllerTest {
 
         @SuppressWarnings("unchecked")
         HashMap<String, ArrayList<String>> mainBody = (HashMap<String, ArrayList<String>>)(response.getMainBody());
-        Assertions.assertThat(mainBody.containsKey("meetingName"));
+        Assertions.assertThat(mainBody.containsKey("meetingTitle"));
 
         //filter out the `FIELD_CANNOT_BE_EMPTY` messages
-        Assertions.assertThat(mainBody.get("meetingName")).filteredOn(e->e.equals(ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)).hasSize(1);
+        Assertions.assertThat(mainBody.get("meetingTitle")).filteredOn(e->e.equals(ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)).hasSize(1);
     }
 
 

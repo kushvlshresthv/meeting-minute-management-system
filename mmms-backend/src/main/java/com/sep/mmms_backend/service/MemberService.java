@@ -62,10 +62,9 @@ public class MemberService {
      * Even if there are other memberships in the Member parameter, they are discarded
      */
 
-    //TODO: check whether the Committee belongs to this particular user;
     @Transactional
     @CheckCommitteeAccess
-    //NOTE: this method does not save the 'attendedMeetings' for a new Member. The attendedMeetings has to be populated through a separate route, not while creating a new User.
+    //NOTE: this method does not save the 'attendedMeetings' for a new Member. The attendedMeetings has to be populated through a separate route ie /addAttendeesToMeeting, not while creating a new User.
 
     //If 'attendedMeetings' is provided, it will simply be removed(this is because to add meetings, we also have to verify that meetings exist in the database first).
 

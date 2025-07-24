@@ -18,14 +18,13 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Entity(name="committees")
 @EntityListeners(AuditingEntityListener.class)
 public class Committee {
     @Id
     @Column(name="committee_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name="committee_name", nullable = false)
     @NotBlank

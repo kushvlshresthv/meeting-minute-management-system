@@ -17,7 +17,7 @@ public class Decision {
     @Id
     @Column(name="decision_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int decisionId;
+    private Integer decisionId;
 
     @ManyToOne
     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id", nullable=false)

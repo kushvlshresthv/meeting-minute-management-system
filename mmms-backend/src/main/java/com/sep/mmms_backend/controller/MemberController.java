@@ -40,7 +40,7 @@ public class MemberController {
             "institution": "Tribhuvan University",
             "post": "Professor",
             "qualification": "Er",
-            "email": "dahalrajesh@gmail.com",
+            "email": "daha@gmail.cou",
             "memberships: [
                 {
                     "role": "SECRETARY",

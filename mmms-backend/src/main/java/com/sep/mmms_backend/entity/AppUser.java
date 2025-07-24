@@ -17,7 +17,6 @@ import static com.sep.mmms_backend.global_constants.ValidationErrorMessages.*;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @Entity
 @Table(name="app_users")
 @AllArgsConstructor
@@ -30,7 +29,7 @@ import static com.sep.mmms_backend.global_constants.ValidationErrorMessages.*;
 public class AppUser {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    int uid;
+    Integer uid;
 
 
     @NotBlank(message = FIELD_CANNOT_BE_EMPTY)

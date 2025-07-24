@@ -9,6 +9,10 @@ public class DecisionBuilder {
     // to correctly handle OneToMany relationship
     private Meeting meeting;
 
+
+    /**
+     * directly build Decision if using it with MeetingBuilder. The 'meeting' builder is set by MeetingBuilder
+     */
     public static DecisionBuilder builder() {
         return new DecisionBuilder();
     }

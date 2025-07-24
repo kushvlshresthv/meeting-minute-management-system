@@ -2,6 +2,7 @@ package com.sep.mmms_backend.controller;
 
 
 import com.sep.mmms_backend.dto.CommitteeDetailsDto;
+import com.sep.mmms_backend.dto.NewMembershipRequest;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Member;
@@ -81,7 +82,7 @@ public class CommitteeController {
     }
 
     @PostMapping("/addMembersToCommittee")
-    public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody Set<CommitteeMembership> newMemberships, Authentication authentication) {
+    public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody Set<NewMembershipRequest> newMemberships, Authentication authentication) {
         Set<Member> newlyAddedMembers = committeeService.addMembershipsToCommittee(committeeId, newMemberships, authentication.getName());
 
         return ResponseEntity.ok(new Response(ResponseMessages.COMMITTEE_MEMBER_ADDITION_SUCCESS, newlyAddedMembers));

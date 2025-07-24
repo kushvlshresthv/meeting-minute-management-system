@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Persistable;
 
 /**
  * NOTE: CommitteeMembership is uniquely identified by a combination of committee_id and member_id, hence this entity will have a composite primary key.
@@ -18,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="committee_memberships")
-public final class CommitteeMembership {
+public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
     /**
      * EmbeddedId has been used in order to have a composite primary key for this entity
      */
@@ -42,4 +43,23 @@ public final class CommitteeMembership {
     @Column(name="role", nullable=false)
     @NotBlank(message = "Role must be defined when adding the users to a committee")
     private String role;
+
+    @Transient
+    private boolean isNew = true;
+
+    @Override
+    public CommitteeMembershipId getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.isNew;
+    }
+
+    @PrePersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
 }

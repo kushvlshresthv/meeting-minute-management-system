@@ -20,7 +20,6 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Entity(name="members")
 @EntityListeners(AuditingEntityListener.class)
 @Builder
@@ -28,7 +27,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
-    private int id;
+    private Integer id;
 
     @Column(name="first_name", nullable=false)
     @NotBlank(message="member's first name can't be blank")

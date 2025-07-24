@@ -32,7 +32,7 @@ public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="meeting_id")
-    private int id;
+    private Integer id;
 
     @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_title")
@@ -105,9 +105,43 @@ public class Meeting {
     @NotNull(message = "meeting coordinator should be specified")
     private Member coordinator;
 
-    public boolean equals(Meeting meeting) {
-        if(this == meeting) return true;
-        if(meeting == null) return false;
-        return id == meeting.getId();
-    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        if(this == obj) return true;
+//        if(obj == null) return false;
+//        if(!(obj instanceof Meeting meeting)) return false;
+//        if(this.getId() <=0 ) return false;
+//        return id == meeting.getId();
+//    }
+
+    //TODO: implement the equals() and hashcode() properly.
+    /*
+        The issue with the above implementation is that for an unsaved entity 'm'
+
+        m.equals(m) returns false because m.id is 0
+
+        now after saving the entity
+
+        m.equals(m) returns true because m.id is > 0 and are equal
+
+-------------------------------------------------------------------------------------------
+
+        Furthermore, how should hashcode be implemented?
+
+        The equality is checked by 'id'. So if two objets m1 and m2 are deemed equal by equal(), then they must have same hashcode.
+
+        Therefore, hashcode must be generated based on id.
+
+        Howevever, the id changes when an unsaved entity is saved.
+
+        Suppose i have an unsaved object 'm'. The id of this object is '0' and has a hashcode say 0000.
+
+        After save operation, the id of this object changes to some other value say '2', and the hashcode for this object now becomes 2222. Here the hashcode has changed due to persist operation.
+
+        If an object's hashcode changes while it's in HashSet/HashMap or any other data structures that uses Hash, it breaks
+
+----------------------------------------------------------------------------------------------
+
+        Another subtle bug, hibernate often uses proxy objects for lazy loading. A simple 'instanceof' check can sometimes fail when comparing an entity with its proxy.
+     */
 }

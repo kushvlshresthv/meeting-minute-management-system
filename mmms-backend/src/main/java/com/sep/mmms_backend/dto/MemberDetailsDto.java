@@ -30,13 +30,13 @@ import java.util.List;
       "meetings": [
         {
           "id": 501,
-          "meetingName": "Q1 Review",
+          "meetingTitle": "Q1 Review",
           "meetingDescription": "Review of first-quarter proposals.",
           "attended": true
         },
         {
           "id": 502,
-          "meetingName": "Q2 Review",
+          "meetingTitle": "Q2 Review",
           "meetingDescription": "Review of second-quarter proposals.",
           "attended": false
         }
@@ -52,7 +52,7 @@ import java.util.List;
       "meetings": [
         {
           "id": 601,
-          "meetingName": "Annual Strategy Session",
+          "meetingTitle": "Annual Strategy Session",
           "meetingDescription": "Planning for the next fiscal year.",
           "attended": true
         }
@@ -75,7 +75,7 @@ public class MemberDetailsDto {
 
     public record CommitteeInfo(int id, String committeeName, String committeeDescription, String role) {}
 
-    public record MeetingInfo(int id, String meetingName, String meetingDescription, boolean hasAttendedMeeting) {}
+    public record MeetingInfo(int id, String meetingTitle, String meetingDescription, boolean hasAttendedMeeting) {}
 
     public record CommitteeWithMeetings(CommitteeInfo committeeInfo, List<MeetingInfo> meetingInfos) {}
 

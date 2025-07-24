@@ -15,6 +15,7 @@ import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.service.MemberService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
+import com.sep.mmms_backend.testing_tools.TestDataHelper;
 import com.sep.mmms_backend.user_details_service.DatabaseUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,56 +70,79 @@ public class MemberControllerTests {
 
         @BeforeEach
         void setUp() {
-            // Initialize member
-            member = new Member();
-            member.setId(memberId);
-            member.setFirstName("John");
-            member.setLastName("Doe");
-            member.setInstitution("Test Institution");
-            member.setPost("Professor");
-            member.setQualification("PhD");
-            member.setEmail("john.doe@example.com");
-            member.setCreatedBy(username);
-            member.setCreatedDate(LocalDate.now());
-            member.setModifiedBy(username);
-            member.setModifiedDate(LocalDate.now());
+//            // Initialize member
+//            member = new Member();
+//            member.setId(memberId);
+//            member.setFirstName("John");
+//            member.setLastName("Doe");
+//            member.setInstitution("Test Institution");
+//            member.setPost("Professor");
+//            member.setQualification("PhD");
+//            member.setEmail("john.doe@example.com");
+//            member.setCreatedBy(username);
+//            member.setCreatedDate(LocalDate.now());
+//            member.setModifiedBy(username);
+//            member.setModifiedDate(LocalDate.now());
+//
+//            // Initialize committee
+//            Committee committee = new Committee();
+//            committee.setId(1);
+//            committee.setName("Test Committee");
+//            committee.setDescription("Test Committee Description");
+//
+//            // Initialize meeting
+//            Meeting meeting = new Meeting();
+//            meeting.setId(1);
+//            meeting.setTitle("Test Meeting");
+//            meeting.setDescription("Test Meeting Description");
+//            meeting.setHeldDate(LocalDate.now());
+//            meeting.setHeldTime(LocalTime.now());
+//            meeting.setHeldPlace("Test Place");
+//            meeting.setCommittee(committee);
+//
+//            // Initialize membership
+//            CommitteeMembership membership = new CommitteeMembership();
+//            membership.setCommittee(committee);
+//            membership.setMember(member);
+//            membership.setRole("Member");
+//
+//            // Set up relationships
+//            Set<CommitteeMembership> memberships = new HashSet<>();
+//            memberships.add(membership);
+//            member.setMemberships(memberships);
+//
+//            Set<Meeting> meetings = new HashSet<>();
+//            meetings.add(meeting);
+//            committee.setMeetings(meetings);
+//
+//            Set<Meeting> attendedMeetings = new HashSet<>();
+//            attendedMeetings.add(meeting);
+//            member.setAttendedMeetings(attendedMeetings);
+//
+//            //Create MemberDetailsDto
+//            MemberDetailsDto.CommitteeInfo committeeInfo = new MemberDetailsDto.CommitteeInfo(
+//                    committee.getId(), committee.getName(), committee.getDescription(), "Member");
+//
+//            MemberDetailsDto.MeetingInfo meetingInfo = new MemberDetailsDto.MeetingInfo(
+//                    meeting.getId(), meeting.getTitle(), meeting.getDescription(), true);
+//
+//            List<MemberDetailsDto.MeetingInfo> meetingInfos = new ArrayList<>();
+//            meetingInfos.add(meetingInfo);
+//
+//            MemberDetailsDto.CommitteeWithMeetings committeeWithMeetings =
+//                    new MemberDetailsDto.CommitteeWithMeetings(committeeInfo, meetingInfos);
+//
+//            List<MemberDetailsDto.CommitteeWithMeetings> committeeWithMeetingsList = new ArrayList<>();
+//            committeeWithMeetingsList.add(committeeWithMeetings);
+//
+//            memberDetailsDto = new MemberDetailsDto(member, committeeWithMeetingsList);
 
-            // Initialize committee
-            Committee committee = new Committee();
-            committee.setId(1);
-            committee.setName("Test Committee");
-            committee.setDescription("Test Committee Description");
+            TestDataHelper helper  = new TestDataHelper();
+            Meeting meeting = helper.getMeeting();
+            Committee committee = helper.getCommittee();
+            member = helper.getMember();
 
-            // Initialize meeting
-            Meeting meeting = new Meeting();
-            meeting.setId(1);
-            meeting.setTitle("Test Meeting");
-            meeting.setDescription("Test Meeting Description");
-            meeting.setHeldDate(LocalDate.now());
-            meeting.setHeldTime(LocalTime.now());
-            meeting.setHeldPlace("Test Place");
-            meeting.setCommittee(committee);
 
-            // Initialize membership
-            CommitteeMembership membership = new CommitteeMembership();
-            membership.setCommittee(committee);
-            membership.setMember(member);
-            membership.setRole("Member");
-
-            // Set up relationships
-            Set<CommitteeMembership> memberships = new HashSet<>();
-            memberships.add(membership);
-            member.setMemberships(memberships);
-
-            Set<Meeting> meetings = new HashSet<>();
-            meetings.add(meeting);
-            committee.setMeetings(meetings);
-
-            Set<Meeting> attendedMeetings = new HashSet<>();
-            attendedMeetings.add(meeting);
-            member.setAttendedMeetings(attendedMeetings);
-
-            //Create MemberDetailsDto
             MemberDetailsDto.CommitteeInfo committeeInfo = new MemberDetailsDto.CommitteeInfo(
                     committee.getId(), committee.getName(), committee.getDescription(), "Member");
 
@@ -128,13 +152,14 @@ public class MemberControllerTests {
             List<MemberDetailsDto.MeetingInfo> meetingInfos = new ArrayList<>();
             meetingInfos.add(meetingInfo);
 
-            MemberDetailsDto.CommitteeWithMeetings committeeWithMeetings = 
+            MemberDetailsDto.CommitteeWithMeetings committeeWithMeetings =
                     new MemberDetailsDto.CommitteeWithMeetings(committeeInfo, meetingInfos);
 
             List<MemberDetailsDto.CommitteeWithMeetings> committeeWithMeetingsList = new ArrayList<>();
             committeeWithMeetingsList.add(committeeWithMeetings);
 
             memberDetailsDto = new MemberDetailsDto(member, committeeWithMeetingsList);
+
         }
 
         private Response performRequestAndGetResponse(String url, HttpStatus expectedStatus) throws Exception {
@@ -206,11 +231,11 @@ public class MemberControllerTests {
 
             // Verify member details
             assertThat(result.getMemberId()).isEqualTo(memberId);
-            assertThat(result.getFirstName()).isEqualTo("John");
-            assertThat(result.getLastName()).isEqualTo("Doe");
-            assertThat(result.getInstitution()).isEqualTo("Test Institution");
-            assertThat(result.getPost()).isEqualTo("Professor");
-            assertThat(result.getQualification()).isEqualTo("PhD");
+            assertThat(result.getFirstName()).isEqualTo(member.getFirstName());
+            assertThat(result.getLastName()).isEqualTo(member.getLastName());
+            assertThat(result.getInstitution()).isEqualTo(member.getInstitution());
+            assertThat(result.getPost()).isEqualTo(member.getPost());
+            assertThat(result.getQualification()).isEqualTo(member.getQualification());
 
             // Verify committee and meeting info
             assertThat(result.getCommitteeWithMeetings()).isNotEmpty();

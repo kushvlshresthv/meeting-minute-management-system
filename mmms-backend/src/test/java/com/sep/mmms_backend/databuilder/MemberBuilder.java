@@ -22,7 +22,7 @@ public class MemberBuilder {
     private String institution = "instituation";
     private String post = "post";
     private String qualification = "qualification";
-    private String email = "email";
+    private String email = "email@gmail.com";
     private Set<CommitteeMembership> memberships;
     private Set<Meeting> attendedMeetings;
 

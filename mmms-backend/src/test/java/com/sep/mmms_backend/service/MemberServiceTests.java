@@ -3,13 +3,13 @@ package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.entity.Committee;
-import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.repository.MemberRepository;
+import com.sep.mmms_backend.testing_tools.TestDataHelper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,16 +19,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 //@SpringBootTest(classes={LocalValidatorFactoryBean.class, MemberService.class, AppConfig.class})
@@ -54,57 +49,18 @@ public class MemberServiceTests {
         private final int memberId = 1;
         private final String username = "testUser";
         private Member member;
+        //NOTE: committee that is associated with the above member
+        private Committee committee;
+
+        //NOTE: meeting attended by the above member
+        private Meeting meeting;
 
         @BeforeEach
         void setUp() {
-            // Initialize member
-            member = new Member();
-            member.setId(memberId);
-            member.setFirstName("John");
-            member.setLastName("Doe");
-            member.setInstitution("Test Institution");
-            member.setPost("Professor");
-            member.setQualification("PhD");
-            member.setEmail("john.doe@example.com");
-            member.setCreatedBy(username);
-            member.setCreatedDate(LocalDate.now());
-            member.setModifiedBy(username);
-            member.setModifiedDate(LocalDate.now());
-
-            // Initialize committee
-            Committee committee = new Committee();
-            committee.setId(1);
-            committee.setName("Test Committee");
-            committee.setDescription("Test Committee Description");
-
-            // Initialize meeting
-            Meeting meeting = new Meeting();
-            meeting.setId(1);
-            meeting.setTitle("Test Meeting");
-            meeting.setDescription("Test Meeting Description");
-            meeting.setHeldDate(LocalDate.now());
-            meeting.setHeldTime(LocalTime.now());
-            meeting.setHeldPlace("Test Place");
-            meeting.setCommittee(committee);
-
-            // Initialize membership
-            CommitteeMembership membership = new CommitteeMembership();
-            membership.setCommittee(committee);
-            membership.setMember(member);
-            membership.setRole("Member");
-
-            // Set up relationships
-            Set<CommitteeMembership> memberships = new HashSet<>();
-            memberships.add(membership);
-            member.setMemberships(memberships);
-
-            Set<Meeting> meetings = new HashSet<>();
-            meetings.add(meeting);
-            committee.setMeetings(meetings);
-
-            Set<Meeting> attendedMeetings = new HashSet<>();
-            attendedMeetings.add(meeting);
-            member.setAttendedMeetings(attendedMeetings);
+            TestDataHelper helper = new TestDataHelper();
+            member = helper.getMember();
+            committee = helper.getCommittee();
+            meeting = helper.getMeeting();
         }
 
         @Test
@@ -154,8 +110,8 @@ public class MemberServiceTests {
             // Assert
             assertThat(result).isNotNull();
             assertThat(memberId).isEqualTo(result.getMemberId());
-            assertThat("John").isEqualTo(result.getFirstName());
-            assertThat("Doe").isEqualTo(result.getLastName());
+            assertThat(member.getFirstName()).isEqualTo(result.getFirstName());
+            assertThat(member.getLastName()).isEqualTo(result.getLastName());
             assertThat(result.getCommitteeWithMeetings().isEmpty()).isFalse();
 
             // Verify meeting attendance is false since attendedMeetings is null
@@ -178,8 +134,8 @@ public class MemberServiceTests {
             // Assert
             assertThat(result).isNotNull();
             assertThat(memberId).isEqualTo(result.getMemberId());
-            assertThat("John").isEqualTo(result.getFirstName());
-            assertThat("Doe").isEqualTo(result.getLastName());
+            assertThat(member.getFirstName()).isEqualTo(result.getFirstName());
+            assertThat(member.getLastName()).isEqualTo(result.getLastName());
             assertThat(result.getCommitteeWithMeetings().isEmpty()).isTrue();
 
             verify(memberRepository, times(1)).findMemberById(memberId);
@@ -197,26 +153,26 @@ public class MemberServiceTests {
             // Assert
             assertThat(result).isNotNull();
             assertThat(memberId).isEqualTo(result.getMemberId());
-            assertThat("John").isEqualTo(result.getFirstName());
-            assertThat("Doe").isEqualTo(result.getLastName());
-            assertThat("Test Institution").isEqualTo(result.getInstitution());
-            assertThat("Professor").isEqualTo(result.getPost());
-            assertThat("PhD").isEqualTo(result.getQualification());
+            assertThat(member.getFirstName()).isEqualTo(result.getFirstName());
+            assertThat(member.getLastName()).isEqualTo(result.getLastName());
+            assertThat(member.getInstitution()).isEqualTo(result.getInstitution());
+            assertThat(member.getPost()).isEqualTo(result.getPost());
+            assertThat(member.getQualification()).isEqualTo(result.getQualification());
 
             // Check committee info
             assertThat(result.getCommitteeWithMeetings().isEmpty()).isFalse();
             MemberDetailsDto.CommitteeInfo committeeInfo = result.getCommitteeWithMeetings().getFirst().committeeInfo();
             assertThat(committeeInfo.id()).isEqualTo(1);
-            assertThat("Test Committee").isEqualTo(committeeInfo.committeeName());
-            assertThat("Test Committee Description").isEqualTo(committeeInfo.committeeDescription());
+            assertThat(committee.getName()).isEqualTo(committeeInfo.committeeName());
+            assertThat(committee.getDescription()).isEqualTo(committeeInfo.committeeDescription());
             assertThat("Member").isEqualTo(committeeInfo.role());
 
             // Check meeting info
             assertThat(result.getCommitteeWithMeetings().getFirst().meetingInfos().isEmpty()).isFalse();
             MemberDetailsDto.MeetingInfo meetingInfo = result.getCommitteeWithMeetings().getFirst().meetingInfos().getFirst();
             assertThat(meetingInfo.id()).isEqualTo(1);
-            assertThat("Test Meeting").isEqualTo(meetingInfo.meetingName());
-            assertThat("Test Meeting Description").isEqualTo(meetingInfo.meetingDescription());
+            assertThat(meeting.getTitle()).isEqualTo(meetingInfo.meetingTitle());
+            assertThat(meeting.getDescription()).isEqualTo(meetingInfo.meetingDescription());
             assertThat(meetingInfo.hasAttendedMeeting()).isTrue();
 
             verify(memberRepository, times(1)).findMemberById(memberId);
