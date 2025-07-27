@@ -12,7 +12,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,6 +27,13 @@ public class Committee {
     @Column(name="committee_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    /**
+     * A universally unique identifier (UUID) that serves as the business key.
+     * This is the field used for equals() and hashCode().
+     */
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private String uuid;
 
     @Column(name="committee_name", nullable = false)
     @NotBlank
@@ -58,4 +67,27 @@ public class Committee {
     @OneToMany(mappedBy = "committee", cascade = CascadeType.PERSIST)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<CommitteeMembership> memberships = new HashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Committee that = (Committee) o;
+        return Objects.equals(uuid, that.uuid);
+    }
 }

@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -19,6 +22,9 @@ public class Decision {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer decisionId;
 
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private String uuid;
+
     @ManyToOne
     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id", nullable=false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -27,4 +33,27 @@ public class Decision {
     @Column(name =  "decision")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String decision;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Decision that = (Decision) o;
+        return Objects.equals(uuid, that.uuid);
+    }
 }

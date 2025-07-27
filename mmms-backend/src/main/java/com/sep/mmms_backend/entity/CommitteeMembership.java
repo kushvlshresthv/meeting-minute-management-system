@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Persistable;
 
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  * NOTE: CommitteeMembership is uniquely identified by a combination of committee_id and member_id, hence this entity will have a composite primary key.
  */
@@ -40,6 +43,10 @@ public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
     @JoinColumn(name="member_id", referencedColumnName="member_id")
     private Member member;
 
+
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private String uuid;
+
     @Column(name="role", nullable=false)
     @NotBlank(message = "Role must be defined when adding the users to a committee")
     private String role;
@@ -57,9 +64,34 @@ public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
         return this.isNew;
     }
 
-    @PrePersist
     @PostLoad
     void markNotNew() {
         this.isNew = false;
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+    }
+
+    @PrePersist
+    public void initUUID() {
+        markNotNew();
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CommitteeMembership that = (CommitteeMembership) o;
+        return Objects.equals(uuid, that.uuid);
     }
 }

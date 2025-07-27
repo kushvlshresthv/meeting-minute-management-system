@@ -15,7 +15,6 @@ import com.sep.mmms_backend.repository.CommitteeMembershipRepository;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

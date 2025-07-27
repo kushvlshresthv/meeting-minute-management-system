@@ -14,7 +14,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -28,6 +30,10 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
     private Integer id;
+
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private String uuid;
+
 
     @Column(name="first_name", nullable=false)
     @NotBlank(message="member's first name can't be blank")
@@ -76,4 +82,27 @@ public class Member {
     @JsonIgnore
     @ManyToMany(mappedBy = "attendees", fetch = FetchType.LAZY)
     Set<Meeting> attendedMeetings = new HashSet<>();
+
+
+    @PrePersist
+    public void initUUID() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Member that = (Member) o;
+        return Objects.equals(uuid, that.uuid);
+    }
 }

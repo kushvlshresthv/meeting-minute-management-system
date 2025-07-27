@@ -17,9 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity(name="meetings")
 @Getter
@@ -33,6 +31,9 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="meeting_id")
     private Integer id;
+
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private String uuid;
 
     @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_title")
@@ -104,6 +105,28 @@ public class Meeting {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "meeting coordinator should be specified")
     private Member coordinator;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Meeting that = (Meeting) o;
+        return Objects.equals(uuid, that.uuid);
+    }
 
 //    @Override
 //    public boolean equals(Object obj) {
