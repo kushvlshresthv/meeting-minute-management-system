@@ -39,7 +39,7 @@
             <tbody>
             <tr th:each="membership, iterStat : ${membershipsOfAttendees}">
                 <td th:text="${iterStat.index + 1}">1</td>
-                <td th:text="${membership.member.firstName + ' ' + membership.member.lastName}"></td>
+                <td th:text="${membership.member.post + ' ' + membership.member.firstNameNepali + ' ' + membership.member.lastNameNepali}"></td>
                 <td th:text="${membership.role}">संयोजक</td>
                 <td></td>
             </tr>
@@ -55,9 +55,11 @@
     </div>
 
 
-    <p>
-    बैठक समापन:
-    </p>
+    <div class="conclusion">
+        <p class="heading">
+            बैठक समापन:
+        </p>
+    </div>
 </div>
 
 </body>

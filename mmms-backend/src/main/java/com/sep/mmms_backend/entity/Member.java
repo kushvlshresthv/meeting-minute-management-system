@@ -43,13 +43,20 @@ public class Member {
     @NotBlank(message="member's last name can't be blank")
     private String lastName;
 
+    //TODO: consider making the following two fields non-nullable
+    @Column(name="first_name_nepali")
+    private String firstNameNepali;
+
+    @Column(name="last_name_nepali")
+    private String lastNameNepali;
+
     private String institution;  //example: Pulchowk Campus, IOE
 
     @NotBlank(message="member's post can't be blank")
     private String post; //example: professor
 
     @NotBlank(message="member's qualification can't be blank")
-    private String qualification; //example: Dr
+    private String qualification; //example: Dr, Prof, Mr
 
     @Column
     @Email

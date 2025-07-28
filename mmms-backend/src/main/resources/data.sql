@@ -2,29 +2,30 @@ INSERT INTO app_users (username, password, email, firstname, lastname)
 VALUES ('username', '{noop}password', 'username@gmail.com', 'admin', 'admin'),
        ('not_username', '{noop}password', 'username@gmail.com', 'admin', 'admin');
 
-
 INSERT INTO members (
     first_name, last_name, institution, post, qualification, email,
-    created_by, created_date, modified_by, modified_date, uuid
+    created_by, created_date, modified_by, modified_date, uuid, first_name_nepali, last_name_nepali
 )
 VALUES
-    ('Hari',   'Bahadur',    'Nepal Engineering College',              'Assistant Professor',     'MSc IT',                  'hari.bahadur@example.com',   'username', '2025-07-04', 'username', '2025-07-04', UUID()),
-    ('Gita',   'Oli',        'Ministry of Education',                  'Officer',                 'MPA',                     'gita.oli@example.com',        'username', '2025-07-05', 'username', '2025-07-05', UUID()),
-    ('Bikash', 'Lama',       'Nist College',                           'HOD',                     'PhD Computer Science',    'bikash.lama@example.com',     'username', '2025-07-06', 'username', '2025-07-06', UUID()),
-    ('Sunita', 'Maharjan',   'St. Xaviers College',                    'Lecturer',                'MSc Environmental Science','sunita.maharjan@example.com','username', '2025-07-07', 'username', '2025-07-07', UUID()),
-    ('Kamal',  'Pandey',     'Pulchowk Campus',                        'Associate Professor',     'PhD Civil Engineering',   'kamal.pandey@example.com',    'username', '2025-07-12', 'username', '2025-07-12', UUID()),
-    ('Deepa',  'Gurung',     'Patan College for Professional Studies', 'HR Manager',              'MBS',                     'deepa.gurung@example.com',    'username', '2025-07-13', 'username', '2025-07-13', UUID()),
-    ('Nabin',  'Tamang',     'Softwarica College',                     'IT Head',                 'MSc Computer Science',    'nabin.tamang@example.com',    'username', '2025-07-14', 'username', '2025-07-14', UUID()),
-    ('Anita',  'Shrestha',   'Tribhuvan University',                  'Assistant Lecturer',       'MA Sociology',           'anita.shrestha@example.com',  'username', '2025-07-15', 'username', '2025-07-15', UUID()),
-    ('Ramesh', 'Karki',      'Nepal Telecom',                         'IT Officer',               'BSc CSIT',               'ramesh.karki@example.com',    'username', '2025-07-16', 'username', '2025-07-16', UUID()),
-    ('Sita',   'Basnet',     'Kathmandu University',                  'Research Fellow',          'PhD Biotechnology',      'sita.basnet@example.com',     'username', '2025-07-17', 'username', '2025-07-17', UUID()),
-    ('Prakash','Rana',       'Nepal Police Academy',                  'Training Coordinator',     'M.Ed',                   'prakash.rana@example.com',    'username', '2025-07-18', 'username', '2025-07-18', UUID()),
-    ('Meena',  'Thapa',      'Nepal Rastra Bank',                     'Economist',                'MA Economics',           'meena.thapa@example.com',     'username', '2025-07-19', 'username', '2025-07-19', UUID()),
-    ('Dipesh', 'KC',         'Kathford College',                      'HOD',                      'MSc IT',                 'dipesh.kc@example.com',       'username', '2025-07-20', 'username', '2025-07-20', UUID()),
-    ('Sarita', 'Dhakal',     'Pokhara University',                    'Professor',                'PhD Management',         'sarita.dhakal@example.com',   'username', '2025-07-21', 'username', '2025-07-21', UUID()),
-    ('Bijay',  'Gurung',     'Nepal Electricity Authority',           'Electrical Engineer',      'BE Electrical',          'bijay.gurung@example.com',    'username', '2025-07-22', 'username', '2025-07-22', UUID()),
-    ('Rojina', 'Maharjan',   'Prime College',                         'Lecturer',                 'MSc CSIT',               'rojina.maharjan@example.com', 'username', '2025-07-23', 'username', '2025-07-23', UUID()),
-    ('Suman',  'Bista',      'Everest Engineering College',           'Dean',                     'PhD Information Systems','suman.bista@example.com',    'username', '2025-07-24', 'username', '2025-07-24', UUID());
+    ('Hari',   'Bahadur',    'Nepal Engineering College',              'Professor',     'MSc IT',                  'hari.bahadur@example.com',   'username', '2025-07-04', 'username', '2025-07-04', UUID(), 'हरि', 'बहादुर'),
+    ('Gita',   'Oli',        'Ministry of Education',                  'Doctor',                 'MPA',                     'gita.oli@example.com',        'username', '2025-07-05', 'username', '2025-07-05', UUID(), 'गिता', 'ओली'),
+    ('Bikash', 'Lama',       'Nist College',                           'Doctor',                     'PhD Computer Science',    'bikash.lama@example.com',     'username', '2025-07-06', 'username', '2025-07-06', UUID(), 'विकाश', 'लामा'),
+    ('Sunita', 'Maharjan',   'St. Xaviers College',                    'Professor',                'MSc Environmental Science','sunita.maharjan@example.com','username', '2025-07-07', 'username', '2025-07-07', UUID(), 'सुनिता', 'महार्जन'),
+    ('Kamal',  'Pandey',     'Pulchowk Campus',                        'Doctor',     'PhD Civil Engineering',   'kamal.pandey@example.com',    'username', '2025-07-12', 'username', '2025-07-12', UUID(), 'कमल', 'पाण्डे'),
+    ('Deepa',  'Gurung',     'Patan College for Professional Studies', 'Professor',              'MBS',                     'deepa.gurung@example.com',    'username', '2025-07-13', 'username', '2025-07-13', UUID(), 'दीपा', 'गुरुङ'),
+    ('Nabin',  'Tamang',     'Softwarica College',                     'Professor',                 'MSc Computer Science',    'nabin.tamang@example.com',    'username', '2025-07-14', 'username', '2025-07-14', UUID(), 'नविन', 'तामाङ'),
+    ('Anita',  'Shrestha',   'Tribhuvan University',                  'Doctor',       'MA Sociology',           'anita.shrestha@example.com',  'username', '2025-07-15', 'username', '2025-07-15', UUID(), 'अनिता', 'श्रेष्ठ'),
+    ('Ramesh', 'Karki',      'Nepal Telecom',                         'Doctor',               'BSc CSIT',               'ramesh.karki@example.com',    'username', '2025-07-16', 'username', '2025-07-16', UUID(), 'रामेश', 'कार्की'),
+    ('Sita',   'Basnet',     'Kathmandu University',                  'Doctor',          'PhD Biotechnology',      'sita.basnet@example.com',     'username', '2025-07-17', 'username', '2025-07-17', UUID(), 'सीता', 'बास्नेत'),
+    ('Prakash','Rana',       'Nepal Police Academy',                  'Doctor',     'M.Ed',                   'prakash.rana@example.com',    'username', '2025-07-18', 'username', '2025-07-18', UUID(), 'प्रकाश', 'राना'),
+    ('Meena',  'Thapa',      'Nepal Rastra Bank',                     'Doctor',                'MA Economics',           'meena.thapa@example.com',     'username', '2025-07-19', 'username', '2025-07-19', UUID(), 'मीना', 'थापा'),
+    ('Dipesh', 'KC',         'Kathford College',                      'Professor',                      'MSc IT',                 'dipesh.kc@example.com',       'username', '2025-07-20', 'username', '2025-07-20', UUID(), 'दिपेश', 'के.सी.'),
+    ('Sarita', 'Dhakal',     'Pokhara University',                    'Professor',                'PhD Management',         'sarita.dhakal@example.com',   'username', '2025-07-21', 'username', '2025-07-21', UUID(), 'सरिता', 'ढकाल'),
+    ('Bijay',  'Gurung',     'Nepal Electricity Authority',           'Professor',      'BE Electrical',          'bijay.gurung@example.com',    'username', '2025-07-22', 'username', '2025-07-22', UUID(), 'विजय', 'गुरुङ'),
+    ('Rojina', 'Maharjan',   'Prime College',                         'Professor',                 'MSc CSIT',               'rojina.maharjan@example.com', 'username', '2025-07-23', 'username', '2025-07-23', UUID(), 'रोजिना', 'महार्जन'),
+    ('Suman',  'Bista',      'Everest Engineering College',           'Doctor',                     'PhD Information Systems','suman.bista@example.com',    'username', '2025-07-24', 'username', '2025-07-24', UUID(), 'सुमन', 'बिष्ट');
+
+
 
 -- Insert Committees
 INSERT INTO committees (
@@ -72,62 +73,61 @@ VALUES
     (1, 'सेमिनारको शीर्षक "प्रविधिमा नवीनता" रहनेछ।', UUID()),
 
     -- decisions for meeting 2
-    (2, 'The proposal to upgrade campus-wide Wi-Fi to Wi-Fi 6 is approved.', UUID()),
-    (2, 'Quotations from three different vendors are to be collected within two weeks.', UUID()),
-    (2, 'The library computer systems will be upgraded with new SSDs and more RAM.', UUID()),
-    (2, 'A new firewall will be implemented to enhance network security.', UUID()),
-
+    (2, 'क्याम्पसभरि Wi-Fi 6 मा स्तरोन्नति गर्ने प्रस्ताव स्वीकृत गरिएको छ।', UUID()),
+    (2, 'दुई हप्ताभित्र तीन फरक विक्रेताबाट दरभाउपत्रहरू सङ्कलन गरिनेछ।', UUID()),
+    (2, 'पुस्तकालयका कम्प्युटरहरू नयाँ SSD र थप RAM सहित स्तरोन्नति गरिनेछ।', UUID()),
+    (2, 'सञ्जाल सुरक्षालाई सुदृढ गर्न नयाँ फायरवाल कार्यान्वयन गरिनेछ।', UUID()),
 
     -- decisions for meeting 3
-    (3, 'Keynote speakers to be finalized by next week.', UUID()),
-    (3, 'The event budget is finalized at NPR 300,000.', UUID()),
-    (3, 'A student volunteer committee will be formed to manage logistics.', UUID()),
+    (3, 'मुख्य वक्ताहरूको छनोट अर्को सातासम्ममा अन्तिम गरिनेछ।', UUID()),
+    (3, 'कार्यक्रमको बजेट रू. ३,००,००० मा अन्तिम गरिएको छ।', UUID()),
+    (3, 'लजिस्टिक व्यवस्थापनका लागि विद्यार्थी स्वयंसेवक समिति गठन गरिनेछ।', UUID()),
 
     -- decisions for meeting 4
-    (4, 'Grant proposal from the Physics department for quantum computing research is approved.', UUID()),
-    (4, 'A new policy for intellectual property rights for student projects will be drafted.', UUID()),
-    (4, 'The budget for a new 3D printing lab is provisionally accepted; final quotes required.', UUID()),
-    (4, 'Collaboration with Kathmandu University on AI research is to be initiated.', UUID()),
+    (4, 'क्वान्टम कम्प्युटिङ अनुसन्धानका लागि भौतिकशास्त्र विभागको अनुदान प्रस्ताव स्वीकृत गरिएको छ।', UUID()),
+    (4, 'विद्यार्थी परियोजनाका लागि बौद्धिक सम्पत्ति अधिकारसम्बन्धी नयाँ नीति प्रारूप तयार गरिनेछ।', UUID()),
+    (4, 'नयाँ 3D प्रिन्टिङ प्रयोगशालाका लागि बजेट सैद्धान्तिक रूपमा स्वीकृत गरिएको छ; अन्तिम दरभाउ आवश्यक।', UUID()),
+    (4, 'कृत्रिम बुद्धिमत्ता अनुसन्धानमा काठमाडौँ विश्वविद्यालयसँग सहकार्य सुरु गरिनेछ।', UUID()),
 
     -- decisions for meeting 5
-    (5, 'Case #001: Student involved in plagiarism will receive a formal warning and must resubmit the assignment.', UUID()),
-    (5, 'The code of conduct for examinations will be updated and circulated to all students.', UUID()),
-    (5, 'A workshop on academic integrity will be made mandatory for all first-year students.', UUID()),
-    (5, 'Case #002 regarding hostel rule violation is postponed pending more evidence.', UUID()),
+    (5, 'मुद्दा #001: नक्कली कार्यमा संलग्न विद्यार्थीलाई औपचारिक चेतावनी दिइनेछ र उसले कार्य पुनः पेश गर्नुपर्नेछ।', UUID()),
+    (5, 'परीक्षासम्बन्धी आचारसंहिता अद्यावधिक गरी सबै विद्यार्थीलाई पठाइनेछ।', UUID()),
+    (5, 'शैक्षिक निष्ठामाथि कार्यशाला सबै पहिलो वर्षका विद्यार्थीका लागि अनिवार्य बनाइनेछ।', UUID()),
+    (5, 'मुद्दा #002 छात्रावास नियम उल्लङ्घनसम्बन्धी निर्णय थप प्रमाण नआएसम्मका लागि स्थगित गरिएको छ।', UUID()),
 
     -- decisions for meeting 6
-    (6, 'The contract with the current canteen vendor will be reviewed based on negative feedback.', UUID()),
-    (6, 'A new water purification system will be installed in Hostel Block B.', UUID()),
-    (6, 'Mental health counseling services will be extended to weekends during exam periods.', UUID()),
-    (6, 'A survey will be conducted to assess the demand for a new sports facility.', UUID());
+    (6, 'हालको क्यान्टिन सेवाप्रदायकसँगको सम्झौता नकारात्मक प्रतिक्रियाका आधारमा पुनरावलोकन गरिनेछ।', UUID()),
+    (6, 'छात्रावास ब्लक B मा नयाँ पानी शुद्धीकरण प्रणाली जडान गरिनेछ।', UUID()),
+    (6, 'परीक्षा अवधिमा मानसिक स्वास्थ्य परामर्श सेवा सप्ताहन्तमा पनि विस्तार गरिनेछ।', UUID()),
+    (6, 'नयाँ खेलकुद सुविधाको माग मूल्याङ्कन गर्न सर्वेक्षण गरिनेछ।', UUID());
 
 -- Insert Committee Memberships
 INSERT INTO committee_memberships (committee_id, member_id, role, uuid)
 VALUES
     -- Committee 1 (8 members)
-    (1, 1, 'Chairperson', UUID()),
+    (1, 1, 'Member-Secretary', UUID()),
     (1, 2, 'Member', UUID()),
-    (1, 3, 'Treasurer', UUID()),
-    (1, 4, 'Member', UUID()),
-    (1, 5, 'Member', UUID()),
+    (1, 3, 'Member', UUID()),
+    (1, 4, 'Invitee', UUID()),
+    (1, 5, 'Member-Secretary', UUID()),
     (1, 6, 'Member', UUID()),
     (1, 7, 'Member', UUID()),
-    (1, 8, 'Secretary', UUID()),
+    (1, 8, 'Invitee', UUID()),
 
     -- Committee 2 (5 members)
-    (2, 9,  'Chairperson', UUID()),
+    (2, 9,  'Member', UUID()),
     (2, 10, 'Member', UUID()),
-    (2, 11, 'Coordinator', UUID()),
+    (2, 11, 'Member-Secretary', UUID()),
     (2, 12, 'Member', UUID()),
     (2, 13, 'Member', UUID()),
 
     -- Committee 3 (3 members)
-    (3, 14, 'Chairperson', UUID()),
+    (3, 14, 'Invitee', UUID()),
     (3, 15, 'Member', UUID()),
     (3, 16, 'Member', UUID()),
 
     -- Committee 4 (1 member)
-    (4, 17, 'Chairperson', UUID());
+    (4, 17, 'Invitee', UUID());
 
 
 INSERT INTO meeting_attendees (member_id, meeting_id)

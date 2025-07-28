@@ -42,14 +42,14 @@ public class MeetingMinutePreparationService {
      *
      * @param committeeId The ID of the committee.
      * @param meetingId The ID of the meeting.
-     * @param username The username of the authenticated user.
+     * @param username The username of the authenticated  user .
      * @return A map containing all data attributes for the Thymeleaf model.
      * @throws CommitteeDoesNotExistException If the committee is not found in the database.
      * @throws MeetingDoesNotExistException If the mmeting is not found in the database.
      * @throws IllegalOperationException If the user does not have access to the committee/meeting.
      *
      */
-    public Map<String, Object> prepareMeetingMinuteData(int committeeId, int meetingId, String username) {
+    public Map<String, Object> prepareMeetingMinuteData(int committeeId, int meetingId, String username, String lang) {
 
         //1. validate committee is accessible by the user
         Committee committee = committeeRepository.findByIdNoException(committeeId).orElseThrow(CommitteeDoesNotExistException::new);
@@ -68,39 +68,45 @@ public class MeetingMinutePreparationService {
 
         // 3. Populate Data Map
         Map<String, Object> modelData = new HashMap<>();
-        modelData.put("meeting", meeting);
+//        modelData.put("meeting", meeting);
         modelData.put("meetingHeldDate", meeting.getHeldDate());
         modelData.put("meetingHeldDay", meeting.getHeldDate().getDayOfWeek().toString());
-        modelData.put("partOfDay", getPartOfDay(meeting.getHeldTime()));
+        modelData.put("partOfDay", getPartOfDay(meeting.getHeldTime(), lang));
         modelData.put("meetingHeldTime", meeting.getHeldTime());
         modelData.put("meetingHeldPlace", meeting.getHeldPlace());
         modelData.put("meetingTitle", meeting.getTitle());
         modelData.put("committeeName", meeting.getCommittee().getName());
-        modelData.put("coordinatorFullName", formatCoordinatorFullName(meeting.getCoordinator()));
-        modelData.put("membershipsOfAttendees", getSortedAttendeesMemberships(meeting, committeeId));
+        modelData.put("coordinatorFullName", formatCoordinatorFullName(meeting.getCoordinator(), lang));
+        modelData.put("membershipsOfAttendees", getSortedAttendeesMemberships(meeting, committeeId, lang));
         modelData.put("decisions", meeting.getDecisions());
 
         return modelData;
     }
 
-        private String getPartOfDay(LocalTime time) {
+    private String getPartOfDay(LocalTime time, String lang) {
         int hour = time.getHour();
+        String partOfDay;
+
         if (hour >= 5 && hour < 12) {
-            return "Morning";
+            partOfDay = lang.equalsIgnoreCase("nepali") ? "बिहान" : "Morning";
         } else if (hour >= 12 && hour < 17) {
-            return "Afternoon";
+            partOfDay = lang.equalsIgnoreCase("nepali") ? "दिउँसो" : "Afternoon";
         } else if (hour >= 17 && hour < 21) {
-            return "Evening";
+            partOfDay = lang.equalsIgnoreCase("nepali") ? "साँझ" : "Evening";
         } else {
-            return "Night";
+            partOfDay = lang.equalsIgnoreCase("nepali") ? "राति" : "Night";
         }
+        return partOfDay;
     }
 
-    private String formatCoordinatorFullName(Member coordinator) {
-        return coordinator.getFirstName() + " " + coordinator.getLastName();
+    private String formatCoordinatorFullName(Member coordinator, String lang) {
+
+        if(lang.equals("nepali")) return coordinator.getFirstNameNepali() + " " + coordinator.getLastNameNepali();
+
+        else return coordinator.getFirstName() + " " + coordinator.getLastName();
     }
 
-    private List<CommitteeMembership> getSortedAttendeesMemberships(Meeting meeting, int committeeId) {
+    private List<CommitteeMembership> getSortedAttendeesMemberships(Meeting meeting, int committeeId, String lang) {
         List<CommitteeMembership> membershipsOfAttendees = meeting.getAttendees().stream()
                 .map(attendee -> {
                     CommitteeMembership membership = memberService.getMembership(attendee, committeeId);
@@ -115,14 +121,35 @@ public class MeetingMinutePreparationService {
                 })
                 .collect(Collectors.toList());
 
-        sortMembershipByRole(membershipsOfAttendees);
+        sortMembershipByRole(membershipsOfAttendees, lang);
+        parsePostForTemplate(membershipsOfAttendees, lang);
         return membershipsOfAttendees;
+    }
+
+    void parsePostForTemplate(List<CommitteeMembership> membershipsOfAttendees, String lang) {
+        for(CommitteeMembership membership: membershipsOfAttendees) {
+            if(membership.getMember().getPost().equalsIgnoreCase("Doctor")){
+                if(lang.equalsIgnoreCase("en")) membership.setRole("Dr");
+                if(lang.equalsIgnoreCase("nepali")) membership.getMember().setPost("डा. ");
+            }
+
+            else if(membership.getMember().getPost().equalsIgnoreCase("Professor")){
+                if(lang.equalsIgnoreCase("en")) membership.getMember().setPost("Prof.");
+                if(lang.equalsIgnoreCase("nepali")) membership.getMember().setPost("प्रा.");
+            }
+
+            else {
+                if(lang.equalsIgnoreCase("en")) membership.getMember().setPost("Mr. ");
+                if(lang.equalsIgnoreCase("nepali")) membership.getMember().setPost("श्री");
+            }
+
+        }
     }
 
     /**
      * Sorts memberships object based on role in the order: 'coordinator -> member -> member_secretary -> invitee'
      */
-    private void sortMembershipByRole(List<CommitteeMembership> memberships) {
+    private void sortMembershipByRole(List<CommitteeMembership> memberships, String lang) {
         if (memberships == null || memberships.isEmpty()) {
             return;
         }
@@ -133,6 +160,26 @@ public class MeetingMinutePreparationService {
         rolePriority.put("Invitee", 4);
 
         memberships.sort(Comparator.comparingInt(m -> rolePriority.getOrDefault(m.getRole(), Integer.MAX_VALUE)));
+
+        if(lang.equals("nepali")) {
+            for(CommitteeMembership membership : memberships) {
+                if(membership.getRole().equalsIgnoreCase("coordinator")) {
+                    membership.setRole("संयोजक");
+                }
+
+                else if(membership.getRole().equalsIgnoreCase("member")) {
+                    membership.setRole("सदस्य");
+                }
+
+                else if(membership.getRole().equalsIgnoreCase("member-secretary")) {
+                    membership.setRole("सदस्य-सचिव");
+                }
+
+                else if(membership.getRole().equalsIgnoreCase("invitee")) {
+                    membership.setRole("आमन्त्रित");
+                }
+            }
+        }
     }
 
     public String renderHtmlTemplate(String templateName, Map<String, Object> dataModel) {
