@@ -1,5 +1,8 @@
 package com.sep.mmms_backend.controller;
 
+import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
+import com.sep.mmms_backend.exceptions.IllegalOperationException;
+import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.service.MeetingMinutePreparationService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,21 +29,14 @@ public class MeetingMinuteController {
         public Object holiday(Model model,
                               @RequestParam int committeeId,
                               @RequestParam int meetingId,
-                              @RequestParam(required=false) String lang,
                               @RequestParam(required=false) String download,
                               Authentication authentication)
                 {
             try {
 
-                String templateName = null;
-                if(lang != null && lang.equalsIgnoreCase("en")) {
-                    templateName = "meeting_minute_english";
-                } else {
-                    templateName = "meeting_minute_nepali";
-                }
+                String templateName ="meeting_minute_nepali";
 
-
-                Map<String, Object> meetingMinuteData = meetingMinutePreparationService.prepareMeetingMinuteData(committeeId, meetingId, authentication.getName(), lang);
+                Map<String, Object> meetingMinuteData = meetingMinutePreparationService.prepareMeetingMinuteData(committeeId, meetingId, authentication.getName());
 
                 if(download != null && download.equalsIgnoreCase("docx")) {
                     meetingMinuteData.put("download", true);
