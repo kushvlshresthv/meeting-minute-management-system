@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.dto.MemberDetailsDto;
+import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
@@ -68,6 +69,13 @@ public class MemberController {
         MemberDetailsDto memberDetailsDto = memberService.getMemberDetails(memberId, authentication.getName());
 
         return ResponseEntity.ok(new Response(memberDetailsDto));
+    }
+
+
+    @GetMapping("/getAllMembers")
+    public ResponseEntity<Response> getAllMembers(Authentication    authentication) {
+       List<MemberWithoutCommitteeDto> allMembers =  memberService.getAllMembers(authentication.getName());
+       return ResponseEntity.ok(new Response(allMembers));
     }
 }
 

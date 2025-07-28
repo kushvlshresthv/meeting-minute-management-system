@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.repository;
 
+import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
@@ -83,4 +84,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     default List<Member> findAllMembersById(List<Integer> memberIds) {
         return this.findAllById(memberIds);
     }
+
+    public List<Member> findAllMembersByCreatedBy(String username);
 }

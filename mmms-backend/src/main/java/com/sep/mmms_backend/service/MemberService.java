@@ -2,6 +2,7 @@ package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
+import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
@@ -161,5 +162,18 @@ public class MemberService {
             committeeWithMeetings.add(new MemberDetailsDto.CommitteeWithMeetings(committeeInfo, meetingInfos));
         }
         return new MemberDetailsDto(member, committeeWithMeetings);
+    }
+
+
+    public List<MemberWithoutCommitteeDto> getAllMembers(String username) {
+        List<MemberWithoutCommitteeDto> allMembersDto = new ArrayList<>();
+        List<Member> allMembers = memberRepository.findAllMembersByCreatedBy(username);
+
+        if(allMembers != null) {
+            for(Member member : allMembers) {
+                allMembersDto.add(new MemberWithoutCommitteeDto(member));
+            }
+        }
+        return allMembersDto;
     }
 }
