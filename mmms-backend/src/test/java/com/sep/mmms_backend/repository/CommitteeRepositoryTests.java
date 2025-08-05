@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
@@ -34,10 +35,12 @@ import java.util.Set;
 @Slf4j
 @DataJpaTest(properties = {
         "spring.jpa.properties.jakarta.persistence.validation.mode=none",
+        "spring.sql.init.mode=never" //prevent data.sql db population
 })
 
 @Import({JpaAuditingConfiguration.class, AuditorAwareImpl.class})
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 
 public class CommitteeRepositoryTests {
 

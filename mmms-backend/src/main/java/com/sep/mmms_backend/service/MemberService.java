@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
+import com.sep.mmms_backend.dto.MemberCreationDto;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
 import com.sep.mmms_backend.entity.Committee;
@@ -65,28 +66,26 @@ public class MemberService {
 
     @Transactional
     @CheckCommitteeAccess
-    //NOTE: this method does not save the 'attendedMeetings' for a new Member. The attendedMeetings has to be populated through a separate route ie /addAttendeesToMeeting, not while creating a new User.
-
-    //If 'attendedMeetings' is provided, it will simply be removed(this is because to add meetings, we also have to verify that meetings exist in the database first).
-
-    public void saveNewMember(Member member, int committeeId, String username) {
-        entityValidator.validate(member);
+    public void saveNewMember(MemberCreationDto memberDto,int committeeId,String username) {
+        entityValidator.validate(memberDto);
         Committee committee = committeeRepository.findCommitteeById(committeeId);
-        if(member.getMemberships() == null || member.getMemberships().size() != 1) {
-            throw new InvalidRequestException(ExceptionMessages.INVALID_MEMBERSHIP_FOR_NEW_MEMBER);
-        }
 
-        //validate that the ROLE fields is populated
-        member.getMemberships().forEach(entityValidator::validate);
+        Member member = new Member();
+        member.setFirstName(memberDto.getFirstName());
+        member.setLastName(memberDto.getLastName());
+        member.setFirstNameNepali(memberDto.getFirstNameNepali());
+        member.setLastNameNepali(memberDto.getLastNameNepali());
+        member.setEmail(memberDto.getEmail());
+        member.setPost(memberDto.getPost());
 
-        //even if there are multiple memberships, only the first one is considered the valid one
-        CommitteeMembership membership = member.getMemberships().iterator().next();
+        CommitteeMembership membership = new CommitteeMembership();
+        membership.setRole(memberDto.getRole());
         membership.setCommittee(committee);
         membership.setMember(member);
 
-        //clear the attended meetings
-        member.getAttendedMeetings().clear();
+        member.getMemberships().add(membership);
 
+        //persists the membershp as well
         memberRepository.save(member);
     }
 

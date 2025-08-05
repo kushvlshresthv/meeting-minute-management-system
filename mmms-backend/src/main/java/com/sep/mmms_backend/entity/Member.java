@@ -25,6 +25,8 @@ import java.util.UUID;
 @Entity(name="members")
 @EntityListeners(AuditingEntityListener.class)
 @Builder
+
+//TODO: since validations are handled by CreationDto objects, consider removing teh validations from here later after confirming no entities are validated in our code.
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +57,7 @@ public class Member {
     @NotBlank(message="member's post can't be blank")
     private String post; //example: professor
 
+    //consider removing this field, as it is redundant to 'post'
     @NotBlank(message="member's qualification can't be blank")
     private String qualification; //example: Dr, Prof, Mr
 

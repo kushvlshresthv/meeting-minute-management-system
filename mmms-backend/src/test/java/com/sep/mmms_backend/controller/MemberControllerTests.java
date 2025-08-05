@@ -5,7 +5,6 @@ import com.sep.mmms_backend.config.AppConfig;
 import com.sep.mmms_backend.config.SecurityConfiguration;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.entity.Committee;
-import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
@@ -16,7 +15,6 @@ import com.sep.mmms_backend.service.AppUserService;
 import com.sep.mmms_backend.service.MemberService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
 import com.sep.mmms_backend.testing_tools.TestDataHelper;
-import com.sep.mmms_backend.user_details_service.DatabaseUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,18 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -70,73 +63,6 @@ public class MemberControllerTests {
 
         @BeforeEach
         void setUp() {
-//            // Initialize member
-//            member = new Member();
-//            member.setId(memberId);
-//            member.setFirstName("John");
-//            member.setLastName("Doe");
-//            member.setInstitution("Test Institution");
-//            member.setPost("Professor");
-//            member.setQualification("PhD");
-//            member.setEmail("john.doe@example.com");
-//            member.setCreatedBy(username);
-//            member.setCreatedDate(LocalDate.now());
-//            member.setModifiedBy(username);
-//            member.setModifiedDate(LocalDate.now());
-//
-//            // Initialize committee
-//            Committee committee = new Committee();
-//            committee.setId(1);
-//            committee.setName("Test Committee");
-//            committee.setDescription("Test Committee Description");
-//
-//            // Initialize meeting
-//            Meeting meeting = new Meeting();
-//            meeting.setId(1);
-//            meeting.setTitle("Test Meeting");
-//            meeting.setDescription("Test Meeting Description");
-//            meeting.setHeldDate(LocalDate.now());
-//            meeting.setHeldTime(LocalTime.now());
-//            meeting.setHeldPlace("Test Place");
-//            meeting.setCommittee(committee);
-//
-//            // Initialize membership
-//            CommitteeMembership membership = new CommitteeMembership();
-//            membership.setCommittee(committee);
-//            membership.setMember(member);
-//            membership.setRole("Member");
-//
-//            // Set up relationships
-//            Set<CommitteeMembership> memberships = new HashSet<>();
-//            memberships.add(membership);
-//            member.setMemberships(memberships);
-//
-//            Set<Meeting> meetings = new HashSet<>();
-//            meetings.add(meeting);
-//            committee.setMeetings(meetings);
-//
-//            Set<Meeting> attendedMeetings = new HashSet<>();
-//            attendedMeetings.add(meeting);
-//            member.setAttendedMeetings(attendedMeetings);
-//
-//            //Create MemberDetailsDto
-//            MemberDetailsDto.CommitteeInfo committeeInfo = new MemberDetailsDto.CommitteeInfo(
-//                    committee.getId(), committee.getName(), committee.getDescription(), "Member");
-//
-//            MemberDetailsDto.MeetingInfo meetingInfo = new MemberDetailsDto.MeetingInfo(
-//                    meeting.getId(), meeting.getTitle(), meeting.getDescription(), true);
-//
-//            List<MemberDetailsDto.MeetingInfo> meetingInfos = new ArrayList<>();
-//            meetingInfos.add(meetingInfo);
-//
-//            MemberDetailsDto.CommitteeWithMeetings committeeWithMeetings =
-//                    new MemberDetailsDto.CommitteeWithMeetings(committeeInfo, meetingInfos);
-//
-//            List<MemberDetailsDto.CommitteeWithMeetings> committeeWithMeetingsList = new ArrayList<>();
-//            committeeWithMeetingsList.add(committeeWithMeetings);
-//
-//            memberDetailsDto = new MemberDetailsDto(member, committeeWithMeetingsList);
-
             TestDataHelper helper  = new TestDataHelper();
             Meeting meeting = helper.getMeeting();
             Committee committee = helper.getCommittee();

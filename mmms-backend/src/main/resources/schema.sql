@@ -8,7 +8,7 @@ CREATE TABLE app_users
     lastname  VARCHAR(50),
     username  VARCHAR(50) UNIQUE,
     email     VARCHAR(100),
-    password  VARCHAR(100)
+    password VARCHAR(100)
 );
 
 CREATE TABLE committees (
