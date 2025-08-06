@@ -19,9 +19,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
 @Table(name="committee_memberships")
+/*This class implements Persistable because it uses 'composite primary key' which is always populated before the entity is saved, and hence JPA considers it 'Not New'
+
+ Due to this, JPA tries to fetch the entity from the database with the poulated composite primary key value and fails.
+
+ Hence, to make this entity we implement Persistable and implement the 'isNew()' method
+*/
+
 public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
     /**
      * EmbeddedId has been used in order to have a composite primary key for this entity
@@ -45,11 +51,22 @@ public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
 
 
     @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    /*
+       BUG FIX: when two new membership is created, both will have uuid = 0. If i add both the membership into member or committee, only one will be added, because the memberships is tracked in a 'Set' container in both member and committee.
+
+       The equation of membership object depends on uuid of the object. Therefore, both the newly created membership is deemed as equal by the JPA.
+
+       First membership is accepted by the 'Set' container, but the second membership will be rejected by the 'Set' container.
+     */
     private String uuid;
 
     @Column(name="role", nullable=false)
     @NotBlank(message = "Role must be defined when adding the users to a committee")
     private String role;
+
+    public CommitteeMembership() {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
     @Transient
     private boolean isNew = true;
@@ -67,17 +84,12 @@ public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
     @PostLoad
     void markNotNew() {
         this.isNew = false;
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID().toString();
-        }
     }
 
     @PrePersist
+    //This method is executed after JPA determines the entity is a transient entity and before calling the entityManager.persist() method.
     public void initUUID() {
         markNotNew();
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID().toString();
-        }
     }
 
     @Override

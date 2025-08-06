@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.service;
 
 
+import com.sep.mmms_backend.dto.MemberCreationDto;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
@@ -8,8 +9,11 @@ import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
+import com.sep.mmms_backend.exceptions.ValidationFailureException;
+import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.testing_tools.TestDataHelper;
+import com.sep.mmms_backend.validators.EntityValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +22,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.HashSet;
 
@@ -28,20 +36,224 @@ import static org.mockito.Mockito.*;
 
 //@SpringBootTest(classes={LocalValidatorFactoryBean.class, MemberService.class, AppConfig.class})
 
+/*
+    With @ExtendWith(MockitoExtension.class) tests a single Java class in complete isolation, without invlvoing the Spring Framework at all.
+
+    What it does: It does not create any ApplicationContext. It's just JUnit and Mockito working together.
+
+    Mechanism: @InjectMocks uses reflection to create an instance of our service classes(which is injected in the test class) and injects the fields of the service with the @Mock(not @MockBean) that we have made(not from the ApplicationContext)
+
+    It is perfect for testing the business logic within a single classs(MemberSerivce) without caring about the Spring framework
+ */
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTests {
 
     @Mock
     private MemberRepository memberRepository;
 
-//    @MockitoBean
-//    private CommitteeRepository committeeRepository;
-//
-//    @MockitoBean
-//    private EntityValidator entityValidator;
+    @Mock
+    private CommitteeRepository committeeRepository;
+
+    @Mock
+    private EntityValidator entityValidator;
 
     @InjectMocks
     private MemberService memberService;
+
+    /*
+        test the saveNewMember of MemberService
+
+        The saveNewMember accepts a MemberCreationDto, committeeId, and username supplied from the controller.
+
+        1. test when firstName, lastName is blank
+        2. test when post is blank
+        3. test when email format is not correct
+        4. test when role is blank.
+        5. test when firstNameNepali, lastNameNepali, institution is blank/null (nothing happens as it can be blank)
+        6. test the success case with firstNameNepali, lastNameNepali
+
+     */
+    @Nested
+    @DisplayName("Tests for the saveNewMember method")
+    class SaveNewMember {
+        private final int committeeId = 1;
+        private final String username = "testUser";
+        private MemberCreationDto memberCreationDto;
+        private Committee committee;
+        private Member savedMember;
+        private RequestAttributes requestAttributes;
+
+        @BeforeEach
+        void setUp() {
+            // Create test data
+            TestDataHelper helper = new TestDataHelper();
+            committee = helper.getCommittee();
+
+            // Create a valid MemberCreationDto
+            memberCreationDto = new MemberCreationDto();
+            memberCreationDto.setFirstName("John");
+            memberCreationDto.setLastName("Doe");
+            memberCreationDto.setFirstNameNepali("जोन");
+            memberCreationDto.setLastNameNepali("डो");
+            memberCreationDto.setInstitution("Test Institution");
+            memberCreationDto.setPost("Test Post");
+            memberCreationDto.setEmail("john.doe@example.com");
+            memberCreationDto.setRole("Member");
+
+            // Create a Member that will be returned by the repository
+            savedMember = new Member();
+            savedMember.setId(1);
+            savedMember.setFirstName("John");
+            savedMember.setLastName("Doe");
+            savedMember.setFirstNameNepali("जोन");
+            savedMember.setLastNameNepali("डो");
+            savedMember.setInstitution("Test Institution");
+            savedMember.setPost("Test Post");
+            savedMember.setEmail("john.doe@example.com");
+        }
+
+        // 1. Test when firstName is blank
+        @Test
+        @DisplayName("should throw ValidationFailureException when firstName is blank")
+        void testFirstNameBlank() {
+            // Arrange
+            memberCreationDto.setFirstName("");
+            doThrow(new ValidationFailureException(ExceptionMessages.VALIDATION_FAILED, Mockito.mock(BindingResult.class)))
+                .when(entityValidator).validate(memberCreationDto);
+
+            // Act & Assert
+            ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
+                memberService.saveNewMember(memberCreationDto, committeeId, username);
+            });
+
+            assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
+            verify(entityValidator, times(1)).validate(memberCreationDto);
+            verify(memberRepository, never()).save(any(Member.class));
+        }
+
+        // 2. Test when post is blank
+        @Test
+        @DisplayName("should throw ValidationFailureException when post is blank")
+        void testPostBlank() {
+            // Arrange
+            memberCreationDto.setPost("");
+            doThrow(new ValidationFailureException(ExceptionMessages.VALIDATION_FAILED, Mockito.mock(BindingResult.class)))
+                .when(entityValidator).validate(memberCreationDto);
+
+            // Act & Assert
+            ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
+                memberService.saveNewMember(memberCreationDto, committeeId, username);
+            });
+
+            assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
+            verify(entityValidator, times(1)).validate(memberCreationDto);
+            verify(memberRepository, never()).save(any(Member.class));
+        }
+
+        // 3. Test when email format is not correct
+        @Test
+        @DisplayName("should throw ValidationFailureException when email format is incorrect")
+        void testEmailFormatIncorrect() {
+            // Arrange
+            memberCreationDto.setEmail("invalid-email");
+            doThrow(new ValidationFailureException(ExceptionMessages.VALIDATION_FAILED, Mockito.mock(BindingResult.class)))
+                .when(entityValidator).validate(memberCreationDto);
+
+            // Act & Assert
+            ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
+                memberService.saveNewMember(memberCreationDto, committeeId, username);
+            });
+
+            assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
+            verify(entityValidator, times(1)).validate(memberCreationDto);
+            verify(memberRepository, never()).save(any(Member.class));
+        }
+
+        // 4. Test when role is blank
+        @Test
+        @DisplayName("should throw ValidationFailureException when role is blank")
+        void testRoleBlank() {
+            // Arrange
+            memberCreationDto.setRole("");
+            doThrow(new ValidationFailureException(ExceptionMessages.VALIDATION_FAILED, Mockito.mock(BindingResult.class)))
+                .when(entityValidator).validate(memberCreationDto);
+
+            // Act & Assert
+            ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
+                memberService.saveNewMember(memberCreationDto, committeeId, username);
+            });
+
+            assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
+            verify(entityValidator, times(1)).validate(memberCreationDto);
+            verify(memberRepository, never()).save(any(Member.class));
+        }
+
+        // 5. Test when firstNameNepali, lastNameNepali, institution is blank/null
+        @Test
+        @DisplayName("should succeed when firstNameNepali, lastNameNepali, institution are blank/null")
+        void testOptionalFieldsBlank() {
+            // Arrange
+            memberCreationDto.setFirstNameNepali("");
+            memberCreationDto.setLastNameNepali(null);
+            memberCreationDto.setInstitution("");
+            doNothing().when(entityValidator).validate(memberCreationDto);
+
+                // Mock repository save method
+            when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
+
+                // Mock RequestContextHolder
+            requestAttributes = Mockito.mock(RequestAttributes.class);
+            Mockito.when(requestAttributes.getAttribute("committee", RequestAttributes.SCOPE_REQUEST))
+                    .thenReturn(committee);
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+
+            // Act
+            Member result = memberService.saveNewMember(memberCreationDto, committeeId, username);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getId()).isEqualTo(savedMember.getId());
+            assertThat(result.getFirstName()).isEqualTo(savedMember.getFirstName());
+            assertThat(result.getLastName()).isEqualTo(savedMember.getLastName());
+
+            verify(entityValidator, times(1)).validate(memberCreationDto);
+            verify(memberRepository, times(1)).save(any(Member.class));
+        }
+
+        // 6. Test the success case with firstNameNepali, lastNameNepali
+        @Test
+        @DisplayName("should succeed with all fields including firstNameNepali, lastNameNepali")
+        void testSuccessCase() {
+            // Arrange
+            doNothing().when(entityValidator).validate(memberCreationDto);
+                // Mock repository save method
+            when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
+                // Mock RequestContextHolder
+            requestAttributes = Mockito.mock(RequestAttributes.class);
+            Mockito.when(requestAttributes.getAttribute("committee", RequestAttributes.SCOPE_REQUEST))
+                    .thenReturn(committee);
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+
+            // Act
+            Member result = memberService.saveNewMember(memberCreationDto, committeeId, username);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getId()).isEqualTo(savedMember.getId());
+            assertThat(result.getFirstName()).isEqualTo(savedMember.getFirstName());
+            assertThat(result.getLastName()).isEqualTo(savedMember.getLastName());
+            assertThat(result.getFirstNameNepali()).isEqualTo(savedMember.getFirstNameNepali());
+            assertThat(result.getLastNameNepali()).isEqualTo(savedMember.getLastNameNepali());
+            assertThat(result.getInstitution()).isEqualTo(savedMember.getInstitution());
+            assertThat(result.getPost()).isEqualTo(savedMember.getPost());
+            assertThat(result.getEmail()).isEqualTo(savedMember.getEmail());
+
+            verify(entityValidator, times(1)).validate(memberCreationDto);
+            verify(memberRepository, times(1)).save(any(Member.class));
+        }
+    }
+
+
 
     @Nested
     @DisplayName("Tests for the getMemberDetails method")

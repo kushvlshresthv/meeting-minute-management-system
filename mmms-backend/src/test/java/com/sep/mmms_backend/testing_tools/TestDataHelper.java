@@ -43,7 +43,12 @@ public class TestDataHelper {
         committee.setModifiedBy(appUser.getUsername());
         committee.setModifiedDate(LocalDate.now());
         committee.setId(1);
-        memberships.forEach(membership->membership.setCommittee(committee));
+        memberships.forEach(membership-> {
+            membership.setCommittee(committee);
+            if(membership.getId() != null) {
+                membership.getId().setCommitteeId(committee.getId());
+            }
+        });
         committee.setMemberships(memberships);
 
 
@@ -56,7 +61,12 @@ public class TestDataHelper {
 
     public void createValidMember() {
         member = MemberBuilder.builder().build();
-        memberships.forEach(membership->membership.setMember(member));
+        memberships.forEach(membership->{
+            membership.setMember(member);
+            if(membership.getId() != null) {
+                membership.getId().setMemberId(member.getId());
+            }
+        });
         member.setMemberships(memberships);
         member.setId(1);
         member.setCreatedBy(appUser.getUsername());

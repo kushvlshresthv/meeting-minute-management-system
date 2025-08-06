@@ -28,6 +28,8 @@ public enum ResponseMessages {
     COMMITTEE_MEMBER_ADDITION_SUCCESS("New member added to the committee successfully"),
 
     MEMBER_CREATION_SUCCESS("Member created successfully"),
+
+    HTTP_MESSAGE_NOT_READABLE("HTTP message is not readable"),
     ;
 
 

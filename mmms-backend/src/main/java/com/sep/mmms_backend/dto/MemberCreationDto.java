@@ -1,8 +1,11 @@
 package com.sep.mmms_backend.dto;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+//Setter is used for preparing test cases
+@Setter
 public class MemberCreationDto {
     @NotBlank(message = "member's first name can't be blank")
     private String firstName;

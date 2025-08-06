@@ -2,6 +2,7 @@ package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.dto.MemberCreationDto;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
+import com.sep.mmms_backend.dto.MemberSummaryDto;
 import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.response.Response;
@@ -53,8 +54,11 @@ public class MemberController {
 
     @PostMapping("/createMember")
     public ResponseEntity<Response> createMember(@RequestParam(required = true) int committeeId, @RequestBody(required=true) MemberCreationDto memberDto , Authentication authentication) {
-        memberService.saveNewMember(memberDto, committeeId, authentication.getName());
-        return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS));
+       Member member = memberService.saveNewMember(memberDto, committeeId, authentication.getName());
+
+       MemberSummaryDto memberSummaryDto = new MemberSummaryDto(member, committeeId);
+
+        return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS, memberSummaryDto));
     }
 
     /** IMPORTANT NOTE:

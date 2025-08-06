@@ -3,9 +3,11 @@ package com.sep.mmms_backend.exception_handling;
 
 import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.response.Response;
+import com.sep.mmms_backend.response.ResponseMessages;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,5 +102,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response> meetingDoesNotExist(MeetingDoesNotExistException ex) {
         log.error("Meeting with id {} does not exist", ex.getMeetingId() );
         return ResponseEntity.badRequest().body(new Response(ex.getMessage()+ " [id: " + ex.getMeetingId() + "]"));
+    }
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Response> httpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        log.error("HttpMessageNotReadableException: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(new Response(ResponseMessages.HTTP_MESSAGE_NOT_READABLE + ": " + ex.getMessage()));
     }
 }

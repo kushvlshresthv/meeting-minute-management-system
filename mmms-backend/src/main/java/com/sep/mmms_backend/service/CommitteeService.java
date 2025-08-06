@@ -2,7 +2,7 @@ package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.dto.CommitteeDetailsDto;
-import com.sep.mmms_backend.dto.MemberDto;
+import com.sep.mmms_backend.dto.MemberSummaryDto;
 import com.sep.mmms_backend.dto.NewMembershipRequest;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.entity.Committee;
@@ -67,14 +67,14 @@ public class CommitteeService {
     /**
      * returns all the members belonging to the committee
      */
-    public List<MemberDto> getMembersOfCommittee(Committee committee) {
+    public List<MemberSummaryDto> getMembersOfCommittee(Committee committee) {
         List<Integer> memberIds = committee.getMemberships().stream()
                 .map(membership->membership.getMember().getId())
                 .collect(Collectors.toList());
 
         List<Member> members = memberRepository.findAllById(memberIds);
 
-        return members.stream().map(member-> new MemberDto(member, committee.getId()))
+        return members.stream().map(member-> new MemberSummaryDto(member, committee.getId()))
                 .collect(Collectors.toList());
     }
 

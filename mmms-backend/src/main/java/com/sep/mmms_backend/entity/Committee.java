@@ -75,7 +75,6 @@ public class Committee {
         }
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(uuid);

@@ -77,6 +77,9 @@ public class MemberDetailsDto {
 
     public record MeetingInfo(int id, String meetingTitle, String meetingDescription, boolean hasAttendedMeeting) {}
 
+    /**
+     * This object contains all the committee and the meetings belonging to that committee
+     */
     public record CommitteeWithMeetings(CommitteeInfo committeeInfo, List<MeetingInfo> meetingInfos) {}
 
     public MemberDetailsDto(Member member, List<CommitteeWithMeetings> committeeWithMeetings) {

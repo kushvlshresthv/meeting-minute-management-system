@@ -115,4 +115,9 @@ public class Member {
         Member that = (Member) o;
         return Objects.equals(uuid, that.uuid);
     }
+
+    public void addMembership(CommitteeMembership membership) {
+        this.memberships.add(membership);
+        membership.setMember(this);
+    }
 }

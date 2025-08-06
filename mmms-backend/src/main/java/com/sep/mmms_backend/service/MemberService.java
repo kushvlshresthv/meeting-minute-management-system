@@ -18,6 +18,8 @@ import com.sep.mmms_backend.validators.EntityValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,12 +29,10 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EntityValidator entityValidator;
-    private final CommitteeRepository committeeRepository;
 
-    public MemberService(MemberRepository memberRepository, CommitteeRepository committeeRepository, EntityValidator entityValidator)  {
+    public MemberService(MemberRepository memberRepository,EntityValidator entityValidator)  {
         this.memberRepository = memberRepository;
         this.entityValidator = entityValidator;
-        this.committeeRepository = committeeRepository;
     }
 
     /**
@@ -57,7 +57,7 @@ public class MemberService {
 
     /**
      *
-     * @param member member data to be persisted
+     * @param memberDto member data to be persisted
      * @param committeeId committeeId to which the member is assocated with
      * @param username username that created committee
      * NOTE: This method only establishes a single membership for the new Member ie with the committeeId provided as the second argument.
@@ -66,9 +66,9 @@ public class MemberService {
 
     @Transactional
     @CheckCommitteeAccess
-    public void saveNewMember(MemberCreationDto memberDto,int committeeId,String username) {
+    public Member saveNewMember(MemberCreationDto memberDto,int committeeId,String username) {
         entityValidator.validate(memberDto);
-        Committee committee = committeeRepository.findCommitteeById(committeeId);
+        Committee committee = (Committee) RequestContextHolder.currentRequestAttributes().getAttribute("committee", RequestAttributes.SCOPE_REQUEST);
 
         Member member = new Member();
         member.setFirstName(memberDto.getFirstName());
@@ -81,12 +81,11 @@ public class MemberService {
         CommitteeMembership membership = new CommitteeMembership();
         membership.setRole(memberDto.getRole());
         membership.setCommittee(committee);
-        membership.setMember(member);
 
-        member.getMemberships().add(membership);
+        member.addMembership(membership);
 
         //persists the membershp as well
-        memberRepository.save(member);
+        return memberRepository.save(member);
     }
 
 
