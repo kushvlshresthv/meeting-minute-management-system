@@ -77,14 +77,14 @@ public class MeetingRepositoryTest {
        @DisplayName("auditing fields should be populated")
        public void saveMeeting_ShouldSetAuditingFields() {
            //Given:
-           Set<Member> attendees = new HashSet<>();
+           List<Member> attendees = new LinkedList<>();
            attendees.add(member);
 
            Decision decision = DecisionBuilder.builder().withDecisionText("Decision").build();
            List<Decision> decisions = new LinkedList<>();
 
            decisions.add(decision);
-           meeting = MeetingBuilder.builder().withCoordinator(member).withAttendees(attendees).withCommittee(committee).withDecisions(decisions).build();
+           meeting = MeetingBuilder.builder().withAttendees(attendees).withCommittee(committee).withDecisions(decisions).build();
 
 
            //When:
@@ -134,7 +134,7 @@ public class MeetingRepositoryTest {
            attendee2 = memberRepository.save(attendee2);
 
            // Add both members as attendees
-           Set<Member> attendees = new HashSet<>();
+           List<Member> attendees = new LinkedList<>();
            attendees.add(attendee1);
            attendees.add(attendee2);
 
@@ -147,7 +147,6 @@ public class MeetingRepositoryTest {
                    .withHeldDate(LocalDate.now())
                    .withHeldTime(LocalTime.now())
                    .withHeldPlace("Test Place")
-                   .withCoordinator(member)
                    .withAttendees(attendees)
                    .withCommittee(committee)
                    .withDecisions(decisions)
@@ -167,58 +166,12 @@ public class MeetingRepositoryTest {
                    .containsExactlyInAnyOrder(attendee1.getId(), attendee2.getId());
        }
 
-       @Test
-       @DisplayName("should populate coordinator join column")
-       public void saveMeeting_ShouldPopulateCoordinator() {
-           // Given
-           CommitteeMembership membership = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
-           List<CommitteeMembership> memberships = new LinkedList<>();
-           memberships.add(membership);
-
-           Member coordinator = MemberBuilder.builder()
-                   .withFirstName("Meeting")
-                   .withLastName("Coordinator")
-                   .withMemberships(memberships)
-                   .build();
-           coordinator = memberRepository.save(coordinator);
-
-           Set<Member> attendees = new HashSet<>();
-           attendees.add(coordinator); // Coordinator is also an attendee
-
-           Decision decision = DecisionBuilder.builder().withDecisionText("Test Decision").build();
-           List<Decision> decisions = new LinkedList<>();
-           decisions.add(decision);
-
-           meeting = MeetingBuilder.builder()
-                   .withTitle("Test Meeting")
-                   .withHeldDate(LocalDate.now())
-                   .withHeldTime(LocalTime.now())
-                   .withHeldPlace("Test Place")
-                   .withCoordinator(coordinator)
-                   .withAttendees(attendees)
-                   .withCommittee(committee)
-                   .withDecisions(decisions)
-                   .build();
-
-           // When
-           Meeting savedMeeting = meetingRepository.save(meeting);
-
-           // Then
-           Meeting foundMeeting = meetingRepository.findById(savedMeeting.getId()).orElse(null);
-           Assertions.assertThat(foundMeeting).isNotNull();
-
-           // Verify coordinator is correctly associated with the meeting
-           Assertions.assertThat(foundMeeting.getCoordinator()).isNotNull();
-           Assertions.assertThat(foundMeeting.getCoordinator().getId()).isEqualTo(coordinator.getId());
-           Assertions.assertThat(foundMeeting.getCoordinator().getFirstName()).isEqualTo("Meeting");
-           Assertions.assertThat(foundMeeting.getCoordinator().getLastName()).isEqualTo("Coordinator");
-       }
 
        @Test
        @DisplayName("should persist decisions with the meeting")
        public void saveMeeting_ShouldPersistDecisions() {
            // Given
-           Set<Member> attendees = new HashSet<>();
+           List<Member> attendees = new LinkedList<>();
            attendees.add(member);
 
            // Create multiple decisions
@@ -233,7 +186,6 @@ public class MeetingRepositoryTest {
                    .withHeldDate(LocalDate.now())
                    .withHeldTime(LocalTime.now())
                    .withHeldPlace("Test Place")
-                   .withCoordinator(member)
                    .withAttendees(attendees)
                    .withCommittee(committee)
                    .withDecisions(decisions)
@@ -269,7 +221,7 @@ public class MeetingRepositoryTest {
            String meetingDescription = "Discussion about project progress";
            String meetingPlace = "Conference Room A";
 
-           Set<Member> attendees = new HashSet<>();
+           List<Member> attendees = new LinkedList<>();
            attendees.add(member);
 
            Decision decision = DecisionBuilder.builder().withDecisionText("Approved project timeline").build();
@@ -282,7 +234,6 @@ public class MeetingRepositoryTest {
                    .withHeldDate(meetingDate)
                    .withHeldTime(meetingTime)
                    .withHeldPlace(meetingPlace)
-                   .withCoordinator(member)
                    .withAttendees(attendees)
                    .withCommittee(committee)
                    .withDecisions(decisions)
@@ -305,9 +256,6 @@ public class MeetingRepositoryTest {
            // Verify relationships
            Assertions.assertThat(foundMeeting.getCommittee()).isNotNull();
            Assertions.assertThat(foundMeeting.getCommittee().getId()).isEqualTo(committee.getId());
-
-           Assertions.assertThat(foundMeeting.getCoordinator()).isNotNull();
-           Assertions.assertThat(foundMeeting.getCoordinator().getId()).isEqualTo(member.getId());
 
            Assertions.assertThat(foundMeeting.getAttendees()).isNotNull();
            Assertions.assertThat(foundMeeting.getAttendees()).hasSize(1);

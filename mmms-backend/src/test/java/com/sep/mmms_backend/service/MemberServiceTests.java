@@ -25,10 +25,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,7 +79,6 @@ public class MemberServiceTests {
         private MemberCreationDto memberCreationDto;
         private Committee committee;
         private Member savedMember;
-        private RequestAttributes requestAttributes;
 
         @BeforeEach
         void setUp() {
@@ -124,7 +120,7 @@ public class MemberServiceTests {
 
             // Act & Assert
             ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
-                memberService.saveNewMember(memberCreationDto, committeeId, username);
+                memberService.saveNewMember(memberCreationDto, committee, username);
             });
 
             assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
@@ -143,7 +139,7 @@ public class MemberServiceTests {
 
             // Act & Assert
             ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
-                memberService.saveNewMember(memberCreationDto, committeeId, username);
+                memberService.saveNewMember(memberCreationDto, committee, username);
             });
 
             assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
@@ -162,7 +158,7 @@ public class MemberServiceTests {
 
             // Act & Assert
             ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
-                memberService.saveNewMember(memberCreationDto, committeeId, username);
+                memberService.saveNewMember(memberCreationDto, committee, username);
             });
 
             assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
@@ -181,7 +177,7 @@ public class MemberServiceTests {
 
             // Act & Assert
             ValidationFailureException ex = assertThrows(ValidationFailureException.class, () -> {
-                memberService.saveNewMember(memberCreationDto, committeeId, username);
+                memberService.saveNewMember(memberCreationDto, committee, username);
             });
 
             assertThat(ex.getMessage()).isEqualTo(ExceptionMessages.VALIDATION_FAILED.toString());
@@ -202,14 +198,9 @@ public class MemberServiceTests {
                 // Mock repository save method
             when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
-                // Mock RequestContextHolder
-            requestAttributes = Mockito.mock(RequestAttributes.class);
-            Mockito.when(requestAttributes.getAttribute("committee", RequestAttributes.SCOPE_REQUEST))
-                    .thenReturn(committee);
-            RequestContextHolder.setRequestAttributes(requestAttributes);
 
             // Act
-            Member result = memberService.saveNewMember(memberCreationDto, committeeId, username);
+            Member result = memberService.saveNewMember(memberCreationDto, committee, username);
 
             // Assert
             assertThat(result).isNotNull();
@@ -230,13 +221,9 @@ public class MemberServiceTests {
                 // Mock repository save method
             when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
                 // Mock RequestContextHolder
-            requestAttributes = Mockito.mock(RequestAttributes.class);
-            Mockito.when(requestAttributes.getAttribute("committee", RequestAttributes.SCOPE_REQUEST))
-                    .thenReturn(committee);
-            RequestContextHolder.setRequestAttributes(requestAttributes);
 
             // Act
-            Member result = memberService.saveNewMember(memberCreationDto, committeeId, username);
+            Member result = memberService.saveNewMember(memberCreationDto, committee, username);
 
             // Assert
             assertThat(result).isNotNull();

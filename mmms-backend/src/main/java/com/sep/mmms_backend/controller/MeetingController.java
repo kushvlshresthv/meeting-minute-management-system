@@ -1,11 +1,14 @@
 package com.sep.mmms_backend.controller;
 
+import com.sep.mmms_backend.dto.MeetingCreationDto;
 import com.sep.mmms_backend.dto.MeetingDetailsDto;
+import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
+import com.sep.mmms_backend.service.CommitteeService;
 import com.sep.mmms_backend.service.MeetingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +23,12 @@ import java.util.Set;
 @RestController
 @RequestMapping("api")
 public class MeetingController {
-   MeetingService meetingService;
+   private MeetingService meetingService;
+   private CommitteeService committeeService;
 
-   MeetingController(MeetingService meetingService) {
+   MeetingController(MeetingService meetingService, CommitteeService committeeService) {
         this.meetingService = meetingService;
+        this.committeeService = committeeService;
    }
 
 
@@ -54,10 +59,11 @@ public class MeetingController {
     }
     */
 
-    @PostMapping("committee/createMeeting")
-    public ResponseEntity<Response> createMeeting(@RequestBody(required = true) Meeting meeting, @RequestParam(required=true) int committeeId, Authentication authentication) {
-       Meeting savedMeeting =  meetingService.saveNewMeeting(meeting, committeeId, authentication.getName());
-       return ResponseEntity.ok(new Response(savedMeeting));
+    @PostMapping("/createMeeting")
+    public ResponseEntity<Response> createMeeting(@RequestBody(required = true) MeetingCreationDto meetingCreationDto, @RequestParam(required=true) int committeeId, Authentication authentication) {
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        Meeting savedMeeting =  meetingService.saveNewMeeting(meetingCreationDto, committee, authentication.getName());
+        return ResponseEntity.ok(new Response(savedMeeting));
     }
 
 
@@ -66,15 +72,19 @@ public class MeetingController {
      */
     @PostMapping("addAttendeesToMeeting")
     public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody Set<Integer> newAttendeeIds, Authentication authentication) {
-        Set<Member> newAttendees = meetingService.addAttendeesToMeeting(newAttendeeIds, committeeId, meetingId, authentication.getName());
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        Meeting meeting = meetingService.findMeetingById(meetingId);
+        Set<Member> newAttendees = meetingService.addAttendeesToMeeting(newAttendeeIds, committee, meeting, authentication.getName());
         return ResponseEntity.ok(new Response(newAttendees));
     }
 
     @GetMapping("getMeetingDetails")
     public ResponseEntity<Response> getMeetingDetails(@RequestParam int committeeId, @RequestParam int meetingId, Authentication authentication) {
-        Meeting meeting = meetingService.getMeetingDetails(committeeId, meetingId, authentication.getName());
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        Meeting meeting = meetingService.findMeetingById(meetingId);
+        Meeting meetingDetails = meetingService.getMeetingDetails(committee, meeting, authentication.getName());
 
-        MeetingDetailsDto meetingDto = new MeetingDetailsDto(meeting);
+        MeetingDetailsDto meetingDto = new MeetingDetailsDto(meetingDetails);
         return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS, meetingDto));
     }
 

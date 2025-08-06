@@ -1,10 +1,8 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
-import com.sep.mmms_backend.entity.Committee;
-import com.sep.mmms_backend.entity.CommitteeMembership;
-import com.sep.mmms_backend.entity.Meeting;
-import com.sep.mmms_backend.entity.Member;
+import com.sep.mmms_backend.dto.MeetingCreationDto;
+import com.sep.mmms_backend.entity.*;
 import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MeetingRepository;
@@ -15,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,57 +32,46 @@ public class MeetingService {
     }
 
     @CheckCommitteeAccess
-    //TODO: the coordinator does not need to be fetched separately, it is fetched alsongside committee as one of the members
-    public Meeting saveNewMeeting(Meeting meeting, int committeeId, String username) {
-        Committee committee = committeeRepository.findCommitteeById(committeeId);
-        Member coordinator = memberRepository.findMemberById(meeting.getCoordinator().getId());
-        List<Member> committeeMemberList = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
+    public Meeting saveNewMeeting(MeetingCreationDto meetingCreationDto, Committee committee , String username) {
+        entityValidator.validate(meetingCreationDto);
 
+        Meeting meeting = new Meeting();
+        meeting.setCommittee(committee);
+        meeting.setTitle(meetingCreationDto.getTitle());
+        meeting.setDescription(meetingCreationDto.getDescription());
+        meeting.setHeldDate(meetingCreationDto.getHeldDate());
+        meeting.setHeldTime(meetingCreationDto.getHeldTime());
+        meeting.setHeldPlace(meetingCreationDto.getHeldPlace());
+        meetingCreationDto.getDecisions().forEach(decisionString -> {
+            Decision decision = new Decision();
+            decision.setDecision(decisionString);
+            meeting.addDecision(decision);
+        });
 
-        //populating the meetings
-        if(meeting.getAttendees() != null && !meeting.getAttendees().isEmpty()) {
-            List<Integer> attendeeMemberIds = meeting.getAttendees().stream().map(Member::getId).toList();
-            Set<Member> attendees = new HashSet<>(memberRepository.findAllMembersById(attendeeMemberIds));
+        //populating the attendees
+        Set<Integer> requestedAttendees = meetingCreationDto.getAttendees();
+        if(!requestedAttendees.isEmpty()) {
+            List<Member> foundMembers = memberRepository.findAndValidateMembers(requestedAttendees);
 
-            //when some attendee Ids are missing from the datbase
-            if(attendees.size() != attendeeMemberIds.size()) {
-                List<Integer> foundMembers = attendees.stream().map(Member::getId).toList();
-                List<Integer> missingMembers = attendeeMemberIds.stream().filter(memberId -> !foundMembers.contains(memberId)).toList();
-                throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, missingMembers.getFirst());
+            List<Member> membersInCommittee = new LinkedList<>();
+
+            if(committee != null && committee.getMemberships()!= null)  {
+                membersInCommittee = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
             }
 
-            //check if all the attendees are in the committee
-            for(Member attendee: attendees) {
-                if(!committeeMemberList.contains(attendee)) {
-                    throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, attendee.getId(), committeeId);
+            //check that the found members belong to the committee
+            for(Member foundMember: foundMembers) {
+                if(!membersInCommittee.contains(foundMember)) {
+                    throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, foundMember.getId(), committee.getId());
                 }
             }
-
-            //NOTE: don't do getAttendees().addAll() because the attendees from the request body still lives in that container
-            meeting.setAttendees(attendees);
+            meeting.setAttendees(foundMembers);
         }
 
-        //check if the coordinator is in the committee
-        if(!committeeMemberList.contains(coordinator)) {
-            throw new MemberNotInCommitteeException(ExceptionMessages.MEMBER_NOT_IN_COMMITTEE, coordinator.getId(), committeeId) ;
-        }
-
-        //ASSERTION: coordinator is also an attendee
-        if(meeting.getAttendees() == null) {
-            meeting.setAttendees(new HashSet<>());
-        }
-        meeting.getAttendees().add(coordinator);
-        meeting.setCoordinator(coordinator);
-
-        //add the current meeting instance to all the decisions
-        //this is impoprtant because meeting is in the inverse side of the relationship
-        meeting.getDecisions().forEach(decision->decision.setMeeting(meeting));
-
-        meeting.setCommittee(committee);
-        this.entityValidator.validate(meeting);
         return meetingRepository.save(meeting);
     }
 
+    //This methods needs to be updated
     public Meeting updateMeeting(Meeting meeting) {
         if(meetingRepository.existsById(meeting.getId())) {
             Meeting existingMeeting = meetingRepository.findMeetingById(meeting.getId());
@@ -105,26 +89,20 @@ public class MeetingService {
     /**
      *
      * @param newAttendeeIds the list of ids(of new attendees)
-     * @param committeeId the committeeId to which the meeting belongs to
-     * @param meetingId the meetingId of the meeting
+     * @param committee the committee to which the meeting belongs to
+     * @param meeting the meeting of the meeting
      * @param username the name of the current user
-     * @return list of saved attendees
+     * @return set of saved attendees
      * NOTE: if the newAttendees list has some members which are already attendees, they are not re-added
      */
 
     @CheckCommitteeAccess(shouldValidateMeeting=true)
     @Transactional
-    public Set<Member> addAttendeesToMeeting(Set<Integer> newAttendeeIds, int committeeId, int meetingId, String username) {
-
-        //The committee and meeting is fetched and stored in the RCH by @CheckCommitteeAccess
-
-        Committee committee = (Committee) RequestContextHolder.currentRequestAttributes().getAttribute("committee", RequestAttributes.SCOPE_REQUEST);
-        Meeting meeting = (Meeting) RequestContextHolder.currentRequestAttributes().getAttribute("meeting", RequestAttributes.SCOPE_REQUEST);
-
+    public Set<Member> addAttendeesToMeeting(Set<Integer> newAttendeeIds, Committee committee, Meeting meeting, String username) {
 
         //1. find the members exists in the database and part of the committee
         //ASSERTION: attendees and meeting must belong to the same committee
-        Set<Member> validNewAttendees = memberRepository.findExistingMembersInCommittee(newAttendeeIds, committeeId);
+        Set<Member> validNewAttendees = memberRepository.findExistingMembersInCommittee(newAttendeeIds, committee.getId());
 
         if(validNewAttendees.size() != newAttendeeIds.size()) {
             Set<Integer> foundIds = validNewAttendees.stream()
@@ -154,8 +132,7 @@ public class MeetingService {
     }
 
     @CheckCommitteeAccess(shouldValidateMeeting=true)
-    public Meeting getMeetingDetails(int committeeId, int meetingId, String username) {
-        Meeting meeting = this.findMeetingById(meetingId);
+    public Meeting getMeetingDetails(Committee committee, Meeting meeting, String username) {
         return meeting;
     }
 }

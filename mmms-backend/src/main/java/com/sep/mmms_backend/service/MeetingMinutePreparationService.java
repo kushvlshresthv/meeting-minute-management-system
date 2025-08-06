@@ -85,7 +85,6 @@ public class MeetingMinutePreparationService {
         modelData.put("meetingHeldPlace", meeting.getHeldPlace());
         modelData.put("meetingTitle", meeting.getTitle());
         modelData.put("committeeName", meeting.getCommittee().getName());
-        modelData.put("coordinatorFullName", formatCoordinatorFullName(meeting.getCoordinator()));
         modelData.put("membershipsOfAttendees", getSortedAttendeesMemberships(meeting, committeeId));
         modelData.put("decisions", meeting.getDecisions());
 
@@ -136,10 +135,10 @@ public class MeetingMinutePreparationService {
         return partOfDay;
     }
 
-    private String formatCoordinatorFullName(Member coordinator) {
-
-       return coordinator.getFirstNameNepali() + " " + coordinator.getLastNameNepali();
-    }
+//    private String formatCoordinatorFullName(Member coordinator) {
+//
+//       return coordinator.getFirstNameNepali() + " " + coordinator.getLastNameNepali();
+//    }
 
     private List<CommitteeMembership> getSortedAttendeesMemberships(Meeting meeting, int committeeId) {
         List<CommitteeMembership> membershipsOfAttendees = meeting.getAttendees().stream()
@@ -148,10 +147,12 @@ public class MeetingMinutePreparationService {
                     //we are sure that attendee is part of the committee because we have already checked that meeting is part of the committee and a member can only be an attendee to a meeting if both belong to the same committee
 
 
-                    //Furthermore, the coordinator is automatically moved to an attendee of the meeting when a member is registered as a coordinator for a meeting.
-                    if (attendee.getId() == meeting.getCoordinator().getId()) {
-                        membership.setRole("Coordinator");
-                    }
+//                    //Furthermore, the coordinator is automatically moved to an attendee of the meeting when a member is registered as a coordinator for a meeting.
+//                    if (attendee.getId() == meeting.getCoordinator().getId()) {
+//                        membership.setRole("Coordinator");
+//                    }
+
+
                     return membership;
                 })
                 .collect(Collectors.toList());

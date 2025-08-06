@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
@@ -85,4 +86,23 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     }
 
     public List<Member> findAllMembersByCreatedBy(String username);
+
+
+    /**
+     * Checks if the provided memberIds are in the database and then
+     * If no, throws MemberDoesNotExistException
+     * If yes, retrieves all the Members from the database
+     * It never returns null becase finaAllMembersById() never returns null
+     */
+    public default List<Member> findAndValidateMembers(Set<Integer> memberIds) {
+        List<Member> foundMembers = this.findAllMembersById(memberIds);
+
+        if (foundMembers.size() != memberIds.size()) {
+            Set<Integer> foundMemberIds = foundMembers.stream().map(Member::getId).collect(Collectors.toSet());
+            Set<Integer> missingIds = new HashSet<>(memberIds);
+            missingIds.removeAll(foundMemberIds);
+            throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, missingIds);
+        }
+        return foundMembers;
+    }
 }

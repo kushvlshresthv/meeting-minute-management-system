@@ -3,10 +3,7 @@ package com.sep.mmms_backend.aop.implementations;
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
-import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
-import com.sep.mmms_backend.exceptions.ExceptionMessages;
-import com.sep.mmms_backend.exceptions.IllegalOperationException;
-import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
+import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.service.CommitteeService;
 import com.sep.mmms_backend.service.MeetingService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,59 +29,39 @@ public class CheckCommitteeAccessAspect {
     @Before("@annotation(checkCommitteeAccess)")
     public void checkCommitteeAccess(JoinPoint joinPoint, CheckCommitteeAccess checkCommitteeAccess) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-
-        Object[] parameterNames = signature.getParameterNames();
+        String[] parameterNames = signature.getParameterNames();
         Object[] args = joinPoint.getArgs();
 
-        int committeeId = 0;
-        String username = "";
-        int meetingId = 0;
+        Committee committee = null;
+        Meeting meeting = null;
+        String username = null;
 
-        boolean flagFoundCommitteeId = false;
-        boolean flagFoundUsername = false;
-        boolean flagFoundMeetingId = false;
-
-        for(int i =0 ; i<parameterNames.length; i++) {
-            if("committeeId".equals(parameterNames[i])) {
-                committeeId = (Integer)args[i];
-                flagFoundCommitteeId = true;
-            }
-            if("username".equals(parameterNames[i])) {
-                username = (String)args[i];
-                flagFoundUsername = true;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof Committee) {
+                committee = (Committee) args[i];
             }
 
-            if(checkCommitteeAccess.shouldValidateMeeting() && "meetingId".equals(parameterNames[i])) {
-                meetingId = (int) args[i];
-                flagFoundMeetingId = true;
+            if (args[i] instanceof Meeting) {
+                meeting = (Meeting) args[i];
+            }
+
+            if ("username".equals(parameterNames[i]) && args[i] instanceof String) {
+                username = (String) args[i];
             }
         }
 
-        if(!flagFoundCommitteeId || !flagFoundUsername ||(!flagFoundMeetingId && checkCommitteeAccess.shouldValidateMeeting())) {
-            log.error("Error in AOP: Some parameters not found in method {}", signature.getName());
-            throw new IllegalOperationException();
+        if (committee == null || username == null || (checkCommitteeAccess.shouldValidateMeeting() && meeting == null)) {
+            throw new IllegalOperationException("Access of meeting or committee could not be verified");
         }
 
-
-        final int comId = committeeId;
         //checking access for the committee
-        Committee committee = committeeService.findCommitteeByIdNoException(committeeId).orElseThrow(()-> new CommitteeDoesNotExistException(ExceptionMessages.COMMITTEE_DOES_NOT_EXIST, comId));
-
-        //storing data in the RCH to be used by the actual method
-        RequestContextHolder.currentRequestAttributes().setAttribute("committee", committee, RequestAttributes.SCOPE_REQUEST);
-
-        if(!committee.getCreatedBy().getUsername().equals(username)) {
+        if (!committee.getCreatedBy().getUsername().equals(username)) {
             throw new IllegalOperationException(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE);
         }
 
         //checking access for the meeting
-        if(checkCommitteeAccess.shouldValidateMeeting()) {
-            final int meetId = meetingId;
-            Meeting meeting = meetingService.findMeetingByIdNoException(meetingId).orElseThrow(()-> new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST, meetId));
-
-            RequestContextHolder.currentRequestAttributes().setAttribute("meeting", meeting, RequestAttributes.SCOPE_REQUEST);
-
-            if(!committee.getMeetings().contains(meeting)) {
+        if (checkCommitteeAccess.shouldValidateMeeting()) {
+            if (!committee.getMeetings().contains(meeting)) {
                 throw new IllegalOperationException(ExceptionMessages.MEETING_NOT_IN_COMMITTEE);
             }
         }

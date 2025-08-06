@@ -52,11 +52,8 @@ public class CommitteeService {
             throw new InvalidMembershipException(ExceptionMessages.MEMBERSHIP_ROLE_MISSING);
         }
 
-        //check if all the memberIds exist in the database
-//        if(!committeeCreationDto.getMembers().isEmpty()) {
-            Set<Integer> requestedMemberIds = committeeCreationDto.getMembers().keySet();
-            List<Member> foundMembers = this.findAndValidateMembers(requestedMemberIds);
-//        }
+        Set<Integer> requestedMemberIds = committeeCreationDto.getMembers().keySet();
+        List<Member> foundMembers = memberRepository.findAndValidateMembers(requestedMemberIds);
 
         Committee committee = new Committee();
         committee.setCreatedBy(appUserService.loadUserByUsername(username));
@@ -97,17 +94,6 @@ public class CommitteeService {
     }
 
 
-    private List<Member> findAndValidateMembers(Set<Integer> memberIds) {
-        List<Member> foundMembers = memberRepository.findAllMembersById(memberIds);
-
-        if (foundMembers.size() != memberIds.size()) {
-            Set<Integer> foundMemberIds = foundMembers.stream().map(Member::getId).collect(Collectors.toSet());
-            Set<Integer> missingIds = new HashSet<>(memberIds);
-            missingIds.removeAll(foundMemberIds);
-            throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, missingIds);
-        }
-        return foundMembers;
-    }
 
     /**
      * returns both Committee and Members associated with the committee
@@ -116,19 +102,14 @@ public class CommitteeService {
      */
 
     @CheckCommitteeAccess
-    public CommitteeDetailsDto getCommitteeDetails(int committeeId, String username) {
-        Committee committee = committeeRepository.findCommitteeById(committeeId);
+    public CommitteeDetailsDto getCommitteeDetails(Committee committee, String username) {
         return new CommitteeDetailsDto(committee);
     }
 
-    //TODO: This method also loads all the meetings associated with a committee which isn't required
+    //TODO: This method also loads all the meetings associated with a committee which isn't required(probably lazy loaded though)
     public List<Committee> getCommittees(String username) {
         AppUser currentUser = appUserService.loadUserByUsername(username);
-        List<Committee> committees = currentUser.getMyCommittees();
-        committees.forEach(committee-> {
-            committee.setMeetings(null);
-        });
-        return committees;
+        return currentUser.getMyCommittees();
     }
 
 
@@ -149,12 +130,11 @@ public class CommitteeService {
      */
     @CheckCommitteeAccess
     @Transactional
-    public List<Member> addMembershipsToCommittee(int committeeId, Set<NewMembershipRequest> newMembershipRequests, String username) {
-    Committee committee = committeeRepository.findCommitteeById(committeeId);
+    public List<Member> addMembershipsToCommittee(Committee committee, Set<NewMembershipRequest> newMembershipRequests, String username) {
     Set<Integer> newMemberIds = newMembershipRequests.stream().map(NewMembershipRequest::memberId).collect(Collectors.toSet());
 
 
-        List<Member> validNewMembers = this.findAndValidateMembers(newMemberIds);
+        List<Member> validNewMembers = memberRepository.findAndValidateMembers(newMemberIds);
 
         validNewMembers.forEach(member ->{
                 if(!member.getCreatedBy().equals(username)) {
@@ -175,6 +155,10 @@ public class CommitteeService {
         }
         committeeMembershipRepository.saveAll(newMemberships);
         return validNewMembers;
+    }
+
+    public Committee findCommitteeById(int committeeId) {
+        return committeeRepository.findCommitteeById(committeeId);
     }
 }
 

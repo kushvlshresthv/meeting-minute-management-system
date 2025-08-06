@@ -51,18 +51,18 @@ VALUES
 INSERT INTO meetings (
     committee_id, meeting_title, meeting_description,
     meeting_held_date, meeting_held_place, meeting_held_time,
-    created_by, updated_by, created_date, updated_date, coordinator, uuid
+    created_by, updated_by, created_date, updated_date, uuid
 )
 VALUES
     -- meetings for committee 1
-    (1, 'Syllabus Update Discussion',         'Discussing proposed updates to the engineering syllabus.',             '2025-07-18', 'Pulchowk Campus',       '14:30:00', 'username', 'username', '2025-07-13', '2025-07-13', 1, UUID()),
-    (1, 'Annual Seminar Planning',            'Organizing the annual institutional seminar.',                        '2025-07-22', 'Auditorium',     '11:00:00', 'username', 'username', '2025-07-14', '2025-07-14',1, UUID()),
-    (1, 'Research Grant Proposals Review',    'Assessment of new research funding requests.',                        '2025-07-25', 'Innovation Hub', '13:00:00', 'username', 'username', '2025-07-21', '2025-07-21', 1, UUID()),
-    (1, 'Review of Recent Incidents',         'Addressing recent disciplinary cases and policy updates.',            '2025-07-28', 'Admin Office 1', '10:00:00', 'username', 'username', '2025-07-22', '2025-07-22', 1, UUID()),
+    (1, 'Syllabus Update Discussion',         'Discussing proposed updates to the engineering syllabus.',             '2025-07-18', 'Pulchowk Campus',       '14:30:00', 'username', 'username', '2025-07-13', '2025-07-13',  UUID()),
+    (1, 'Annual Seminar Planning',            'Organizing the annual institutional seminar.',                        '2025-07-22', 'Auditorium',     '11:00:00', 'username', 'username', '2025-07-14', '2025-07-14', UUID()),
+    (1, 'Research Grant Proposals Review',    'Assessment of new research funding requests.',                        '2025-07-25', 'Innovation Hub', '13:00:00', 'username', 'username', '2025-07-21', '2025-07-21', UUID()),
+    (1, 'Review of Recent Incidents',         'Addressing recent disciplinary cases and policy updates.',            '2025-07-28', 'Admin Office 1', '10:00:00', 'username', 'username', '2025-07-22', '2025-07-22', UUID()),
 
     -- meetings for committee 2
-    (2, 'Canteen and Hostel Feedback Session','Discussing feedback from students on facilities.',                    '2025-07-29', 'Student Lounge', '15:00:00', 'username', 'username', '2025-07-23', '2025-07-23', 9, UUID()),
-    (2, 'Campus Wi-Fi Upgrade Plan',          'Finalizing the plan to upgrade network infrastructure.',              '2025-08-01', 'IT Department',  '11:00:00', 'username', 'username', '2025-07-25', '2025-07-25', 9, UUID());
+    (2, 'Canteen and Hostel Feedback Session','Discussing feedback from students on facilities.',                    '2025-07-29', 'Student Lounge', '15:00:00', 'username', 'username', '2025-07-23', '2025-07-23', UUID()),
+    (2, 'Campus Wi-Fi Upgrade Plan',          'Finalizing the plan to upgrade network infrastructure.',              '2025-08-01', 'IT Department',  '11:00:00', 'username', 'username', '2025-07-25', '2025-07-25', UUID());
 
 -- Insert Decisions
 INSERT INTO decisions (meeting_id, decision, uuid)

@@ -5,6 +5,10 @@ public class IllegalOperationException extends RuntimeException{
         super(message.toString());
     }
 
+    public IllegalOperationException(String message){
+        super(message);
+    }
+
     public IllegalOperationException() {
 
     };

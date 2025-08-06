@@ -58,7 +58,7 @@ public class MemberService {
     /**
      *
      * @param memberDto member data to be persisted
-     * @param committeeId committeeId to which the member is assocated with
+     * @param committee committee to which the member is assocated with
      * @param username username that created committee
      * NOTE: This method only establishes a single membership for the new Member ie with the committeeId provided as the second argument.
      * Even if there are other memberships in the Member parameter, they are discarded
@@ -66,9 +66,8 @@ public class MemberService {
 
     @Transactional
     @CheckCommitteeAccess
-    public Member saveNewMember(MemberCreationDto memberDto,int committeeId,String username) {
+    public Member saveNewMember(MemberCreationDto memberDto,Committee committee,String username) {
         entityValidator.validate(memberDto);
-        Committee committee = (Committee) RequestContextHolder.currentRequestAttributes().getAttribute("committee", RequestAttributes.SCOPE_REQUEST);
 
         Member member = new Member();
         member.setFirstName(memberDto.getFirstName());

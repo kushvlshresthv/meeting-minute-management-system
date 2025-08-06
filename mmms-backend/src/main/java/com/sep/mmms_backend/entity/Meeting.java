@@ -93,18 +93,17 @@ public class Meeting {
             }
     )
     @NotEmpty
-    public Set<Member> attendees = new HashSet<>();
+    public List<Member> attendees = new ArrayList<>();
 
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotEmpty
     private List<Decision> decisions;
 
-    @OneToOne
-    @JoinColumn(name="coordinator", referencedColumnName = "member_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull(message = "meeting coordinator should be specified")
-    private Member coordinator;
+    public void addDecision(Decision decision) {
+        decision.setMeeting(this);
+        this.decisions.add(decision);
+    }
 
     @PrePersist
     public void prePersist() {
@@ -127,17 +126,7 @@ public class Meeting {
         Meeting that = (Meeting) o;
         return Objects.equals(uuid, that.uuid);
     }
-
-//    @Override
-//    public boolean equals(Object obj) {
-//        if(this == obj) return true;
-//        if(obj == null) return false;
-//        if(!(obj instanceof Meeting meeting)) return false;
-//        if(this.getId() <=0 ) return false;
-//        return id == meeting.getId();
-//    }
-
-    //TODO: implement the equals() and hashcode() properly.
+    //The issue with not using uuid is that:
     /*
         The issue with the above implementation is that for an unsaved entity 'm'
 
@@ -157,7 +146,7 @@ public class Meeting {
 
         Howevever, the id changes when an unsaved entity is saved.
 
-        Suppose i have an unsaved object 'm'. The id of this object is '0' and has a hashcode say 0000.
+        Suppose I have an unsaved object 'm'. The id of this object is '0' and has a hashcode say 0000.
 
         After save operation, the id of this object changes to some other value say '2', and the hashcode for this object now becomes 2222. Here the hashcode has changed due to persist operation.
 

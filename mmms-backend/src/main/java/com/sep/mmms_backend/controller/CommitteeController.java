@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +39,11 @@ public class CommitteeController {
     @GetMapping("/getCommittee")
     public ResponseEntity<Response> getCommittees(Authentication authentication) {
         List<Committee> committees =  committeeService.getCommittees(authentication.getName());
-        return ResponseEntity.ok().body(new Response(committees));
+        List<CommitteeSummaryDto> committeeSummaryDtos = new ArrayList<>();
+        committees.forEach(committee-> {
+            committeeSummaryDtos.add(new CommitteeSummaryDto(committee));
+        });
+        return ResponseEntity.ok().body(new Response(committeeSummaryDtos));
     }
 
 
@@ -53,13 +58,15 @@ public class CommitteeController {
 
     @GetMapping("/getCommitteeDetails")
     public ResponseEntity<Response> getCommitteeDetails(@RequestParam int committeeId, Authentication authentication) {
-        CommitteeDetailsDto committeeDetails = committeeService.getCommitteeDetails(committeeId, authentication.getName());
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        CommitteeDetailsDto committeeDetails = committeeService.getCommitteeDetails(committee, authentication.getName());
         return ResponseEntity.ok().body(new Response(committeeDetails));
     }
 
     @PostMapping("/addMembersToCommittee")
     public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody Set<NewMembershipRequest> newMemberships, Authentication authentication) {
-        List<Member> newlyAddedMembers = committeeService.addMembershipsToCommittee(committeeId, newMemberships, authentication.getName());
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        List<Member> newlyAddedMembers = committeeService.addMembershipsToCommittee(committee, newMemberships, authentication.getName());
         return ResponseEntity.ok(new Response(ResponseMessages.COMMITTEE_MEMBER_ADDITION_SUCCESS, newlyAddedMembers));
     }
 }

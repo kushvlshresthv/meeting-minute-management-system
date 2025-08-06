@@ -18,7 +18,11 @@ public enum ExceptionMessages {
     COMMITTEE_NOT_ACCESSIBLE("Specified committee is not accessible to you"),
     MEMBER_NOT_IN_COMMITTEE("The specified member is not associated with the committee"),
     MEMBER_NOT_ACCESSIBLE("Specified member is not accessible to you"),
-    MEMBERSHIP_ROLE_MISSING("Membership role missing");
+    MEMBERSHIP_ROLE_MISSING("Membership role missing"),
+
+    MEETING_NOT_ACCESSIBLE("Meeting not accessible"),
+    COMMITTEE_OR_MEETING_NOT_ACCESSIBLE("Committee or meeting not accessible")
+
     ;
 
 

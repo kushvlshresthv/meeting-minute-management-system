@@ -18,6 +18,7 @@ import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.AppUserService;
+import com.sep.mmms_backend.service.CommitteeService;
 import com.sep.mmms_backend.service.MemberService;
 import com.sep.mmms_backend.testing_tools.SerializerDeserializer;
 import com.sep.mmms_backend.testing_tools.TestDataHelper;
@@ -61,6 +62,9 @@ public class MemberControllerTests {
     @MockitoBean
     private AppUserService appUserService;
 
+    @MockitoBean
+    private CommitteeService committeeService;
+
 
    //test the /createMember route
 
@@ -87,7 +91,7 @@ public class MemberControllerTests {
     @Nested
     @DisplayName("Testing /createMember route")
     class CreateMemberRoute {
-        private final int committeeId = 1;
+        private Committee committee;
         private final String username = "testUser";
         private MemberCreationDto memberCreationDto;
         private Member createdMember;
@@ -95,7 +99,7 @@ public class MemberControllerTests {
         @BeforeEach
         void setUp() {
             TestDataHelper helper = new TestDataHelper();
-            Committee committee = helper.getCommittee();
+            committee = helper.getCommittee();
 
             // Create MemberCreationDto with required fields
             memberCreationDto = new MemberCreationDto();
@@ -122,6 +126,9 @@ public class MemberControllerTests {
             createdMember.setInstitution("Test Institution");
             createdMember.setPost("Test Post");
             createdMember.setEmail("john.doe@example.com");
+            createdMember.setId(1);
+
+            Mockito.when(committeeService.findCommitteeById(anyInt())).thenReturn(committee);
 
         }
 
@@ -153,11 +160,11 @@ public class MemberControllerTests {
             objectNode.put("additionField", "additionalValue");
             String requestBody = mapper.writeValueAsString(objectNode);
 
-            Mockito.when(memberService.saveNewMember(any(MemberCreationDto.class), eq(committeeId), eq(username)))
+            Mockito.when(memberService.saveNewMember(any(MemberCreationDto.class), eq(committee), eq(username)))
                     .thenReturn(createdMember);
 
             // Act
-            Response response = performPostRequestAndGetResponse("/api/createMember?committeeId=" + committeeId, 
+            Response response = performPostRequestAndGetResponse("/api/createMember?committeeId=" + committee.getId(),
                     requestBody, HttpStatus.BAD_REQUEST);
 
             //Assert
@@ -184,7 +191,7 @@ public class MemberControllerTests {
 
             // Verify
             Mockito.verify(memberService, Mockito.never())
-                    .saveNewMember(any(MemberCreationDto.class), anyInt(), anyString());
+                    .saveNewMember(any(MemberCreationDto.class), any(), anyString());
         }
 
         // 3. Check whether the response message is ResponseMessages.MEMBER_CREATION_SUCCESS
@@ -194,11 +201,11 @@ public class MemberControllerTests {
         @DisplayName("Should return success message and correct member data")
         void testSuccessfulMemberCreation() throws Exception {
             // Arrange
-            Mockito.when(memberService.saveNewMember(any(MemberCreationDto.class), eq(committeeId), eq(username)))
+            Mockito.when(memberService.saveNewMember(any(MemberCreationDto.class), eq(committee), eq(username)))
                     .thenReturn(createdMember);
 
             // Act
-            Response response = performPostRequestAndGetResponse("/api/createMember?committeeId=" + committeeId, 
+            Response response = performPostRequestAndGetResponse("/api/createMember?committeeId=" + committee.getId(),
                     memberCreationDto, HttpStatus.OK);
 
             // Assert
@@ -218,7 +225,7 @@ public class MemberControllerTests {
 
             // Verify
             Mockito.verify(memberService, Mockito.times(1))
-                    .saveNewMember(any(MemberCreationDto.class), eq(committeeId), eq(username));
+                    .saveNewMember(any(MemberCreationDto.class), eq(committee), eq(username));
         }
     }
 
@@ -259,6 +266,8 @@ public class MemberControllerTests {
             committeeWithMeetingsList.add(committeeWithMeetings);
 
             memberDetailsDto = new MemberDetailsDto(member, committeeWithMeetingsList);
+
+            Mockito.when(committeeService.findCommitteeById(anyInt())).thenReturn(committee);
         }
 
         private Response performRequestAndGetResponse(String url, HttpStatus expectedStatus) throws Exception {

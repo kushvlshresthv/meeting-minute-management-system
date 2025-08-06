@@ -4,9 +4,11 @@ import com.sep.mmms_backend.dto.MemberCreationDto;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.dto.MemberSummaryDto;
 import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
+import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
+import com.sep.mmms_backend.service.CommitteeService;
 import com.sep.mmms_backend.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,8 +20,11 @@ import java.util.List;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    public MemberController(MemberService memberService) {
+    private final CommitteeService committeeService;
+
+    public MemberController(MemberService memberService, CommitteeService committeeService) {
         this.memberService = memberService;
+        this.committeeService = committeeService;
     }
 
     @GetMapping("/searchMembersByName")
@@ -32,7 +37,7 @@ public class MemberController {
     /**
      *
      * @param committeeId id of the committee to which the new memeber is going to be associated with
-     * @param member member data to be persisted
+     * @param memberDto member data to be persisted
      */
 
     /*
@@ -54,7 +59,8 @@ public class MemberController {
 
     @PostMapping("/createMember")
     public ResponseEntity<Response> createMember(@RequestParam(required = true) int committeeId, @RequestBody(required=true) MemberCreationDto memberDto , Authentication authentication) {
-       Member member = memberService.saveNewMember(memberDto, committeeId, authentication.getName());
+       Committee committee= committeeService.findCommitteeById(committeeId);
+       Member member = memberService.saveNewMember(memberDto, committee, authentication.getName());
 
        MemberSummaryDto memberSummaryDto = new MemberSummaryDto(member, committeeId);
 

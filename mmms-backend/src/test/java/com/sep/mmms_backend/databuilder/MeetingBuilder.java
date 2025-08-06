@@ -8,10 +8,7 @@ import com.sep.mmms_backend.entity.Member;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /*
     A meeting is associated with a committee and hence must reference a 'SAVED' committee. It populates the join column as it owns the relationship
@@ -34,13 +31,12 @@ public class MeetingBuilder {
 
     private Committee committee = null;
 
-    private Member coordinator = null;
 
-    private Set<Member> attendees = new HashSet<>();
+    private List<Member> attendees = new LinkedList<>();
     private List<Decision> decisions = new ArrayList<>();
 
     /**
-     * 'saved committee', 'saved coordinator', 'at least one saved Atteendee' and 'unsaved decisions' is mandatory for save operation in this entity
+     * 'saved committee' , 'at least one saved Atteendee' and 'unsaved decisions' is mandatory for save operation in this entity
      */
     public static MeetingBuilder builder() {
         return new MeetingBuilder();
@@ -76,12 +72,8 @@ public class MeetingBuilder {
         return this;
     }
 
-    public MeetingBuilder withCoordinator(Member coordinator) {
-        this.coordinator = coordinator;
-        return this;
-    }
 
-    public MeetingBuilder withAttendees(Set<Member> attendees) {
+    public MeetingBuilder withAttendees(List<Member> attendees) {
         this.attendees = attendees;
         return this;
     }
@@ -102,8 +94,6 @@ public class MeetingBuilder {
         meeting.setCommittee(this.committee);
         this.committee.getMeetings().add(meeting);
 
-
-        meeting.setCoordinator(this.coordinator);
 
         meeting.setAttendees(this.attendees);
 

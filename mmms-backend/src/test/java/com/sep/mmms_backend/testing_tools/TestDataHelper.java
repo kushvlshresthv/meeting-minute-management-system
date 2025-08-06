@@ -77,10 +77,10 @@ public class TestDataHelper {
         List<Decision> decisions = new ArrayList<>();
         decisions.add(decision);
 
-        Set<Member> attendees = new HashSet<>();
+        List<Member> attendees = new LinkedList<>();
         attendees.add(member);
 
-        meeting = MeetingBuilder.builder().withCommittee(committee).withCoordinator(member).withDecisions(decisions).withAttendees(attendees).build();
+        meeting = MeetingBuilder.builder().withCommittee(committee).withDecisions(decisions).withAttendees(attendees).build();
 
         meeting.setId(1);
         meeting.setCreatedBy(appUser.getUsername());
