@@ -76,10 +76,9 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     /**
      * returns the set of members. If no elements are available, it returns an empty set, never null
      */
-    default Set<Member> findAllMembersById(Set<Integer> memberIds) {
-        return new HashSet<>(findAllById(memberIds));
+    default List<Member> findAllMembersById(Set<Integer> memberIds) {
+        return findAllById(memberIds);
     }
-
 
     default List<Member> findAllMembersById(List<Integer> memberIds) {
         return this.findAllById(memberIds);

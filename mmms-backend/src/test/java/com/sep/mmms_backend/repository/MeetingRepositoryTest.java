@@ -61,7 +61,7 @@ public class MeetingRepositoryTest {
         committee = committeeRepository.save(committee);
 
         CommitteeMembership membership = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
-        Set<CommitteeMembership> memberships = new HashSet<>();
+        List<CommitteeMembership> memberships = new LinkedList<>();
         memberships.add(membership);
 
         member = MemberBuilder.builder().withMemberships(memberships).build();
@@ -112,7 +112,7 @@ public class MeetingRepositoryTest {
            // Given
            // Create two members to be attendees
            CommitteeMembership membership1 = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
-           Set<CommitteeMembership> memberships1 = new HashSet<>();
+           List<CommitteeMembership> memberships1 = new LinkedList<>();
            memberships1.add(membership1);
 
            Member attendee1 = MemberBuilder.builder()
@@ -123,7 +123,7 @@ public class MeetingRepositoryTest {
            attendee1 = memberRepository.save(attendee1);
 
            CommitteeMembership membership2 = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
-           Set<CommitteeMembership> memberships2 = new HashSet<>();
+           List<CommitteeMembership> memberships2 = new LinkedList<>();
            memberships2.add(membership2);
 
            Member attendee2 = MemberBuilder.builder()
@@ -172,7 +172,7 @@ public class MeetingRepositoryTest {
        public void saveMeeting_ShouldPopulateCoordinator() {
            // Given
            CommitteeMembership membership = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
-           Set<CommitteeMembership> memberships = new HashSet<>();
+           List<CommitteeMembership> memberships = new LinkedList<>();
            memberships.add(membership);
 
            Member coordinator = MemberBuilder.builder()

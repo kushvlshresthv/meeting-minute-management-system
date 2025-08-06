@@ -225,7 +225,6 @@ public class MemberControllerTests {
 
 
 
-
     @Nested
     @DisplayName("Testing /getMemberDetails route")
     class GetMemberDetailsRoute {

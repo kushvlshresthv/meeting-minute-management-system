@@ -20,6 +20,8 @@ CREATE TABLE committees (
         created_date DATE NOT NULL,
         modified_by VARCHAR(255) NOT NULL,
         modified_date DATE NOT NULL,
+        status VARCHAR(255) NOT NULL,
+        max_no_of_meetings INT,
         FOREIGN KEY (created_by) REFERENCES app_users(uid)
 );
 

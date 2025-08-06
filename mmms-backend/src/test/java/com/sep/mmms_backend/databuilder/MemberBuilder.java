@@ -4,6 +4,7 @@ import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -23,7 +24,7 @@ public class MemberBuilder {
     private String post = "post";
     private String qualification = "qualification";
     private String email = "email@gmail.com";
-    private Set<CommitteeMembership> memberships;
+    private List<CommitteeMembership> memberships;
     private Set<Meeting> attendedMeetings;
 
     /**
@@ -63,7 +64,7 @@ public class MemberBuilder {
         return this;
     }
 
-    public MemberBuilder withMemberships(Set<CommitteeMembership> memberships) {
+    public MemberBuilder withMemberships(List<CommitteeMembership> memberships) {
         this.memberships = memberships;
         return this;
     }

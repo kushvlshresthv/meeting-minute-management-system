@@ -17,7 +17,8 @@ public enum ExceptionMessages {
     INVALID_MEMBERSHIP_FOR_NEW_MEMBER("The new member must have single membership"),
     COMMITTEE_NOT_ACCESSIBLE("Specified committee is not accessible to you"),
     MEMBER_NOT_IN_COMMITTEE("The specified member is not associated with the committee"),
-    MEMBER_NOT_ACCESSIBLE("Specified member is not accessible to you");
+    MEMBER_NOT_ACCESSIBLE("Specified member is not accessible to you"),
+    MEMBERSHIP_ROLE_MISSING("Membership role missing");
     ;
 
 

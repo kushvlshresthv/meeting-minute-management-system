@@ -13,7 +13,8 @@ public class MemberDoesNotExistException extends RuntimeException {
 
     public MemberDoesNotExistException(ExceptionMessages message, Set<Integer> memberIds){
         super(message.toString());
-        this.memberIds.addAll(memberIds);
+        if(memberIds != null)
+            this.memberIds.addAll(memberIds);
     }
 
     public Set<Integer> getMemberIds(){

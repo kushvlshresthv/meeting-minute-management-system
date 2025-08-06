@@ -30,6 +30,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -142,7 +144,7 @@ public class CommitteeRepositoryTests {
                     .withRole("Chair")
                     .build();
 
-            Set<CommitteeMembership> memberships = new HashSet<>();
+            List<CommitteeMembership> memberships = new LinkedList<>();
             memberships.add(membership);
 
             // Create a member with the membership

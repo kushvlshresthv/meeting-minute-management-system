@@ -2,6 +2,7 @@ package com.sep.mmms_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sep.mmms_backend.enums.CommitteeStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -11,10 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -42,9 +40,17 @@ public class Committee {
     @Column(name="committee_description")
     private String description;
 
+    @Column(name="max_no_of_meetings")
+    private Integer maxNoOfMeetings;
+
+    @Column(name="status")
+    @Enumerated(EnumType.STRING)
+    private CommitteeStatus status;
+
     @ManyToOne
     @JoinColumn(name="created_by", referencedColumnName="uid", nullable=false)
     @JsonIgnore
+    //@CreatedBy is not used because then Audit will inquire the database
     private AppUser createdBy;
 
     @Column(name = "created_date")
@@ -62,11 +68,19 @@ public class Committee {
     private LocalDate modifiedDate;
 
     @OneToMany(mappedBy="committee")
-    private Set<Meeting> meetings;
+    private List<Meeting> meetings = new LinkedList<>();
 
     @OneToMany(mappedBy = "committee", cascade = CascadeType.PERSIST)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Set<CommitteeMembership> memberships = new HashSet<>();
+    private List<CommitteeMembership> memberships = new LinkedList<>();
+
+    /**
+        automatically sets membership->committee to 'this' as well
+     */
+    public void addMembership(CommitteeMembership membership) {
+        memberships.add(membership);
+        membership.setCommittee(this);
+    }
 
     @PrePersist
     public void prePersist() {

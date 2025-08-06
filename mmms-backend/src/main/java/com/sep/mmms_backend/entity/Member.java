@@ -13,10 +13,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -87,7 +84,7 @@ public class Member {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy="member", cascade=CascadeType.PERSIST)
     @NotEmpty
-    private Set<CommitteeMembership> memberships = new HashSet<>();
+    private List<CommitteeMembership> memberships = new LinkedList<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "attendees", fetch = FetchType.LAZY)

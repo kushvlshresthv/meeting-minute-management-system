@@ -35,15 +35,17 @@ INSERT INTO committees (
     created_date,
     modified_by,
     modified_date,
-    uuid
+    uuid,
+    status,
+    max_no_of_meetings
 )
 VALUES
-    ('Academic Committee',                 'Oversees academic policies and curriculum development.', 1, CURDATE(), 'username', CURDATE(), UUID()),
-    ('Events Committee',                   'Plans and organizes all institutional events and seminars.', 1, CURDATE(), 'username', CURDATE(), UUID()),
-    ('Research and Development Committee', 'Promotes research and innovation.', 1, CURDATE(), 'username', CURDATE(), UUID()),
-    ('Disciplinary Committee',             'Handles student and staff disciplinary issues.', 1, CURDATE(), 'username', CURDATE(), UUID()),
-    ('Student Welfare Committee',          'Addresses student concerns and well-being.', 1, CURDATE(), 'username', CURDATE(), UUID()),
-    ('IT and Infrastructure Committee',    'Manages IT resources and campus infrastructure.', 2, CURDATE(), 'username', CURDATE(), UUID());
+    ('Academic Committee',                 'Oversees academic policies and curriculum development.', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
+    ('Events Committee',                   'Plans and organizes all institutional events and seminars.', 1, CURDATE(), 'username', CURDATE(), UUID(),'ACTIVE', 10),
+    ('Research and Development Committee', 'Promotes research and innovation.', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
+    ('Disciplinary Committee',             'Handles student and staff disciplinary issues.', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
+    ('Student Welfare Committee',          'Addresses student concerns and well-being.', 1, CURDATE(), 'username', CURDATE(), UUID(),'ACTIVE', 10),
+    ('IT and Infrastructure Committee',    'Manages IT resources and campus infrastructure.', 2, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10);
 
 -- Insert Meetings
 INSERT INTO meetings (

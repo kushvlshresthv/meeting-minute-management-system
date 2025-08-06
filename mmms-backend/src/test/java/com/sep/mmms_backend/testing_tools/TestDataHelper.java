@@ -6,10 +6,7 @@ import com.sep.mmms_backend.entity.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Getter
@@ -18,7 +15,7 @@ public class TestDataHelper {
     Committee committee;
     Member member;
     Meeting meeting;
-    Set<CommitteeMembership> memberships;
+    List<CommitteeMembership> memberships;
 
 
     /*
@@ -93,7 +90,7 @@ public class TestDataHelper {
 
 
         //set 'meetings' field in the committee object
-        Set<Meeting> meetings = new HashSet<>();
+        LinkedList<Meeting> meetings = new LinkedList<>();
         meetings.add(meeting);
         committee.setMeetings(meetings);
 
@@ -105,7 +102,7 @@ public class TestDataHelper {
     }
 
     public void createMemberships() {
-        memberships =  new HashSet<>();
+        memberships =  new LinkedList<>();
         CommitteeMembership membership = CommitteeMembershipBuilder.builder().withRole("Member").build();
         memberships.add(membership);
     }

@@ -29,6 +29,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -254,7 +255,6 @@ public class MemberServiceTests {
     }
 
 
-
     @Nested
     @DisplayName("Tests for the getMemberDetails method")
     class GetMemberDetails {
@@ -337,7 +337,7 @@ public class MemberServiceTests {
         @DisplayName("committee for a particular member is null")
         void testCommitteesNull() {
             // Arrange
-            member.setMemberships(new HashSet<>());
+            member.setMemberships(new LinkedList<>());
             when(memberRepository.findMemberById(memberId)).thenReturn(member);
 
             // Act

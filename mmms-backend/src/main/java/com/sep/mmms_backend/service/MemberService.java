@@ -108,7 +108,7 @@ public class MemberService {
      * NOTE: this method iterates through all the memberships for a particular member to get the membership associated with a particular committeeId
      */
     public CommitteeMembership getMembership(Member member, int committeeId) {
-        Set <CommitteeMembership> memberships = member.getMemberships();
+        List <CommitteeMembership> memberships = member.getMemberships();
         for(CommitteeMembership membership : memberships) {
             if(membership.getId().getCommitteeId() == committeeId) {
                 return membership;
@@ -137,8 +137,9 @@ public class MemberService {
                 CommitteeMembership::getRole
         ));
 
+        //all committee(with role) the member has joined + all meetings in the committee with information of attended or not
         for(Committee committee : committees) {
-            Set<Meeting> allMeetingsOfCommittee = committee.getMeetings();
+            List<Meeting> allMeetingsOfCommittee = committee.getMeetings();
 
             String role = committeeIdToRoleMap.get(committee.getId());
             MemberDetailsDto.CommitteeInfo committeeInfo = new MemberDetailsDto.CommitteeInfo(committee.getId(), committee.getName(), committee.getDescription(), role);

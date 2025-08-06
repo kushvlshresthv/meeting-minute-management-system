@@ -1,8 +1,11 @@
 package com.sep.mmms_backend.databuilder;
 
 import com.sep.mmms_backend.entity.*;
+import com.sep.mmms_backend.enums.CommitteeStatus;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -17,9 +20,10 @@ import java.util.Set;
 public class CommitteeBuilder {
     private String name = "committeeName";
     private String description = "committeeDescription";
-    private Set<Meeting> meetings = new HashSet<>();
-    private Set<CommitteeMembership> memberships = new HashSet<>();
+    private List<Meeting> meetings = new LinkedList<>();
+    private List<CommitteeMembership> memberships = new LinkedList<>();
     private AppUser createdBy;
+    private CommitteeStatus status = CommitteeStatus.ACTIVE;
 
     /**
      *must reference a saved 'createdBy' AppUser entity. A committee can also have 'membership' but not compulsary
@@ -40,12 +44,12 @@ public class CommitteeBuilder {
     }
 
     //NOTE: while saving a Committee, even if the meetings field is populated, nothing happens, because there is not CascadeType.PERSIST
-    public CommitteeBuilder withMembers(Set<Meeting> meetings) {
+    public CommitteeBuilder withMembers(List<Meeting> meetings) {
         this.meetings = meetings;
         return this;
     }
 
-    public CommitteeBuilder withMemberships(Set<CommitteeMembership> memberships) {
+    public CommitteeBuilder withMemberships(List<CommitteeMembership> memberships) {
         this.memberships = memberships;
         return this;
     }
@@ -65,6 +69,7 @@ public class CommitteeBuilder {
         committee.setMemberships(this.memberships);
         committee.setMeetings(this.meetings);
         committee.setCreatedBy(this.createdBy);
+        committee.setStatus(this.status);
         return committee;
     }
 }

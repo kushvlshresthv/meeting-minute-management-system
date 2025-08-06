@@ -19,7 +19,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -28,6 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -52,12 +52,13 @@ public class MemberRepositoryTests {
     @Autowired
     private AppUserRepository appUserRepository;
 
-    private Member johnDoe;
-    private Member janeDoe;
-    private Member bobSmith;
-
     @BeforeEach
     public void init() {
+
+        Member johnDoe;
+        Member janeDoe;
+        Member bobSmith;
+
         // Create a test user
         AppUser testUser = AppUserBuilder.builder().withUsername("testUser").build();
         testUser = appUserRepository.save(testUser);
@@ -71,13 +72,13 @@ public class MemberRepositoryTests {
         CommitteeMembership membership2 = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
         CommitteeMembership membership3 = CommitteeMembershipBuilder.builder().withCommittee(committee).build();
 
-        Set<CommitteeMembership> memberships1 = new HashSet<>();
+        List<CommitteeMembership> memberships1 = new LinkedList<>();
         memberships1.add(membership1);
 
-        Set<CommitteeMembership> memberships2 = new HashSet<>();
+        List<CommitteeMembership> memberships2 = new LinkedList<>();
         memberships2.add(membership2);
 
-        Set<CommitteeMembership> memberships3 = new HashSet<>();
+        List<CommitteeMembership> memberships3 = new LinkedList<>();
         memberships3.add(membership3);
 
         // Create members with different names
@@ -248,18 +249,18 @@ public class MemberRepositoryTests {
 
             // Create memberships for committee1
             CommitteeMembership membership1 = CommitteeMembershipBuilder.builder().withCommittee(committee1).withRole("member").build();
-            Set<CommitteeMembership> memberships1 = new HashSet<>();
+            List<CommitteeMembership> memberships1 = new LinkedList<>();
             memberships1.add(membership1);
 
             // Create memberships for committee2
             CommitteeMembership membership2 = CommitteeMembershipBuilder.builder().withCommittee(committee2).withRole("member").build();
-            Set<CommitteeMembership> memberships2 = new HashSet<>();
+            List<CommitteeMembership> memberships2 = new LinkedList<>();
             memberships2.add(membership2);
 
             // Create memberships for both committees
             CommitteeMembership membership3a = CommitteeMembershipBuilder.builder().withCommittee(committee1).withRole("member").build();
             CommitteeMembership membership3b = CommitteeMembershipBuilder.builder().withCommittee(committee2).withRole("member").build();
-            Set<CommitteeMembership> memberships3 = new HashSet<>();
+            List<CommitteeMembership> memberships3 = new LinkedList<>();
             memberships3.add(membership3a);
             memberships3.add(membership3b);
 
@@ -389,7 +390,7 @@ public class MemberRepositoryTests {
 
             // Create membership for the committee
             CommitteeMembership membership = CommitteeMembershipBuilder.builder().withCommittee(committee).withRole("member").build();
-            Set<CommitteeMembership> memberships = new HashSet<>();
+            List<CommitteeMembership> memberships = new LinkedList<>();
             memberships.add(membership);
 
             // Create a test member
@@ -456,7 +457,7 @@ public class MemberRepositoryTests {
                     .withCommittee(committee)
                     .withRole("member")
                     .build();
-            Set<CommitteeMembership> memberships = new HashSet<>();
+            List<CommitteeMembership> memberships = new LinkedList<>();
             memberships.add(membership);
 
             Member member = MemberBuilder.builder()
@@ -490,7 +491,7 @@ public class MemberRepositoryTests {
                     .withCommittee(committee)
                     .withRole("member")
                     .build();
-            Set<CommitteeMembership> memberships = new HashSet<>();
+            List<CommitteeMembership> memberships = new LinkedList<>();
             memberships.add(membership);
 
             Member member = MemberBuilder.builder()
@@ -521,7 +522,7 @@ public class MemberRepositoryTests {
                     .withCommittee(committee)
                     .withRole("chair")
                     .build();
-            Set<CommitteeMembership> memberships = new HashSet<>();
+            LinkedList<CommitteeMembership> memberships = new LinkedList<>();
             memberships.add(membership);
 
             Member member = MemberBuilder.builder()
