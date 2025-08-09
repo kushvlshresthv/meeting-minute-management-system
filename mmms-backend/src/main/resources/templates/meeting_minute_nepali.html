@@ -27,7 +27,7 @@
 
     <div class="attendees">
 
-        <h5 class="heading">उपस्थितिः</h5>
+        <h5 class="heading"><b>उपस्थितिः</b></h5>
         <table border="2" cellspacing="0" cellpadding="5">
             <thead>
             <tr>
@@ -39,7 +39,7 @@
             </thead>
             <tbody>
             <tr th:each="membership, iterStat : ${membershipsOfAttendees}">
-                <td th:text="${iterStat.index + 1}">1</td>
+                <td th:text="${numUtils.toNepaliNumber(iterStat.index+1)}">५</td>
                 <td th:text="${membership.member.post + ' ' + membership.member.firstNameNepali + ' ' + membership.member.lastNameNepali}"></td>
                 <td th:text="${membership.role}">संयोजक</td>
                 <td></td>
@@ -48,20 +48,28 @@
         </table>
     </div>
 
-    <div class="decisions">
-        <h5 class="heading"><b>निर्णयहरूः</b></h5>
-        <ol>
-            <li th:each="decision : ${decisions}" th:text="${decision.decision}" class="decision">No Decisions</li>
+
+    <div class="agendas" th:if="${!#lists.isEmpty(agendas)}">
+        <h5 class="heading"><b>प्रस्ताव</b></h5>
+        <ol class="agenda-lists" style="list-style-type: none; padding-left: 0;">
+            <li th:each="agenda, iterStat : ${agendas}"
+                class="decision"
+                th:text="${numUtils.toNepaliNumber(iterStat.index + 1)} + '. ' + ${agenda.agenda}">
+                No Agendas
+            </li>
         </ol>
     </div>
 
-
-    <div class="conclusion">
-        <p class="heading">
-            बैठक समापन:
-        </p>
+    <div class="decisions">
+        <h5 class="heading"><b>निर्णयहरूः</b></h5>
+        <ol class="decision-lists" style="list-style-type: none; padding-left: 0;">
+            <li th:each="decision, iterStat : ${decisions}"
+                class="decision"
+                th:text="${numUtils.toNepaliNumber(iterStat.index + 1)} + '. ' + ${decision.decision}">
+                No Decisions
+            </li>
+        </ol>
     </div>
 </div>
-
 </body>
 </html>

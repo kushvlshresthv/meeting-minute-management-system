@@ -69,7 +69,7 @@ ol {
 }
 
 
-.decision {
+.decision, .agenda {
     margin-top:0;
     margin-bottom:8px;
 }
@@ -82,10 +82,14 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
-.introduction, .decisions, .attendees {
+.introduction, .decisions, .attendees, .agendas {
     margin: 8px;
 }
 
 li,ol {
     margin: 0;
+}
+
+.agenda-lists, .decision-lists {
+    margin-left: 13px;
 }

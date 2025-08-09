@@ -5,8 +5,10 @@ import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
+import com.sep.mmms_backend.exceptions.CommitteeNotAccessibleException;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
+import com.sep.mmms_backend.exceptions.MeetingNotAccessibleException;
 import com.sep.mmms_backend.testing_tools.TestDataHelper;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -82,7 +84,7 @@ public class CheckCommitteeAccessTests {
 
 
         @Test
-        @DisplayName("Should throw IllegalOperationException when committee is not accessible")
+        @DisplayName("Should throw CommitteeNotAccessibleException when committee is not accessible")
         void testCommitteeNotAccessible() {
             // Arrange
             AppUser differentUser = new AppUser();
@@ -91,7 +93,7 @@ public class CheckCommitteeAccessTests {
 
             // Act & Assert
             assertThatThrownBy(() -> aspect.checkCommitteeAccess(joinPoint, checkCommitteeAccess))
-                    .isInstanceOf(IllegalOperationException.class)
+                    .isInstanceOf(CommitteeNotAccessibleException.class)
                     .hasMessageContaining(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE.toString());
         }
 
@@ -122,20 +124,17 @@ public class CheckCommitteeAccessTests {
 
 
         @Test
-        @DisplayName("Should throw IllegalOperationException when meeting is not in committee")
-        void testMeetingNotInCommittee() {
+        @DisplayName("Should throw MeetingNotAccessible when meeting is not accessible")
+        void testCommitteeNotAccessible() {
             // Arrange
-            Meeting differentMeeting = new Meeting();
-            differentMeeting.setUuid("aaetae");
-
-            when(joinPoint.getArgs()).thenReturn(new Object[]{committee, username, differentMeeting});
-
+            meeting.setCreatedBy("differentUser");
 
             // Act & Assert
             assertThatThrownBy(() -> aspect.checkCommitteeAccess(joinPoint, checkCommitteeAccess))
-                    .isInstanceOf(IllegalOperationException.class)
-                    .hasMessageContaining(ExceptionMessages.MEETING_NOT_IN_COMMITTEE.toString());
+                    .isInstanceOf(MeetingNotAccessibleException.class)
+                    .hasMessageContaining(ExceptionMessages.MEETING_NOT_ACCESSIBLE.toString());
         }
+
 
         @Test
         @DisplayName("Should not throw exception when meeting exists and is in committee")

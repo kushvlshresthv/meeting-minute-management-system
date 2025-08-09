@@ -59,11 +59,12 @@ public class CommitteeController {
      */
 
 
+    //TODO: Create Tests
     @GetMapping("/getCommitteeDetails")
     public ResponseEntity<Response> getCommitteeDetails(@RequestParam int committeeId, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
         CommitteeDetailsDto committeeDetails = committeeService.getCommitteeDetails(committee, authentication.getName());
-        return ResponseEntity.ok().body(new Response(committeeDetails));
+        return ResponseEntity.ok().body(new Response(ResponseMessages.COMMITTEES_RETRIEVED_SUCCESSFULLY,committeeDetails));
     }
 
     @PostMapping("/addMembersToCommittee")

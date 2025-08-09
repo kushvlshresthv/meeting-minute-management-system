@@ -1,9 +1,7 @@
 package com.sep.mmms_backend.controller;
 
-import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
-import com.sep.mmms_backend.exceptions.IllegalOperationException;
-import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.service.MeetingMinutePreparationService;
+import com.sep.mmms_backend.utils.NumberUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +35,7 @@ public class MeetingMinuteController {
                 String templateName ="meeting_minute_nepali";
 
                 Map<String, Object> meetingMinuteData = meetingMinutePreparationService.prepareMeetingMinuteData(committeeId, meetingId, authentication.getName());
+                meetingMinuteData.put("numUtils", new NumberUtils());
 
                 if(download != null && download.equalsIgnoreCase("docx")) {
                     meetingMinuteData.put("download", true);

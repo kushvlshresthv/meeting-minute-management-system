@@ -277,6 +277,7 @@ public class MemberRepositoryTests {
                     .withLastName("Committee2")
                     .withMemberships(memberships2)
                     .build();
+
             memberInCommittee2 = memberRepository.save(memberInCommittee2);
 
             memberInBothCommittees = MemberBuilder.builder()
@@ -284,6 +285,9 @@ public class MemberRepositoryTests {
                     .withLastName("BothCommittees")
                     .withMemberships(memberships3)
                     .build();
+
+            //as access is also checked
+
             memberInBothCommittees = memberRepository.save(memberInBothCommittees);
         }
 
@@ -297,7 +301,7 @@ public class MemberRepositoryTests {
             memberIds.add(memberInCommittee2.getId());
 
             // When
-            Set<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId());
+            List<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId(), "testUser");
 
             // Then
             Assertions.assertThat(foundMembers).isNotNull();
@@ -316,7 +320,7 @@ public class MemberRepositoryTests {
             memberIds.add(memberInCommittee2.getId());
 
             // When
-            Set<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId());
+            List<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId(), "testUser");
 
             // Then
             Assertions.assertThat(foundMembers).isNotNull();
@@ -330,7 +334,7 @@ public class MemberRepositoryTests {
             Set<Integer> memberIds = new HashSet<>();
 
             // When
-            Set<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId());
+            List<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId(), "testUser");
 
             // Then
             Assertions.assertThat(foundMembers).isNotNull();
@@ -345,7 +349,7 @@ public class MemberRepositoryTests {
             memberIds.add(memberInBothCommittees.getId());
 
             // When
-            Set<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId());
+            List<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee1.getId(), "testUser");
 
             // Then
             Assertions.assertThat(foundMembers).isNotNull();
@@ -361,7 +365,7 @@ public class MemberRepositoryTests {
             memberIds.add(memberInBothCommittees.getId());
 
             // When
-            Set<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee2.getId());
+            List<Member> foundMembers = memberRepository.findExistingMembersInCommittee(memberIds, committee2.getId(), "testUser");
 
             // Then
             Assertions.assertThat(foundMembers).isNotNull();

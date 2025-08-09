@@ -1,14 +1,13 @@
 package com.sep.mmms_backend.service;
-import org.apache.poi.xwpf.usermodel.*;
 
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
-import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.repository.CommitteeRepository;
+import org.apache.poi.xwpf.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,9 +73,22 @@ public class MeetingMinutePreparationService {
 
         // 3. Populate Data Map
         Map<String, Object> modelData = new HashMap<>();
-        modelData.put("meetingHeldDate", toNepaliDigits(meeting.getHeldDate().toString()));
+        LocalDate meetingHeldDate = meeting.getHeldDate();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDateForBSConversion = meeting.getHeldDate().format(formatter);
+
+//        DateConverter dc = new DateConverter();
+        try {
+//            modelData.put("meetingHeldDate", toNepaliDigits(dc.convertAdToBs(formattedDateForBSConversion)));
+            modelData.put("meetingHeldDate", toNepaliDigits(formattedDateForBSConversion));
+        } catch(Exception e) {
+
+            //TODO: Handle this exception
+            System.out.println("TODO: Handle Exception");
+        }
+
+        formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
         String formattedDate = meeting.getHeldDate().format(formatter);
         modelData.put("meetingHeldDateEnglish", formattedDate);
 
@@ -87,6 +100,7 @@ public class MeetingMinutePreparationService {
         modelData.put("committeeName", meeting.getCommittee().getName());
         modelData.put("membershipsOfAttendees", getSortedAttendeesMemberships(meeting, committeeId));
         modelData.put("decisions", meeting.getDecisions());
+        modelData.put("agendas", meeting.getAgendas());
 
         return modelData;
     }
@@ -135,23 +149,10 @@ public class MeetingMinutePreparationService {
         return partOfDay;
     }
 
-//    private String formatCoordinatorFullName(Member coordinator) {
-//
-//       return coordinator.getFirstNameNepali() + " " + coordinator.getLastNameNepali();
-//    }
-
     private List<CommitteeMembership> getSortedAttendeesMemberships(Meeting meeting, int committeeId) {
         List<CommitteeMembership> membershipsOfAttendees = meeting.getAttendees().stream()
                 .map(attendee -> {
                     CommitteeMembership membership = memberService.getMembership(attendee, committeeId);
-                    //we are sure that attendee is part of the committee because we have already checked that meeting is part of the committee and a member can only be an attendee to a meeting if both belong to the same committee
-
-
-//                    //Furthermore, the coordinator is automatically moved to an attendee of the meeting when a member is registered as a coordinator for a meeting.
-//                    if (attendee.getId() == meeting.getCoordinator().getId()) {
-//                        membership.setRole("Coordinator");
-//                    }
-
 
                     return membership;
                 })
@@ -226,6 +227,7 @@ public class MeetingMinutePreparationService {
     public String renderHtmlTemplate(String templateName, Map<String, Object> dataModel) {
         Context context = new Context();
         dataModel.forEach(context::setVariable);
+
         return templateEngine.process(templateName, context);
     }
 
@@ -245,6 +247,9 @@ public class MeetingMinutePreparationService {
         #attendees
             #heading-attendees
             #attendee-table
+        #agendas  (only have this section if agenda isn't empty)
+            #heading-agendas
+            #agendas-list
         #decisions
             #heading-decisions
             #decisions-list
@@ -310,6 +315,61 @@ public class MeetingMinutePreparationService {
                     }
                 }
 
+
+                else if(element.className().contains("agendas")) {
+                    Elements children = element.children();
+
+                    //deicisions has two children, a heading, and a list
+                    for(Element child: children) {
+                        if(child.className().contains("heading")) {
+                            paragraph = document.createParagraph();
+                            paragraph.setSpacingBefore(200);
+                            paragraph.setSpacingAfter(200);
+                            run = paragraph.createRun();
+                            styleHeading(run, child);
+                        }
+
+                        if(child.nodeName().equals("ol")) {
+                            Elements agendas = child.children();
+                            int count = 1;
+                            final int DECISION_SPACING = 17;
+
+                            // 1. Create numbering instance
+                            XWPFNumbering numbering = document.createNumbering();
+
+                            // 2. Define abstract numbering style (numbered list)
+                            CTAbstractNum abstractNum = CTAbstractNum.Factory.newInstance();
+                            abstractNum.setAbstractNumId(BigInteger.ZERO);
+
+                            CTLvl level = abstractNum.addNewLvl();
+                            level.setIlvl(BigInteger.ZERO);
+                            level.addNewNumFmt().setVal(STNumberFormat.HINDI_NUMBERS);
+                            level.addNewLvlText().setVal("%1.");
+                            level.addNewStart().setVal(BigInteger.ONE);
+
+                            // 3. Add the abstract numbering to document
+                            XWPFAbstractNum xwpfAbstractNum = new XWPFAbstractNum(abstractNum);
+                            BigInteger abstractNumID = numbering.addAbstractNum(xwpfAbstractNum);
+
+                            // 4. Create a numbering instance for the list
+                            BigInteger numID = numbering.addNum(abstractNumID);
+
+                            // 5. Now add decisions with automatic numbering
+                            for (Element agenda : agendas) {
+                                paragraph = document.createParagraph();
+                                paragraph.setNumID(numID);  // ← This line activates numbering!
+
+                                // Fix line wrapping for numbered list
+                                paragraph.setIndentationLeft(720);      // Indent whole paragraph
+                                paragraph.setIndentationHanging(360);   // Hanging indent for number alignment
+
+                                run = paragraph.createRun();
+                                run.setText(agenda.text().substring(3));
+                            }
+                        }
+                    }
+                }
+
                 else if(element.className().contains("decisions")) {
                     Elements children = element.children();
 
@@ -328,27 +388,27 @@ public class MeetingMinutePreparationService {
                             int count = 1;
                             final int DECISION_SPACING = 17;
 
-                        // 1. Create numbering instance
+                            // 1. Create numbering instance
                             XWPFNumbering numbering = document.createNumbering();
 
-                        // 2. Define abstract numbering style (numbered list)
+                            // 2. Define abstract numbering style (numbered list)
                             CTAbstractNum abstractNum = CTAbstractNum.Factory.newInstance();
                             abstractNum.setAbstractNumId(BigInteger.ZERO);
 
                             CTLvl level = abstractNum.addNewLvl();
                             level.setIlvl(BigInteger.ZERO);
-                            level.addNewNumFmt().setVal(STNumberFormat.DECIMAL);
+                            level.addNewNumFmt().setVal(STNumberFormat.HINDI_NUMBERS);
                             level.addNewLvlText().setVal("%1.");
                             level.addNewStart().setVal(BigInteger.ONE);
 
-                        // 3. Add the abstract numbering to document
+                            // 3. Add the abstract numbering to document
                             XWPFAbstractNum xwpfAbstractNum = new XWPFAbstractNum(abstractNum);
                             BigInteger abstractNumID = numbering.addAbstractNum(xwpfAbstractNum);
 
-                        // 4. Create a numbering instance for the list
+                            // 4. Create a numbering instance for the list
                             BigInteger numID = numbering.addNum(abstractNumID);
 
-                        // 5. Now add decisions with automatic numbering
+                            // 5. Now add decisions with automatic numbering
                             for (Element decision : decisions) {
                                 paragraph = document.createParagraph();
                                 paragraph.setNumID(numID);  // ← This line activates numbering!
@@ -358,7 +418,7 @@ public class MeetingMinutePreparationService {
                                 paragraph.setIndentationHanging(360);   // Hanging indent for number alignment
 
                                 run = paragraph.createRun();
-                                run.setText(decision.text());
+                                run.setText(decision.text().substring(3));
                             }
                         }
                     }
@@ -386,6 +446,7 @@ public class MeetingMinutePreparationService {
 
 
 
+    //copies html table to msword table
     public void copyTable(XWPFTable newTable, Element oldTable) {
         //getting all the rows
         Elements oldRows = oldTable.select("tr");

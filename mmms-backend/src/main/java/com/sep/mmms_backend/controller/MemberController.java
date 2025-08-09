@@ -1,9 +1,6 @@
 package com.sep.mmms_backend.controller;
 
-import com.sep.mmms_backend.dto.MemberCreationDto;
-import com.sep.mmms_backend.dto.MemberDetailsDto;
-import com.sep.mmms_backend.dto.MemberSummaryDto;
-import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
+import com.sep.mmms_backend.dto.*;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.response.Response;
@@ -14,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,10 +25,13 @@ public class MemberController {
         this.committeeService = committeeService;
     }
 
+    //TODO: Create Tests
     @GetMapping("/searchMembersByName")
     public ResponseEntity<Response> getMembersByName(@RequestParam(required=true) String name) {
         List<Member> fetchedMembers = memberService.searchMemberByName(name);
-        return ResponseEntity.ok(new Response(fetchedMembers));
+        List<MemberSearchResultDto> memberSearchResultDtos = new ArrayList<>();
+        fetchedMembers.forEach(member-> memberSearchResultDtos.add(new MemberSearchResultDto(member)));
+        return ResponseEntity.ok(new Response("Results: ", memberSearchResultDtos));
     }
 
 

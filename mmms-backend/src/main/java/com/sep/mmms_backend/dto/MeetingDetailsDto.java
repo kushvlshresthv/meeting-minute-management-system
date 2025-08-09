@@ -1,6 +1,7 @@
 package com.sep.mmms_backend.dto;
 
 
+import com.sep.mmms_backend.entity.Agenda;
 import com.sep.mmms_backend.entity.Decision;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
@@ -24,7 +25,8 @@ public class MeetingDetailsDto {
     private final LocalDate createdDate;
     private final LocalDate updatedDate;
     private final Set<MemberSummaryDto> attendees = new HashSet<>();
-    private final List<DecisionDto> decision = new ArrayList<>();
+    private final List<DecisionDto> decisions = new ArrayList<>();
+    private final List<AgendaDto> agendas = new ArrayList<>();
 
     public MeetingDetailsDto(Meeting meeting) {
         this.id = meeting.getId();
@@ -41,7 +43,11 @@ public class MeetingDetailsDto {
         }
 
         for(Decision decision: meeting.getDecisions()) {
-            this.decision.add(new DecisionDto(decision));
+            this.decisions.add(new DecisionDto(decision));
+        }
+
+        for(Agenda agenda: meeting.getAgendas()) {
+            this.agendas.add(new AgendaDto(agenda));
         }
     }
 }

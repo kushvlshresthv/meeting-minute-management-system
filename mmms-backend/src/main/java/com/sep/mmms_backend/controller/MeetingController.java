@@ -63,9 +63,15 @@ public class MeetingController {
 
     //TODO: Create Tests
     @PostMapping("/createMeeting")
-    public ResponseEntity<Response> createMeeting(@RequestBody(required = true) MeetingCreationDto meetingCreationDto, @RequestParam(required=true) int committeeId, Authentication authentication) {
+    public ResponseEntity<Response> createMeeting(
+            @RequestBody(required = true) MeetingCreationDto meetingCreationDto,
+            @RequestParam(required=true) int committeeId,
+            Authentication authentication) {
+
         Committee committee = committeeService.findCommitteeById(committeeId);
+
         Meeting savedMeeting =  meetingService.saveNewMeeting(meetingCreationDto, committee, authentication.getName());
+
         MeetingSummaryDto savedMeetingSummary = new MeetingSummaryDto(savedMeeting);
         return ResponseEntity.ok(new Response(ResponseMessages.MEETING_CREATION_SUCCESSFUL, savedMeetingSummary));
     }

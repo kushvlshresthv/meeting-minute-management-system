@@ -32,4 +32,6 @@ public class MeetingCreationDto {
 
     @NotEmpty(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     private List<String> decisions = new ArrayList<>();
+
+    private List<String> agendas = new ArrayList<>();
 }

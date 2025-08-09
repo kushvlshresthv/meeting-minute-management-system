@@ -95,3 +95,13 @@ CREATE TABLE decisions (
            FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
+CREATE TABLE agendas (
+                           agenda_id INT AUTO_INCREMENT PRIMARY KEY,
+                           uuid VARCHAR(36) NOT NULL UNIQUE,
+
+                           meeting_id INT NOT NULL,
+                           agenda TEXT,
+                           FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+

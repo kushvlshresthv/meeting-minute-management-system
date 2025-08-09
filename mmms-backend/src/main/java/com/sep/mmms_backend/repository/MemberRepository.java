@@ -57,7 +57,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     //TODO: Tests [unit tests does not test whether the createdBy condition is satisfied as it was added later]
 
     @Query("SELECT m FROM Member m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId AND m.createdBy = :username")
-    List<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId, String username);
+    List<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId, @Param("username") String username);
 
 
 

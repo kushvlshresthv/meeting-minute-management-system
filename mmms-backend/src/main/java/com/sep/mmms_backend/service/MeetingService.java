@@ -20,12 +20,10 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MemberRepository memberRepository;
     private final EntityValidator entityValidator;
-    private final CommitteeRepository committeeRepository;
 
-    public MeetingService(MeetingRepository meetingRepository, CommitteeRepository committeeRepository, MemberRepository memberRepository, EntityValidator entityValidator) {
+    public MeetingService(MeetingRepository meetingRepository, MemberRepository memberRepository, EntityValidator entityValidator) {
         this.meetingRepository = meetingRepository;
         this.entityValidator = entityValidator;
-        this.committeeRepository = committeeRepository;
         this.memberRepository = memberRepository;
     }
 
@@ -35,6 +33,7 @@ public class MeetingService {
         entityValidator.validate(meetingCreationDto);
 
         Meeting meeting = new Meeting();
+
         meeting.setCommittee(committee);
         meeting.setTitle(meetingCreationDto.getTitle());
         if(meetingCreationDto.getDescription() != null)
@@ -48,16 +47,22 @@ public class MeetingService {
             meeting.addDecision(decision);
         });
 
+        meetingCreationDto.getAgendas().forEach(agendaString -> {
+            Agenda agenda = new Agenda();
+            agenda.setAgenda(agendaString);
+            meeting.addAgenda(agenda);
+        });
+
         //populating the attendees
         List<Integer> requestedAttendees = meetingCreationDto.getAttendeeIds().stream().toList();
         if(!requestedAttendees.isEmpty()) {
             List<Member> foundMembers = memberRepository.findAccessibleMembersByIds(requestedAttendees, username);
             memberRepository.validateWhetherAllMembersAreFound(requestedAttendees, foundMembers);
 
-            List<Member> membersInCommittee = new LinkedList<>();
+            Set<Member> membersInCommittee = new LinkedHashSet<>();
 
             if(committee != null && committee.getMemberships()!= null)  {
-                membersInCommittee = committee.getMemberships().stream().map(CommitteeMembership::getMember).toList();
+                membersInCommittee = committee.getMemberships().stream().map(CommitteeMembership::getMember).collect(Collectors.toSet());
             }
 
             //check that the found members belong to the committee
@@ -72,7 +77,7 @@ public class MeetingService {
         return meetingRepository.save(meeting);
     }
 
-    //This methods needs to be updated
+    //This method needs to be updated
     public Meeting updateMeeting(Meeting meeting) {
         if(meetingRepository.existsById(meeting.getId())) {
             Meeting existingMeeting = meetingRepository.findMeetingById(meeting.getId());

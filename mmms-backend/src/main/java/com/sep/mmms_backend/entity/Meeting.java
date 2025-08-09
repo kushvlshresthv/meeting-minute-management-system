@@ -86,9 +86,18 @@ public class Meeting {
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     private List<Decision> decisions = new ArrayList<>();
 
+    @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
+    private List<Agenda> agendas = new ArrayList<>();
+
     public void addDecision(Decision decision) {
         decision.setMeeting(this);
         this.decisions.add(decision);
+    }
+
+
+    public void addAgenda(Agenda agenda) {
+        agenda.setMeeting(this);
+        this.agendas.add(agenda);
     }
 
     @PrePersist

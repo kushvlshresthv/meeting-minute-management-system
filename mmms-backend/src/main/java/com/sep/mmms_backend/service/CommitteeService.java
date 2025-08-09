@@ -107,6 +107,7 @@ public class CommitteeService {
      * NOTE: membership is populated in the Members object, not in the committee object
      */
 
+    //TODO: Create Tests
     @CheckCommitteeAccess
     public CommitteeDetailsDto getCommitteeDetails(Committee committee, String username) {
         return new CommitteeDetailsDto(committee);

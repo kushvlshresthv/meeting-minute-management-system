@@ -41,6 +41,8 @@ public class MemberService {
      * - If the keyword is two or more words, it uses the first two words to search
      * for a match in the first and last name fields.
      */
+    //TODO: Create Tests
+    //TODO: Optimization This fetches all data of members, but only memberId, firstName, lastName, and post is required
     public List<Member> searchMemberByName(String keyword) {
         if (!StringUtils.hasText(keyword)) {
             return Collections.emptyList();
