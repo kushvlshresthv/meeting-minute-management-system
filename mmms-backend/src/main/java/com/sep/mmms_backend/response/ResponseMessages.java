@@ -25,7 +25,7 @@ public enum ResponseMessages {
 
     //COMMITTEE RELATED:
     COMMITTEE_CREATION_SUCCESS("Committee created successfully"),
-    COMMITTEE_MEMBER_ADDITION_SUCCESS("New member added to the committee successfully"),
+    COMMITTEE_MEMBER_ADDITION_SUCCESS("New members added to the committee successfully"),
 
     MEMBER_CREATION_SUCCESS("Member created successfully"),
 

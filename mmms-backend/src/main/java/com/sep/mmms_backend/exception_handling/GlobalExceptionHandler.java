@@ -110,4 +110,11 @@ public class GlobalExceptionHandler {
         log.error("HttpMessageNotReadableException: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(new Response(ResponseMessages.HTTP_MESSAGE_NOT_READABLE + ": " + ex.getMessage()));
     }
+
+
+    @ExceptionHandler(MembershipAlreadyExistsException.class)
+    public ResponseEntity<Response> memberAlreadyExists(MembershipAlreadyExistsException ex) {
+        log.error("MembershipAlreadExistsException: {}", ex.getMessage() + "[memberId, role]: " + ex.getMemberIdAndRole());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage() + "[memberId, role]: " + ex.getMemberIdAndRole()));
+    }
 }

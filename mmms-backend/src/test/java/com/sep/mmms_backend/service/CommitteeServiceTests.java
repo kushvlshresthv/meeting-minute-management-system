@@ -183,7 +183,8 @@ public class CommitteeServiceTests {
 
             verify(entityValidator, times(1)).validate(committeeCreationDto);
             verify(appUserService, times(1)).loadUserByUsername(username);
-            verify(memberRepository, times(1)).findAndValidateMembers(anySet());
+            verify(memberRepository, times(1)).findAccessibleMembersByIds(any(), any());
+            verify(memberRepository, times(1)).validateWhetherAllMembersAreFound(any(), any());
             verify(committeeRepository, times(1)).save(any(Committee.class));
         }
     }

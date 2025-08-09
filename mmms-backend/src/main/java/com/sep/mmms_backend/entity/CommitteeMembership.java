@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Persistable;
 
@@ -39,6 +38,7 @@ public class CommitteeMembership implements Persistable<CommitteeMembershipId> {
      * when committee field of this entity is populated, the @EmbeddedId is also populated due to @MapsId used
      */
 
+    //NOTE: here the primary key column (from the above @EmbeddedId) is also the foreign key column
     @ManyToOne(fetch= FetchType.LAZY)
     @MapsId("committeeId")  //it maps a relationship field to a part of the embedded primary key
     @JoinColumn(name="committee_id", referencedColumnName="committee_id")

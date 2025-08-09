@@ -1,7 +1,6 @@
 package com.sep.mmms_backend.dto;
 
 import com.sep.mmms_backend.global_constants.ValidationErrorMessages;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -29,8 +28,8 @@ public class MeetingCreationDto {
     @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     private String heldPlace;
 
-    private Set<Integer> attendees = new HashSet<>();
+    private LinkedHashSet<Integer> attendeeIds = new LinkedHashSet<>();
 
     @NotEmpty(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
-    private List<String> decisions;
+    private List<String> decisions = new ArrayList<>();
 }

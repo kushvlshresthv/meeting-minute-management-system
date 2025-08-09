@@ -98,7 +98,7 @@ public class Meeting {
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotEmpty
-    private List<Decision> decisions;
+    private List<Decision> decisions = new ArrayList<>();
 
     public void addDecision(Decision decision) {
         decision.setMeeting(this);

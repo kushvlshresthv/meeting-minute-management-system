@@ -9,13 +9,14 @@ import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Member;
-import com.sep.mmms_backend.exceptions.*;
+import com.sep.mmms_backend.exceptions.ExceptionMessages;
+import com.sep.mmms_backend.exceptions.InvalidMembershipException;
+import com.sep.mmms_backend.exceptions.MembershipAlreadyExistsException;
 import com.sep.mmms_backend.repository.CommitteeMembershipRepository;
 import com.sep.mmms_backend.repository.CommitteeRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -52,8 +53,10 @@ public class CommitteeService {
             throw new InvalidMembershipException(ExceptionMessages.MEMBERSHIP_ROLE_MISSING);
         }
 
-        Set<Integer> requestedMemberIds = committeeCreationDto.getMembers().keySet();
-        List<Member> foundMembers = memberRepository.findAndValidateMembers(requestedMemberIds);
+        List<Integer> requestedMemberIds = committeeCreationDto.getMembers().keySet().stream().toList();
+
+        List<Member> foundMembers = memberRepository.findAccessibleMembersByIds(requestedMemberIds, username);
+        memberRepository.validateWhetherAllMembersAreFound(requestedMemberIds, foundMembers);
 
         Committee committee = new Committee();
         committee.setCreatedBy(appUserService.loadUserByUsername(username));
@@ -97,7 +100,7 @@ public class CommitteeService {
 
     /**
      * returns both Committee and Members associated with the committee
-     *
+     * <br>
      * NOTE: membership is populated in the Members object, not in the committee object
      */
 
@@ -118,32 +121,30 @@ public class CommitteeService {
     }
 
 
-    //TODO: this method does not check whether the membership already exists, if it does, it simply throws NotUniqueObjectException
-    //TODO: thie method also does not check whether the newMemberships has the same member id, it simply throws NotUniqueObjectException in this case as well
-    //NOTE: this method also tests whether the members are accessible to the current user with 'createdBy' field
-    /*
+    /**
         BUG FIX: This method won't work IF we try to populate the 'committee' with the new 'memberships' because  when trying to save memberships from cascading, JPA will decide whether the membership is either new or not by checking whether membership's primary key value is null or not(which it isn't.
-
+        <br><br>
         Since, not null, JPA will try to merge(), but since the row is not present in the database, it will throw EntityNotExistException.
-
+         <br><br>
         Here, since we are using CommitteeMembershipRepository, JPA will decide whether the membership is either new or not by calling isNew() method since CommmiteeMembership implements Presistable interface
      */
     @CheckCommitteeAccess
     @Transactional
-    public List<Member> addMembershipsToCommittee(Committee committee, Set<NewMembershipRequest> newMembershipRequests, String username) {
-    Set<Integer> newMemberIds = newMembershipRequests.stream().map(NewMembershipRequest::memberId).collect(Collectors.toSet());
+    public void addMembershipsToCommittee(Committee committee, LinkedHashSet<NewMembershipRequest> newMembershipRequests, String username) {
+        List<Integer> newMemberIds = newMembershipRequests.stream().map(NewMembershipRequest::memberId).collect(Collectors.toList());
 
+        List<Member> validNewMembers = memberRepository.findAccessibleMembersByIds(newMemberIds, username);
+        memberRepository.validateWhetherAllMembersAreFound(newMemberIds, validNewMembers);
 
-        List<Member> validNewMembers = memberRepository.findAndValidateMembers(newMemberIds);
+        //check if the membership for the member and committee already exists
+        List<CommitteeMembership> alreadyExistingMemberships = committeeMembershipRepository.findExistingMemberships(newMemberIds, committee.getId());
+        if(!alreadyExistingMemberships.isEmpty()) {
+            Map<Integer, String> memberIdAndRole = alreadyExistingMemberships.stream().collect(Collectors.toMap(membership->membership.getMember().getId(), CommitteeMembership::getRole));
+            throw new MembershipAlreadyExistsException(ExceptionMessages.MEMBERSHIP_ALREADY_EXISTS, memberIdAndRole);
+        }
 
-        validNewMembers.forEach(member ->{
-                if(!member.getCreatedBy().equals(username)) {
-                    throw new IllegalOperationException(ExceptionMessages.MEMBER_NOT_ACCESSIBLE);
-                }
-        });
 
         Map<Integer, String> rolesMap = newMembershipRequests.stream().collect(Collectors.toMap(NewMembershipRequest::memberId, NewMembershipRequest::role));
-
         List<CommitteeMembership> newMemberships = new ArrayList<>();
 
         for(Member member: validNewMembers) {
@@ -153,8 +154,8 @@ public class CommitteeService {
             newMembership.setRole(rolesMap.get(member.getId()));
             newMemberships.add(newMembership);
         }
+
         committeeMembershipRepository.saveAll(newMemberships);
-        return validNewMembers;
     }
 
     public Committee findCommitteeById(int committeeId) {

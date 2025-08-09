@@ -10,8 +10,6 @@ import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +36,8 @@ public class MeetingService {
         Meeting meeting = new Meeting();
         meeting.setCommittee(committee);
         meeting.setTitle(meetingCreationDto.getTitle());
-        meeting.setDescription(meetingCreationDto.getDescription());
+        if(meetingCreationDto.getDescription() != null)
+            meeting.setDescription(meetingCreationDto.getDescription());
         meeting.setHeldDate(meetingCreationDto.getHeldDate());
         meeting.setHeldTime(meetingCreationDto.getHeldTime());
         meeting.setHeldPlace(meetingCreationDto.getHeldPlace());
@@ -49,9 +48,10 @@ public class MeetingService {
         });
 
         //populating the attendees
-        Set<Integer> requestedAttendees = meetingCreationDto.getAttendees();
+        List<Integer> requestedAttendees = meetingCreationDto.getAttendeeIds().stream().toList();
         if(!requestedAttendees.isEmpty()) {
-            List<Member> foundMembers = memberRepository.findAndValidateMembers(requestedAttendees);
+            List<Member> foundMembers = memberRepository.findAccessibleMembersByIds(requestedAttendees, username);
+            memberRepository.validateWhetherAllMembersAreFound(requestedAttendees, foundMembers);
 
             List<Member> membersInCommittee = new LinkedList<>();
 
@@ -109,7 +109,7 @@ public class MeetingService {
                     .map(Member::getId)
                     .collect(Collectors.toSet());
 
-            Set<Integer> missingOrInvalidIds = new HashSet<>(newAttendeeIds);
+            List<Integer> missingOrInvalidIds = new LinkedList<>(newAttendeeIds);
             missingOrInvalidIds.removeAll(foundIds);
 
 

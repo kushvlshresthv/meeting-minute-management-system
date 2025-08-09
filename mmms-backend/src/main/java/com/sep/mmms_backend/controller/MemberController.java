@@ -40,22 +40,6 @@ public class MemberController {
      * @param memberDto member data to be persisted
      */
 
-    /*
-        a valid request json example
-        {
-            "firstName": "Rajesh",
-            "lastName": "Dahal",
-            "institution": "Tribhuvan University",
-            "post": "Professor",
-            "qualification": "Er",
-            "email": "daha@gmail.cou",
-            "memberships: [
-                {
-                    "role": "SECRETARY",
-                }
-            ]
-        }
-     */
 
     @PostMapping("/createMember")
     public ResponseEntity<Response> createMember(@RequestParam(required = true) int committeeId, @RequestBody(required=true) MemberCreationDto memberDto , Authentication authentication) {
@@ -67,18 +51,17 @@ public class MemberController {
         return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS, memberSummaryDto));
     }
 
-    /** IMPORTANT NOTE:
-
+    /** <h2>IMPORTANT NOTE</h2>
      * whether a particular member is acceesbile by a particular user is checked by comparing username
-
+       <br> <br>
      * if the username is made changeable in the future, this has to be updated as well
-
+       <br> <br>
      * the resason the 'created_by' section was not choosen to be 'id' is because, to retreive the 'id' of the current user, a database operation is required, which flushes the context to save the entity before the 'created_by' section is populated in the entity causing an error
      */
+
     @GetMapping("/getMemberDetails")
     public ResponseEntity<Response> getMemberDetails(@RequestParam(required=true) int memberId, Authentication authentication) {
         MemberDetailsDto memberDetailsDto = memberService.getMemberDetails(memberId, authentication.getName());
-
         return ResponseEntity.ok(new Response(memberDetailsDto));
     }
 

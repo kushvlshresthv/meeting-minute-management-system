@@ -21,7 +21,8 @@ public enum ExceptionMessages {
     MEMBERSHIP_ROLE_MISSING("Membership role missing"),
 
     MEETING_NOT_ACCESSIBLE("Meeting not accessible"),
-    COMMITTEE_OR_MEETING_NOT_ACCESSIBLE("Committee or meeting not accessible")
+    COMMITTEE_OR_MEETING_NOT_ACCESSIBLE("Committee or meeting not accessible"),
+    MEMBERSHIP_ALREADY_EXISTS("Membership already exists"),
 
     ;
 

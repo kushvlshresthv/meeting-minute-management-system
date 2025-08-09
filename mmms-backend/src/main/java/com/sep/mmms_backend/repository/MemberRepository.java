@@ -1,5 +1,6 @@
 package com.sep.mmms_backend.repository;
 
+import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
@@ -9,10 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -21,7 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     /**
      * Searches for a single keyword in either the first name or the last name.
      */
-    @Query("SELECT m FROM members m WHERE LOWER(m.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(m.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT m FROM Member m WHERE LOWER(m.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(m.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Member> findByFirstNameOrLastName(@Param("keyword") String keyword);
 
     /**
@@ -29,7 +27,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
      *If a member's first name matches key1 but their last name doesn't match key2 (e.g., searching for "John Doe" finds a member named "John Smith"), the first condition (LOWER(m.firstName) LIKE ... :key1 ...) is still true, so the member is returned.
      */
-    @Query("SELECT m FROM members m WHERE " +
+    @Query("SELECT m FROM Member m WHERE " +
             "LOWER(m.firstName) LIKE LOWER(CONCAT('%', :key1, '%')) OR " +
             "LOWER(m.lastName)  LIKE LOWER(CONCAT('%', :key1, '%')) OR " +
             "LOWER(m.firstName) LIKE LOWER(CONCAT('%', :key2, '%')) OR " +
@@ -55,7 +53,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
      * @param committeeId the id of the committee to which the member should belong to
      * @return set of member objects
      */
-    @Query("SELECT m FROM members m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId")
+    @Query("SELECT m FROM Member m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId")
     Set<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId);
 
 
@@ -88,21 +86,34 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     public List<Member> findAllMembersByCreatedBy(String username);
 
 
+
+
     /**
-     * Checks if the provided memberIds are in the database and then
+     * returns all members with the provided memberIds if they are accessible by the 'username' by checking the 'createdBy' field
+     */
+    @Query("SELECT m FROM Member m WHERE m.id IN :memberIds AND m.createdBy = :username")
+    List<Member> findAccessibleMembersByIds(
+            @Param("memberIds") List<Integer> memberIds,
+            @Param("username") String username
+    );
+
+
+    /**
+     * Checks if all requiredMemberIds in foundMembers
      * If no, throws MemberDoesNotExistException
      * If yes, retrieves all the Members from the database
      * It never returns null becase finaAllMembersById() never returns null
+     * NOTE: this method is put in repository as various serivce use this
      */
-    public default List<Member> findAndValidateMembers(Set<Integer> memberIds) {
-        List<Member> foundMembers = this.findAllMembersById(memberIds);
-
-        if (foundMembers.size() != memberIds.size()) {
-            Set<Integer> foundMemberIds = foundMembers.stream().map(Member::getId).collect(Collectors.toSet());
-            Set<Integer> missingIds = new HashSet<>(memberIds);
+    public default void validateWhetherAllMembersAreFound(List<Integer> requiredMemberIds, List<Member> foundMembers) {
+        if (foundMembers.size() != requiredMemberIds.size()) {
+            List<Integer> foundMemberIds = foundMembers.stream().map(Member::getId).toList();
+            List<Integer> missingIds = new LinkedList<>(requiredMemberIds);
             missingIds.removeAll(foundMemberIds);
             throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, missingIds);
         }
-        return foundMembers;
     }
+
+
+
 }

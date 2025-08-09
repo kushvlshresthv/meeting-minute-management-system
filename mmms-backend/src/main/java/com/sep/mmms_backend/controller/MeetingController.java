@@ -2,6 +2,7 @@ package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.dto.MeetingCreationDto;
 import com.sep.mmms_backend.dto.MeetingDetailsDto;
+import com.sep.mmms_backend.dto.MeetingSummaryDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
@@ -63,7 +64,8 @@ public class MeetingController {
     public ResponseEntity<Response> createMeeting(@RequestBody(required = true) MeetingCreationDto meetingCreationDto, @RequestParam(required=true) int committeeId, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
         Meeting savedMeeting =  meetingService.saveNewMeeting(meetingCreationDto, committee, authentication.getName());
-        return ResponseEntity.ok(new Response(savedMeeting));
+        MeetingSummaryDto savedMeetingSummary = new MeetingSummaryDto(savedMeeting);
+        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_CREATION_SUCCESSFUL, savedMeetingSummary));
     }
 
 

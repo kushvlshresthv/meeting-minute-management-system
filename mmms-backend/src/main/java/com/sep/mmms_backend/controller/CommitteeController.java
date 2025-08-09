@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -64,9 +65,10 @@ public class CommitteeController {
     }
 
     @PostMapping("/addMembersToCommittee")
-    public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody Set<NewMembershipRequest> newMemberships, Authentication authentication) {
+    //NOTE: LinkedHashSet is made LinkedHashSet to preserve order and avoid duplicate memberIds
+    public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody LinkedHashSet<NewMembershipRequest> newMemberships, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
-        List<Member> newlyAddedMembers = committeeService.addMembershipsToCommittee(committee, newMemberships, authentication.getName());
-        return ResponseEntity.ok(new Response(ResponseMessages.COMMITTEE_MEMBER_ADDITION_SUCCESS, newlyAddedMembers));
+        committeeService.addMembershipsToCommittee(committee, newMemberships, authentication.getName());
+        return ResponseEntity.ok(new Response(ResponseMessages.COMMITTEE_MEMBER_ADDITION_SUCCESS));
     }
 }

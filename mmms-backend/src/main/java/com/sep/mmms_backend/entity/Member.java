@@ -19,9 +19,10 @@ import java.util.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name="members")
+@Table(name="members")
 @EntityListeners(AuditingEntityListener.class)
 @Builder
+@Entity
 
 //TODO: since validations are handled by CreationDto objects, consider removing teh validations from here later after confirming no entities are validated in our code.
 public class Member {
