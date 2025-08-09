@@ -1,18 +1,21 @@
 package com.sep.mmms_backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.mmms_backend.enums.CommitteeStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -34,7 +37,6 @@ public class Committee {
     private String uuid;
 
     @Column(name="committee_name", nullable = false)
-    @NotBlank
     private String name;
 
     @Column(name="committee_description")
@@ -49,7 +51,6 @@ public class Committee {
 
     @ManyToOne
     @JoinColumn(name="created_by", referencedColumnName="uid", nullable=false)
-    @JsonIgnore
     //@CreatedBy is not used because then Audit will inquire the database
     private AppUser createdBy;
 
@@ -59,19 +60,16 @@ public class Committee {
 
     @Column(name = "modified_by")
     @LastModifiedBy
-    @JsonIgnore
     private String modifiedBy;
 
     @Column(name = "modified_date")
     @LastModifiedDate
-    @JsonIgnore
     private LocalDate modifiedDate;
 
     @OneToMany(mappedBy="committee")
     private List<Meeting> meetings = new LinkedList<>();
 
     @OneToMany(mappedBy = "committee", cascade = CascadeType.PERSIST)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<CommitteeMembership> memberships = new LinkedList<>();
 
     /**

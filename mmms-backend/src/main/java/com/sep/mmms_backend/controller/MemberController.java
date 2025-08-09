@@ -62,7 +62,7 @@ public class MemberController {
     @GetMapping("/getMemberDetails")
     public ResponseEntity<Response> getMemberDetails(@RequestParam(required=true) int memberId, Authentication authentication) {
         MemberDetailsDto memberDetailsDto = memberService.getMemberDetails(memberId, authentication.getName());
-        return ResponseEntity.ok(new Response(memberDetailsDto));
+        return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_DETAIL_RETRIEVED_SUCCESSFULLY, memberDetailsDto));
     }
 
 

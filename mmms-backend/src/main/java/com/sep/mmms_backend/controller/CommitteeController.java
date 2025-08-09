@@ -30,6 +30,7 @@ public class CommitteeController {
     }
 
 
+    //TODO: Create Tests
     @PostMapping("/createCommittee")
     public ResponseEntity<Response> createCommittee(@RequestBody CommitteeCreationDto committeeCreationDto, Authentication authentication) {
         Committee savedCommittee = committeeService.saveNewCommittee(committeeCreationDto, authentication.getName());
@@ -37,14 +38,15 @@ public class CommitteeController {
         return ResponseEntity.ok().body(new Response(ResponseMessages.COMMITTEE_CREATION_SUCCESS, committeeSummaryDto));
     }
 
-    @GetMapping("/getCommittee")
+    //TODO: Create Tests
+    @GetMapping("/getCommittees")
     public ResponseEntity<Response> getCommittees(Authentication authentication) {
         List<Committee> committees =  committeeService.getCommittees(authentication.getName());
         List<CommitteeSummaryDto> committeeSummaryDtos = new ArrayList<>();
         committees.forEach(committee-> {
             committeeSummaryDtos.add(new CommitteeSummaryDto(committee));
         });
-        return ResponseEntity.ok().body(new Response(committeeSummaryDtos));
+        return ResponseEntity.ok().body(new Response(ResponseMessages.COMMITTEES_RETRIEVED_SUCCESSFULLY, committeeSummaryDtos));
     }
 
 
@@ -66,6 +68,7 @@ public class CommitteeController {
 
     @PostMapping("/addMembersToCommittee")
     //NOTE: LinkedHashSet is made LinkedHashSet to preserve order and avoid duplicate memberIds
+    //TODO: Create Tests
     public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody LinkedHashSet<NewMembershipRequest> newMemberships, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
         committeeService.addMembershipsToCommittee(committee, newMemberships, authentication.getName());

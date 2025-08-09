@@ -7,10 +7,15 @@ import java.util.List;
 
 @Getter
 public class MemberDoesNotExistException extends RuntimeException {
-    final List<Integer> memberIds = new LinkedList<>();
+    private final List<Integer> memberIds = new LinkedList<>();
     public MemberDoesNotExistException(ExceptionMessages message, int memberId){
         super(message.toString());
         this.memberIds.add(memberId);
+    }
+
+    public MemberDoesNotExistException(ExceptionMessages message, MemberDoesNotExistException cause){
+        super(message.toString());
+        this.memberIds.addAll(cause.getMemberIds());
     }
 
 

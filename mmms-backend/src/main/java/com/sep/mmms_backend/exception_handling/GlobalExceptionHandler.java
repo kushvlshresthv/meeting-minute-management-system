@@ -117,4 +117,24 @@ public class GlobalExceptionHandler {
         log.error("MembershipAlreadExistsException: {}", ex.getMessage() + "[memberId, role]: " + ex.getMemberIdAndRole());
         return ResponseEntity.badRequest().body(new Response(ex.getMessage() + "[memberId, role]: " + ex.getMemberIdAndRole()));
     }
+
+
+    //TODO: Rewrite the getMessage method like below for all of the above methods
+    @ExceptionHandler(CommitteeNotAccessibleException.class)
+    public ResponseEntity<Response> committeeNotAccessible(CommitteeNotAccessibleException ex) {
+        log.error("CommitteeNotAccessibleException: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MeetingDoesNotBelongToCommittee.class)
+    public ResponseEntity<Response> meetingDoesNotBelongToCommittee(MeetingDoesNotBelongToCommittee ex) {
+        log.error("MeetingDoesNotBelongToCommittee: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MeetingNotAccessibleException.class)
+    public ResponseEntity<Response> meetingNotAccessible(MeetingNotAccessibleException ex) {
+        log.error("MeetingNotAccessibleException: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(new Response(ex.getMessage()));
+    }
 }

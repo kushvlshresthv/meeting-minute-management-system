@@ -29,6 +29,7 @@ public class MeetingService {
         this.memberRepository = memberRepository;
     }
 
+    //TODO: Create Tests
     @CheckCommitteeAccess
     public Meeting saveNewMeeting(MeetingCreationDto meetingCreationDto, Committee committee , String username) {
         entityValidator.validate(meetingCreationDto);
@@ -92,34 +93,41 @@ public class MeetingService {
      * @param committee the committee to which the meeting belongs to
      * @param meeting the meeting of the meeting
      * @param username the name of the current user
-     * @return set of saved attendees
      * NOTE: if the newAttendees list has some members which are already attendees, they are not re-added
      */
 
     @CheckCommitteeAccess(shouldValidateMeeting=true)
     @Transactional
-    public Set<Member> addAttendeesToMeeting(Set<Integer> newAttendeeIds, Committee committee, Meeting meeting, String username) {
+    //TODO: Create Tests
+    public void addAttendeesToMeeting(Set<Integer> newAttendeeIds, Committee committee, Meeting meeting, String username) {
 
-        //1. find the members exists in the database and part of the committee
-        //ASSERTION: attendees and meeting must belong to the same committee
-        Set<Member> validNewAttendees = memberRepository.findExistingMembersInCommittee(newAttendeeIds, committee.getId());
+        if (!meeting.getCommittee().getId().equals(committee.getId())) {
+            throw new MeetingDoesNotBelongToCommittee(ExceptionMessages.MEETING_NOT_IN_COMMITTEE, meeting.getTitle(), committee.getName());
+        }
 
-        if(validNewAttendees.size() != newAttendeeIds.size()) {
-            Set<Integer> foundIds = validNewAttendees.stream()
-                    .map(Member::getId)
-                    .collect(Collectors.toSet());
+        //find the members exists in the database and part of the committee and also accessible by the user
+        List<Member> validNewAttendees = memberRepository.findExistingMembersInCommittee(newAttendeeIds, committee.getId(), username);
 
-            List<Integer> missingOrInvalidIds = new LinkedList<>(newAttendeeIds);
-            missingOrInvalidIds.removeAll(foundIds);
+        //check whether the member is already an attendee to the meeting
+        Set<Integer> existingAttendeeIds = meeting.getAttendees().stream().map(Member::getId).collect(Collectors.toSet());
 
+        try {
+            memberRepository.validateWhetherAllMembersAreFound(newAttendeeIds.stream().toList(), validNewAttendees);
+        } catch(MemberDoesNotExistException ex) {
+            throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST_OR_NOT_PART_OF_COMMITTEE, ex);
+        }
 
-            throw new MemberDoesNotExistException(ExceptionMessages.MEMBER_DOES_NOT_EXIST, missingOrInvalidIds);
+        List<Member> membersToAdd = validNewAttendees.stream()
+                .filter(member -> !existingAttendeeIds.contains(member.getId()))
+                .toList();
+
+        if (membersToAdd.isEmpty()) {
+            throw new IllegalOperationException("Member alread an attendee to the meeting");
+            //TODO: (Exception) handle this exception properly by returning which new attendee already exists
         }
 
         meeting.getAttendees().addAll(validNewAttendees);
         meetingRepository.save(meeting);
-
-        return validNewAttendees;
     }
 
 
@@ -131,6 +139,7 @@ public class MeetingService {
         return meetingRepository.findById(meetingId);
     }
 
+    //TODO: Create Tests
     @CheckCommitteeAccess(shouldValidateMeeting=true)
     public Meeting getMeetingDetails(Committee committee, Meeting meeting, String username) {
         return meeting;

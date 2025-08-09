@@ -13,8 +13,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Aspect
 @Component
@@ -56,13 +54,13 @@ public class CheckCommitteeAccessAspect {
 
         //checking access for the committee
         if (!committee.getCreatedBy().getUsername().equals(username)) {
-            throw new IllegalOperationException(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE);
+            throw new CommitteeNotAccessibleException(ExceptionMessages.COMMITTEE_NOT_ACCESSIBLE, committee.getName());
         }
 
-        //checking access for the meeting
+
         if (checkCommitteeAccess.shouldValidateMeeting()) {
-            if (!committee.getMeetings().contains(meeting)) {
-                throw new IllegalOperationException(ExceptionMessages.MEETING_NOT_IN_COMMITTEE);
+            if(!meeting.getCreatedBy().equals(username)) {
+                throw new MeetingNotAccessibleException(ExceptionMessages.MEETING_NOT_ACCESSIBLE, meeting.getTitle());
             }
         }
     }

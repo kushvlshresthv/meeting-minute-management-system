@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @RestController
@@ -60,6 +61,7 @@ public class MeetingController {
     }
     */
 
+    //TODO: Create Tests
     @PostMapping("/createMeeting")
     public ResponseEntity<Response> createMeeting(@RequestBody(required = true) MeetingCreationDto meetingCreationDto, @RequestParam(required=true) int committeeId, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
@@ -69,17 +71,18 @@ public class MeetingController {
     }
 
 
-    /**
-     * The received attendees are not well populated, only the memberId is populated
-     */
+    //TODO: Create Tests
     @PostMapping("addAttendeesToMeeting")
-    public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody Set<Integer> newAttendeeIds, Authentication authentication) {
+    public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody LinkedHashSet<Integer> newAttendeeIds, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
         Meeting meeting = meetingService.findMeetingById(meetingId);
-        Set<Member> newAttendees = meetingService.addAttendeesToMeeting(newAttendeeIds, committee, meeting, authentication.getName());
-        return ResponseEntity.ok(new Response(newAttendees));
+
+        meetingService.addAttendeesToMeeting(newAttendeeIds, committee, meeting, authentication.getName());
+
+        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS));
     }
 
+    //TODO: Create Tests
     @GetMapping("getMeetingDetails")
     public ResponseEntity<Response> getMeetingDetails(@RequestParam int committeeId, @RequestParam int meetingId, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);

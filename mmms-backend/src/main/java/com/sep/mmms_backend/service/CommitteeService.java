@@ -11,6 +11,7 @@ import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.InvalidMembershipException;
+import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.exceptions.MembershipAlreadyExistsException;
 import com.sep.mmms_backend.repository.CommitteeMembershipRepository;
 import com.sep.mmms_backend.repository.CommitteeRepository;
@@ -45,6 +46,7 @@ public class CommitteeService {
      * @param username username that creates the committee
      *
      */
+    //TODO: Create Tests
     @Transactional
     public Committee saveNewCommittee(CommitteeCreationDto committeeCreationDto, String username) {
         entityValidator.validate(committeeCreationDto);
@@ -85,6 +87,7 @@ public class CommitteeService {
     /**
      * returns all the members belonging to the committee
      */
+
     public List<MemberSummaryDto> getMembersOfCommittee(Committee committee) {
         List<Integer> memberIds = committee.getMemberships().stream()
                 .map(membership->membership.getMember().getId())
@@ -109,7 +112,8 @@ public class CommitteeService {
         return new CommitteeDetailsDto(committee);
     }
 
-    //TODO: This method also loads all the meetings associated with a committee which isn't required(probably lazy loaded though)
+    //TODO: This method also loads all the meetings associated with a committee which isn't required(probably lazy loaded though) or maybe write a custom query
+    //TODO: Create Tests
     public List<Committee> getCommittees(String username) {
         AppUser currentUser = appUserService.loadUserByUsername(username);
         return currentUser.getMyCommittees();
@@ -128,6 +132,7 @@ public class CommitteeService {
          <br><br>
         Here, since we are using CommitteeMembershipRepository, JPA will decide whether the membership is either new or not by calling isNew() method since CommmiteeMembership implements Presistable interface
      */
+    //TODO: Create Tests
     @CheckCommitteeAccess
     @Transactional
     public void addMembershipsToCommittee(Committee committee, LinkedHashSet<NewMembershipRequest> newMembershipRequests, String username) {

@@ -35,53 +35,42 @@ public class Meeting {
     @Column(name = "uuid", nullable = false, unique = true, updatable = false)
     private String uuid;
 
-    @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_title")
     private String title;
 
     @Column(name="meeting_description")
     private String description;
 
-    @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_date")
     private LocalDate heldDate;
 
-    @NotNull(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_time")
     private LocalTime heldTime;
 
-    @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     @Column(name="meeting_held_place")
     private String heldPlace;
 
-    @JsonIgnore
     @CreatedBy
     @Column(name="created_by", updatable = false, nullable = false)
     private String createdBy;
 
-    @JsonIgnore
     @LastModifiedBy
     @Column(name="updated_by", nullable = false)
     private String updatedBy;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @CreatedDate
     @Column(name="created_date", updatable=false, nullable = false)
     private LocalDate createdDate;
 
-    @JsonIgnore
     @LastModifiedDate
     @Column(name="updated_date", nullable = false)
     private LocalDate updatedDate;
 
     @ManyToOne
     @JoinColumn(name = "committee_id", referencedColumnName="committee_id")
-    @JsonIgnore
-    @NotNull(message = "committee should be specified")
     Committee committee;
 
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="meeting_attendees",
             inverseJoinColumns = {
@@ -92,12 +81,9 @@ public class Meeting {
                     @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
             }
     )
-    @NotEmpty
     public List<Member> attendees = new ArrayList<>();
 
     @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotEmpty
     private List<Decision> decisions = new ArrayList<>();
 
     public void addDecision(Decision decision) {

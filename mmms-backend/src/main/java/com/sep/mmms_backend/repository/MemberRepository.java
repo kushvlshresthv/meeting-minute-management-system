@@ -39,11 +39,11 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
 
     /*
-        This query acts as join table in SQL.
+     This query acts as join table in SQL.
 
-        It selects a member and joins member with each committee membership the member has. Now, for every member, we're examining all their committee memberships
+     It selects a member and joins member with each committee membership the member has. Now, for every member, we're examining all their committee memberships
 
-        Then we filter the members to those whose Ids are in the given list. Then filter only those who have at least one membership in the given committee
+     Then we filter the members to those whose Ids are in the given list. Then filter only those who have at least one membership in the given committee
      */
 
     /**
@@ -51,10 +51,15 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
      *
      * @param memberIds the ids of the member that need to be fetched
      * @param committeeId the id of the committee to which the member should belong to
-     * @return set of member objects
+     * @return List of member objects
      */
-    @Query("SELECT m FROM Member m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId")
-    Set<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId);
+
+    //TODO: Tests [unit tests does not test whether the createdBy condition is satisfied as it was added later]
+
+    @Query("SELECT m FROM Member m JOIN m.memberships cm WHERE m.id IN :memberIds AND cm.committee.id = :committeeId AND m.createdBy = :username")
+    List<Member> findExistingMembersInCommittee(@Param("memberIds") Set<Integer> memberIds, @Param("committeeId") int committeeId, String username);
+
+
 
 
 

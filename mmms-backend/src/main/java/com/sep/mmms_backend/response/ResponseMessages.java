@@ -16,6 +16,7 @@ public enum ResponseMessages {
     MEETING_CREATION_FAILED("Failed to create meeting"),
     MEETING_CREATION_SUCCESSFUL("Meeting registered successfully"),
     MEETING_ATTENDEE_ADDITION_SUCCESS("New attendees added to the meeting successfully"),
+    MEETING_DETAIL_RETRIEVED_SUCCESSFULLY("Meeting retrieved successfully"),
 
 
     //ROUTES MISUSED:
@@ -26,8 +27,11 @@ public enum ResponseMessages {
     //COMMITTEE RELATED:
     COMMITTEE_CREATION_SUCCESS("Committee created successfully"),
     COMMITTEE_MEMBER_ADDITION_SUCCESS("New members added to the committee successfully"),
+    COMMITTEES_RETRIEVED_SUCCESSFULLY("Committees retrieved successfully"),
 
+    //MEMBER RELATED:
     MEMBER_CREATION_SUCCESS("Member created successfully"),
+    MEMBER_DETAIL_RETRIEVED_SUCCESSFULLY("Member retrieved successfully"),
 
     HTTP_MESSAGE_NOT_READABLE("HTTP message is not readable"),
     ;

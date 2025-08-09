@@ -11,6 +11,7 @@ public enum ExceptionMessages {
     ROUTE_UPDATE_USER_CANT_UPDATE_PASSWORD("This route can't be used to update password"),
     USER_VALIDATION_FALIED("User data does not meet validation criterias"),
     MEMBER_DOES_NOT_EXIST("The specified member does not exist"),
+    MEMBER_DOES_NOT_EXIST_OR_NOT_PART_OF_COMMITTEE("The specified member does not exist or not part of the committee"),
     INVALID_MEMBERSHIP("Invalid membership"),
     VALIDATION_FAILED("Validation Failed"),
     COMMITTEE_DOES_NOT_EXIST("The specified committee does not exist"),
@@ -23,7 +24,9 @@ public enum ExceptionMessages {
     MEETING_NOT_ACCESSIBLE("Meeting not accessible"),
     COMMITTEE_OR_MEETING_NOT_ACCESSIBLE("Committee or meeting not accessible"),
     MEMBERSHIP_ALREADY_EXISTS("Membership already exists"),
+    MEETING_DOES_NOT_BELONG_TO_COMMITTEE("The specified meeting does not belong to the committee"),
 
+    TODO("Implement Exception Handling Properly");
     ;
 
 
