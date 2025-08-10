@@ -1,7 +1,9 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
+import com.sep.mmms_backend.dto.AgendaDto;
 import com.sep.mmms_backend.dto.MeetingCreationDto;
+import com.sep.mmms_backend.dto.MeetingUpdationDto;
 import com.sep.mmms_backend.entity.*;
 import com.sep.mmms_backend.exceptions.*;
 import com.sep.mmms_backend.repository.CommitteeRepository;
@@ -77,19 +79,88 @@ public class MeetingService {
         return meetingRepository.save(meeting);
     }
 
-    //This method needs to be updated
-    public Meeting updateMeeting(Meeting meeting) {
-        if(meetingRepository.existsById(meeting.getId())) {
-            Meeting existingMeeting = meetingRepository.findMeetingById(meeting.getId());
-            //update the data
-            existingMeeting.setTitle(meeting.getTitle());
-            existingMeeting.setDescription(meeting.getDescription());
-            existingMeeting.setHeldDate(meeting.getHeldDate());
+    //TODO: Create Tests
 
-            return meetingRepository.save(existingMeeting);
+    /**
+     * This updates meeting details + agendas and decisions
+     * If the provided agenda id already exists for the meeting, it simply updates the agenda string
+     * Else it saves the new agenda id along with the agenda string in the database
+     * Same is the case for decisions
+     */
+    @Transactional
+    public Meeting updateExistingMeetingDetails(MeetingUpdationDto newMeetingData, String username) {
+
+        if(newMeetingData.getMeetingId() == null) {
+            throw new IllegalOperationException("TODO: Exception (handle this exception)");
         }
-        throw new MeetingDoesNotExistException(ExceptionMessages.MEETING_DOES_NOT_EXIST, meeting.getId());
+
+        Meeting existingMeeting = meetingRepository.findMeetingById(newMeetingData.getMeetingId());
+
+        if(!existingMeeting.getCreatedBy().equals(username)) {
+            throw new MeetingNotAccessibleException(ExceptionMessages.MEETING_NOT_ACCESSIBLE, existingMeeting.getTitle());
+        }
+
+        if(newMeetingData.getTitle() != null)
+            existingMeeting.setTitle(newMeetingData.getTitle());
+        if(newMeetingData.getDescription() != null)
+            existingMeeting.setDescription(newMeetingData.getDescription());
+        if(newMeetingData.getHeldDate() != null)
+            existingMeeting.setHeldDate(newMeetingData.getHeldDate());
+        if(newMeetingData.getHeldTime() != null)
+            existingMeeting.setHeldTime(newMeetingData.getHeldTime());
+        if(newMeetingData.getHeldPlace() != null)
+            existingMeeting.setHeldPlace(newMeetingData.getHeldPlace());
+
+
+        Map<Integer, Agenda> existingAgendas = existingMeeting.getAgendas().stream().collect(Collectors.toMap(Agenda::getAgendaId, agenda->agenda));
+
+        if(!newMeetingData.getAgendas().isEmpty()) {
+            List<Agenda> updatedAgendas = new ArrayList<>();
+            newMeetingData.getAgendas().forEach(newAgendaDto -> {
+                if(newAgendaDto.getAgendaId() != null && existingAgendas.containsKey(newAgendaDto.getAgendaId())) {
+                    if(newAgendaDto.getAgenda() != null && !newAgendaDto.getAgenda().isBlank()) {
+                        existingAgendas.get(newAgendaDto.getAgendaId()).setAgenda(newAgendaDto.getAgenda());
+                        updatedAgendas.add(existingAgendas.get(newAgendaDto.getAgendaId()));
+                    }
+                } else {
+                    if(newAgendaDto.getAgenda() != null && !newAgendaDto.getAgenda().isBlank()) {
+                        Agenda newAgenda = new Agenda();
+                        newAgenda.setAgenda(newAgendaDto.getAgenda());
+                        updatedAgendas.add(newAgenda);
+                    }
+                }
+            });
+            existingMeeting.getAgendas().clear();
+            existingMeeting.addAllAgendas(updatedAgendas);
+        }
+
+        Map<Integer, Decision> existingDecisions = existingMeeting.getDecisions().stream().collect(Collectors.toMap(Decision::getDecisionId, decision->decision));
+
+        if(!newMeetingData.getDecisions().isEmpty()) {
+            List<Decision> updatedDecisions = new ArrayList<>();
+            newMeetingData.getDecisions().forEach(newDecisionDto -> {
+                if(newDecisionDto.getDecisionId() != null && existingDecisions.containsKey(newDecisionDto.getDecisionId())) {
+                    if( newDecisionDto.getDecision() != null && !newDecisionDto.getDecision().isBlank()) {
+                        existingDecisions.get(newDecisionDto.getDecisionId()).setDecision(newDecisionDto.getDecision());
+                        updatedDecisions.add(existingDecisions.get(newDecisionDto.getDecisionId()));
+                    }
+                } else {
+                    if(newDecisionDto.getDecision() != null && !newDecisionDto.getDecision().isBlank()) {
+                        Decision newDecision = new Decision();
+                        newDecision.setDecision(newDecisionDto.getDecision());
+                        updatedDecisions.add(newDecision);
+                    }
+                }
+            });
+            existingMeeting.getDecisions().clear();
+            existingMeeting.addAllDecisions(updatedDecisions);
+        }
+
+        return meetingRepository.save(existingMeeting);
     }
+
+
+
 
 
     /**

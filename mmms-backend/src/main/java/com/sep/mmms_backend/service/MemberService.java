@@ -3,6 +3,7 @@ package com.sep.mmms_backend.service;
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.dto.MemberCreationDto;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
+import com.sep.mmms_backend.dto.MemberUpdationDto;
 import com.sep.mmms_backend.dto.MemberWithoutCommitteeDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
@@ -90,6 +91,38 @@ public class MemberService {
     }
 
 
+    @Transactional
+    public Member updateExistingMemberDetails(MemberUpdationDto newMemberData, String username) {
+
+        if(newMemberData.getId() == null) {
+            throw new IllegalOperationException("TODO:(Exception) handle this exception");
+        }
+
+        Member existingMember = memberRepository.findMemberById(newMemberData.getId());
+        if(!existingMember.getCreatedBy().equals(username)) {
+            throw new IllegalOperationException("TODO: (Exception) handle this exception");
+            //maybe create MemberNotAccessible exception
+        }
+
+        if(newMemberData.getFirstName() != null)
+            existingMember.setFirstName(newMemberData.getFirstName());
+        if(newMemberData.getLastName() != null)
+            existingMember.setLastName(newMemberData.getLastName());
+        if(newMemberData.getEmail() != null)
+            existingMember.setEmail(newMemberData.getEmail());
+        if(newMemberData.getPost() != null)
+            existingMember.setPost(newMemberData.getPost());
+        if(newMemberData.getFirstNameNepali() != null)
+            existingMember.setFirstNameNepali(newMemberData.getFirstNameNepali());
+        if(newMemberData.getLastNameNepali() != null)
+            existingMember.setLastNameNepali(newMemberData.getLastNameNepali());
+        if(newMemberData.getInstitution() != null)
+            existingMember.setInstitution(newMemberData.getInstitution());
+
+        return memberRepository.save(existingMember);
+    }
+
+
     public boolean existsById(int memberId) {
         return memberRepository.existsById(memberId);
     }
@@ -165,15 +198,9 @@ public class MemberService {
     }
 
 
-    public List<MemberWithoutCommitteeDto> getAllMembers(String username) {
+    public List<Member> getAllMembers(String username) {
         List<MemberWithoutCommitteeDto> allMembersDto = new ArrayList<>();
         List<Member> allMembers = memberRepository.findAllMembersByCreatedBy(username);
-
-        if(allMembers != null) {
-            for(Member member : allMembers) {
-                allMembersDto.add(new MemberWithoutCommitteeDto(member));
-            }
-        }
-        return allMembersDto;
+        return allMembers;
     }
 }

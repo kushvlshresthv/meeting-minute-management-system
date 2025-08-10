@@ -1,12 +1,8 @@
 package com.sep.mmms_backend.controller;
 
-
-import com.sep.mmms_backend.dto.CommitteeCreationDto;
-import com.sep.mmms_backend.dto.CommitteeDetailsDto;
-import com.sep.mmms_backend.dto.CommitteeSummaryDto;
-import com.sep.mmms_backend.dto.NewMembershipRequest;
+import com.sep.mmms_backend.dto.*;
 import com.sep.mmms_backend.entity.Committee;
-import com.sep.mmms_backend.entity.Member;
+import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.CommitteeService;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -36,6 +31,21 @@ public class CommitteeController {
         Committee savedCommittee = committeeService.saveNewCommittee(committeeCreationDto, authentication.getName());
         CommitteeSummaryDto committeeSummaryDto = new CommitteeSummaryDto(savedCommittee);
         return ResponseEntity.ok().body(new Response(ResponseMessages.COMMITTEE_CREATION_SUCCESS, committeeSummaryDto));
+    }
+
+
+
+    //TODO: Create Tests
+    @PostMapping("/updateCommitteeDetails")
+    public ResponseEntity<Response> updateExistingCommittee(@RequestBody CommitteeUpdationDto committeeUpdationDto, Authentication authentication) {
+        if(committeeUpdationDto.getId() == null) {
+            throw new IllegalOperationException("TODO: Handle this");
+            //TODO: Exception (handle this)
+        }
+        Committee committee = committeeService.findCommitteeById(committeeUpdationDto.getId());
+        Committee updatedCommittee = committeeService.updateExistingCommittee(committeeUpdationDto,committee, authentication.getName());
+        CommitteeSummaryDto committeeSummaryDto = new CommitteeSummaryDto(updatedCommittee);
+        return ResponseEntity.ok().body(new Response(ResponseMessages.COMMITTEE_UPDATION_SUCCESS, committeeSummaryDto));
     }
 
     //TODO: Create Tests

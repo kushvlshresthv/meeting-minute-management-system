@@ -11,16 +11,18 @@ import java.util.List;
 
 
 /**
- * returns the summary of the member along with membership of the member in a particular committee
+ * returns the summary of the member along with role of the member in a particular committee
  */
 @Getter
 public class MemberSummaryDto {
     private final int memberId;
     private final String firstName;
     private final String lastName;
+    private final String firstNameNepali;
+    private final String lastNameNepali;
     private final String institution;
     private final String post;
-    private CommitteeMembershipDto membership;
+    private String role ;
 
     public MemberSummaryDto(Member member, int committeeId) {
         this.memberId = member.getId();
@@ -33,10 +35,12 @@ public class MemberSummaryDto {
                     && membership.getId().getCommitteeId() != null
                     && membership.getId().getCommitteeId() == committeeId
             ) {
-                this.membership = new CommitteeMembershipDto(membership);
+                this.role = membership.getRole();
                 break;
             }
         }
+        this.firstNameNepali = member.getFirstNameNepali();
+        this.lastNameNepali = member.getLastNameNepali();
     }
 
 
@@ -50,13 +54,17 @@ public class MemberSummaryDto {
             @JsonProperty("lastName") String lastName,
             @JsonProperty("institution") String institution,
             @JsonProperty("post") String post,
-            @JsonProperty("membership") CommitteeMembershipDto membership
+            @JsonProperty("role") String role,
+            @JsonProperty("firstNameNepali") String firstNameNepali,
+            @JsonProperty("lastNameNepali") String lastNameNepali
     ) {
         this.memberId = memberId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.institution = institution;
         this.post = post;
-        this.membership = membership;
+        this.role = role;
+        this.firstNameNepali = firstNameNepali;
+        this.lastNameNepali = lastNameNepali;
     }
 }

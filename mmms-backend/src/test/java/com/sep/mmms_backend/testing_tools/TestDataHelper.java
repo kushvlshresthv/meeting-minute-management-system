@@ -48,6 +48,7 @@ public class TestDataHelper {
         });
         committee.setMemberships(memberships);
 
+        committee.setMaxNoOfMeetings(10);
 
         
         //setting the committees in app user
@@ -70,6 +71,8 @@ public class TestDataHelper {
         member.setModifiedBy(appUser.getUsername());
         member.setModifiedDate(LocalDate.now());
         member.setCreatedDate(LocalDate.now());
+        member.setFirstNameNepali("Nepali");
+        member.setLastNameNepali("Nepali");
     }
 
     public void createValidMeeting () {

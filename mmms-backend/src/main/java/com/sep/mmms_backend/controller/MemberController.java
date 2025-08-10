@@ -52,6 +52,17 @@ public class MemberController {
         return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS, memberSummaryDto));
     }
 
+
+
+    @PostMapping("/updateMemberDetails")
+    public ResponseEntity<Response> updateMemberDetails(@RequestBody(required=true) MemberUpdationDto memberUpdationDto, Authentication authentication) {
+        Member updatedMember = memberService.updateExistingMemberDetails(memberUpdationDto, authentication.getName());
+
+        MemberWithoutCommitteeDto updatedMemberWithoutCommitteeDto = new MemberWithoutCommitteeDto(updatedMember);
+
+        return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_UPDATION_SUCCESS, updatedMemberWithoutCommitteeDto));
+    }
+
     /** <h2>IMPORTANT NOTE</h2>
      * whether a particular member is acceesbile by a particular user is checked by comparing username
        <br> <br>
@@ -67,10 +78,13 @@ public class MemberController {
     }
 
 
+    //TODO: Create Tests
     @GetMapping("/getAllMembers")
     public ResponseEntity<Response> getAllMembers(Authentication    authentication) {
-       List<MemberWithoutCommitteeDto> allMembers =  memberService.getAllMembers(authentication.getName());
-       return ResponseEntity.ok(new Response(allMembers));
+        List<Member> members =  memberService.getAllMembers(authentication.getName());
+       List<MemberSearchResultDto> allMembers = new ArrayList<>();
+       members.forEach(member-> allMembers.add(new MemberSearchResultDto(member)));
+       return ResponseEntity.ok(new Response("Found Members: ", allMembers));
     }
 }
 

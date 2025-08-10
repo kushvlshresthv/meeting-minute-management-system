@@ -83,10 +83,10 @@ public class Meeting {
     )
     public List<Member> attendees = new ArrayList<>();
 
-    @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy="meeting", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Decision> decisions = new ArrayList<>();
 
-    @OneToMany(mappedBy="meeting", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy="meeting", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Agenda> agendas = new ArrayList<>();
 
     public void addDecision(Decision decision) {
@@ -95,9 +95,20 @@ public class Meeting {
     }
 
 
+    public void addAllDecisions(List<Decision> decisions) {
+        decisions.forEach(decision->decision.setMeeting(this));
+        this.decisions.addAll(decisions);
+    }
+
     public void addAgenda(Agenda agenda) {
         agenda.setMeeting(this);
         this.agendas.add(agenda);
+    }
+
+
+    public void addAllAgendas(List<Agenda> agendas) {
+        agendas.forEach(agenda->agenda.setMeeting(this));
+        this.agendas.addAll(agendas);
     }
 
     @PrePersist

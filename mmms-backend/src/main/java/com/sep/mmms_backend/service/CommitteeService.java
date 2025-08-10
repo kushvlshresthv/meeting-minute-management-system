@@ -1,10 +1,7 @@
 package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
-import com.sep.mmms_backend.dto.CommitteeCreationDto;
-import com.sep.mmms_backend.dto.CommitteeDetailsDto;
-import com.sep.mmms_backend.dto.MemberSummaryDto;
-import com.sep.mmms_backend.dto.NewMembershipRequest;
+import com.sep.mmms_backend.dto.*;
 import com.sep.mmms_backend.entity.AppUser;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
@@ -77,6 +74,24 @@ public class CommitteeService {
         });
 
         return committeeRepository.save(committee);
+    }
+
+
+
+    //TODO: Create Tests
+    @Transactional
+    @CheckCommitteeAccess
+    public Committee updateExistingCommittee(CommitteeUpdationDto newCommitteeData, Committee existingCommittee, String username) {
+        if(newCommitteeData.getName() != null)
+            existingCommittee.setName(newCommitteeData.getName());
+        if(newCommitteeData.getDescription() != null)
+            existingCommittee.setDescription(newCommitteeData.getDescription());
+        if(newCommitteeData.getStatus() != null)
+            existingCommittee.setStatus(newCommitteeData.getStatus());
+        if(newCommitteeData.getMaximumNumberOfMeetings() != null)
+            existingCommittee.setMaxNoOfMeetings(newCommitteeData.getMaximumNumberOfMeetings());
+
+        return committeeRepository.save(existingCommittee);
     }
 
 

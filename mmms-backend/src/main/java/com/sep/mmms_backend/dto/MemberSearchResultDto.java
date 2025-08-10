@@ -1,6 +1,5 @@
 package com.sep.mmms_backend.dto;
 
-import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import lombok.Getter;
 

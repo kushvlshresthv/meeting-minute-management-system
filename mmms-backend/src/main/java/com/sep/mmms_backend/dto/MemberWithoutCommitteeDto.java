@@ -16,9 +16,10 @@ public class MemberWithoutCommitteeDto {
     private final int memberId;
     private final String firstName;
     private final String lastName;
+    private final String firstNameNepali;
+    private final String lastNameNepali;
     private final String institution;
     private final String post;
-    private final String qualification;
 
     public MemberWithoutCommitteeDto(Member member){
         this.memberId = member.getId();
@@ -26,6 +27,7 @@ public class MemberWithoutCommitteeDto {
         this.lastName = member.getLastName();
         this.institution = member.getInstitution();
         this.post = member.getPost();
-        this.qualification = member.getQualification();
+        this.firstNameNepali = member.getFirstNameNepali();
+        this.lastNameNepali = member.getLastNameNepali();
     }
 }

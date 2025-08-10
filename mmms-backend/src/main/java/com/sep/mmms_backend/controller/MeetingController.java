@@ -3,6 +3,7 @@ package com.sep.mmms_backend.controller;
 import com.sep.mmms_backend.dto.MeetingCreationDto;
 import com.sep.mmms_backend.dto.MeetingDetailsDto;
 import com.sep.mmms_backend.dto.MeetingSummaryDto;
+import com.sep.mmms_backend.dto.MeetingUpdationDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
@@ -25,41 +26,14 @@ import java.util.Set;
 @RestController
 @RequestMapping("api")
 public class MeetingController {
-   private MeetingService meetingService;
-   private CommitteeService committeeService;
+   private final MeetingService meetingService;
+   private final CommitteeService committeeService;
 
    MeetingController(MeetingService meetingService, CommitteeService committeeService) {
         this.meetingService = meetingService;
         this.committeeService = committeeService;
    }
 
-
-    /*
-    {
-      "meetingHeldDate": "2025-07-09",
-      "meetingHeldPlace": "Kathmandu, Nepal",
-      "meetingHeldTime": "14:30:00",
-      "attendees": [
-        {
-          "memberId": 101
-        },
-        {
-          "memberId": 102
-        },
-        {
-          "memberId": 103
-        }
-      ],
-      "decisions": [
-        {
-          "decision": "Approved annual budget."
-        },
-        {
-          "decision": "Scheduled next meeting for August."
-        }
-      ]
-    }
-    */
 
     //TODO: Create Tests
     @PostMapping("/createMeeting")
@@ -74,6 +48,19 @@ public class MeetingController {
 
         MeetingSummaryDto savedMeetingSummary = new MeetingSummaryDto(savedMeeting);
         return ResponseEntity.ok(new Response(ResponseMessages.MEETING_CREATION_SUCCESSFUL, savedMeetingSummary));
+    }
+
+
+    //TODO: Create Tests
+    @PostMapping("/updateMeetingDetails")
+    public ResponseEntity<Response> updateMeetingDetails(
+            @RequestBody(required = true) MeetingUpdationDto meetingUpdationDto,
+            Authentication authentication) {
+
+        Meeting savedMeeting =  meetingService.updateExistingMeetingDetails(meetingUpdationDto, authentication.getName());
+
+        MeetingDetailsDto meetingDetailsDto = new MeetingDetailsDto(savedMeeting);
+        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_UPDATION_SUCCESS, meetingDetailsDto));
     }
 
 
@@ -97,35 +84,5 @@ public class MeetingController {
 
         MeetingDetailsDto meetingDto = new MeetingDetailsDto(meetingDetails);
         return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS, meetingDto));
-    }
-
-
-    @PostMapping("/updateMeeting")
-    public ResponseEntity<Response> updateMeeting(@RequestBody @Valid Meeting meeting, Errors errors) {
-
-        //Validation failed:
-        if(errors.hasErrors()) {
-            HashMap<String, ArrayList<String>> errorMessages = new HashMap<>();
-            errors.getFieldErrors().forEach(
-                    config-> {
-                        if(errorMessages.containsKey(config.getField())) {
-                            errorMessages.get(config.getField()).add(config.getDefaultMessage());
-                        } else {
-                            ArrayList<String> list = new ArrayList<>();
-                            list.add(config.getDefaultMessage());
-                            errorMessages.put(config.getField(), list);
-                        }
-                    }
-            );
-
-            return ResponseEntity.badRequest().body(new Response(ResponseMessages.MEETING_CREATION_FAILED, errorMessages));
-        }
-
-        try {
-            Meeting savedMeeting = this.meetingService.updateMeeting(meeting);
-        } catch(MeetingDoesNotExistException e) {
-            return ResponseEntity.badRequest().body(new Response(e.getMessage()));
-        }
-        return ResponseEntity.ok().body(new Response(ResponseMessages.MEETING_CREATION_SUCCESSFUL));
     }
 }
