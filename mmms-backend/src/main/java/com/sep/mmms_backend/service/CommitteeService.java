@@ -2,16 +2,14 @@ package com.sep.mmms_backend.service;
 
 import com.sep.mmms_backend.aop.interfaces.CheckCommitteeAccess;
 import com.sep.mmms_backend.dto.*;
-import com.sep.mmms_backend.entity.AppUser;
-import com.sep.mmms_backend.entity.Committee;
-import com.sep.mmms_backend.entity.CommitteeMembership;
-import com.sep.mmms_backend.entity.Member;
+import com.sep.mmms_backend.entity.*;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
 import com.sep.mmms_backend.exceptions.InvalidMembershipException;
 import com.sep.mmms_backend.exceptions.MemberDoesNotExistException;
 import com.sep.mmms_backend.exceptions.MembershipAlreadyExistsException;
 import com.sep.mmms_backend.repository.CommitteeMembershipRepository;
 import com.sep.mmms_backend.repository.CommitteeRepository;
+import com.sep.mmms_backend.repository.MeetingRepository;
 import com.sep.mmms_backend.repository.MemberRepository;
 import com.sep.mmms_backend.validators.EntityValidator;
 import jakarta.transaction.Transactional;
@@ -28,12 +26,14 @@ public class CommitteeService {
     private final AppUserService appUserService;
     private final MemberRepository memberRepository;
     private final CommitteeMembershipRepository committeeMembershipRepository;
+    private final MeetingRepository meetingRepository;
 
-    public CommitteeService(CommitteeRepository committeeRepository,  AppUserService appUserService, EntityValidator entityValidator, MemberRepository memberRepository, CommitteeMembershipRepository committeeMembershipRepository) {
+    public CommitteeService(CommitteeRepository committeeRepository,  AppUserService appUserService, EntityValidator entityValidator, MemberRepository memberRepository, CommitteeMembershipRepository committeeMembershipRepository, MeetingRepository meetingRepository) {
        this.committeeRepository = committeeRepository;
        this.appUserService = appUserService;
        this.entityValidator = entityValidator;
        this.memberRepository = memberRepository;
+       this.meetingRepository = meetingRepository;
        this.committeeMembershipRepository = committeeMembershipRepository;
     }
 
@@ -92,6 +92,12 @@ public class CommitteeService {
             existingCommittee.setMaxNoOfMeetings(newCommitteeData.getMaximumNumberOfMeetings());
 
         return committeeRepository.save(existingCommittee);
+    }
+
+    @Transactional
+    @CheckCommitteeAccess
+    public void deleteCommittee(Committee committeeToBeDeleted, String username) {
+        committeeRepository.delete(committeeToBeDeleted);
     }
 
 

@@ -54,7 +54,7 @@ public class MemberController {
 
 
 
-    @PostMapping("/updateMemberDetails")
+    @PutMapping("/updateMemberDetails")
     public ResponseEntity<Response> updateMemberDetails(@RequestBody(required=true) MemberUpdationDto memberUpdationDto, Authentication authentication) {
         Member updatedMember = memberService.updateExistingMemberDetails(memberUpdationDto, authentication.getName());
 
@@ -64,7 +64,7 @@ public class MemberController {
     }
 
     /** <h2>IMPORTANT NOTE</h2>
-     * whether a particular member is acceesbile by a particular user is checked by comparing username
+     * whether a particular member is acceesbile by a particular user is checked by com  aring username
        <br> <br>
      * if the username is made changeable in the future, this has to be updated as well
        <br> <br>

@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -189,7 +188,7 @@ public class MeetingMinutePreparationService {
         Map<String, Integer> rolePriority = new HashMap<>();
         rolePriority.put("Coordinator", 1);
         rolePriority.put("Member", 2);
-        rolePriority.put("Member_Secretary", 3);
+        rolePriority.put("Member-Secretary", 3);
         rolePriority.put("Invitee", 4);
 
         memberships.sort(Comparator.comparingInt(m -> rolePriority.getOrDefault(m.getRole(), Integer.MAX_VALUE)));

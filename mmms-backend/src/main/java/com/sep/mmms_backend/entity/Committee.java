@@ -12,10 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -66,11 +63,11 @@ public class Committee {
     @LastModifiedDate
     private LocalDate modifiedDate;
 
-    @OneToMany(mappedBy="committee")
-    private List<Meeting> meetings = new LinkedList<>();
+    @OneToMany(mappedBy="committee", cascade = CascadeType.REMOVE)
+    private List<Meeting> meetings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "committee", cascade = CascadeType.PERSIST)
-    private List<CommitteeMembership> memberships = new LinkedList<>();
+    @OneToMany(mappedBy = "committee", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<CommitteeMembership> memberships = new ArrayList<>();
 
     /**
         automatically sets membership->committee to 'this' as well

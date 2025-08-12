@@ -60,6 +60,15 @@ public class CommitteeController {
     }
 
 
+    //TODO: Create Tests
+    @PostMapping("/deleteCommittee")
+    public ResponseEntity<Response> deleteCommittee(@RequestParam(required = true) int  committeeId, Authentication authentication) {
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        committeeService.deleteCommittee(committee, authentication.getName());
+        return ResponseEntity.ok(new Response(ResponseMessages.COMMITTEE_DELETED_SUCCESSFULLY));
+    }
+
+
 
 
     /**

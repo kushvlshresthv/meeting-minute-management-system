@@ -108,7 +108,7 @@ INSERT INTO committee_memberships (committee_id, member_id, role, uuid)
 VALUES
     -- Committee 1 (8 members)
     (1, 1, 'Member-Secretary', UUID()),
-    (1, 2, 'Member', UUID()),
+    (1, 2, 'Coordinator', UUID()),
     (1, 3, 'Member', UUID()),
     (1, 4, 'Invitee', UUID()),
     (1, 5, 'Member-Secretary', UUID()),
