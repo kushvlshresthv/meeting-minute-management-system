@@ -26,6 +26,7 @@ public class CommitteeController {
 
 
     //TODO: Create Tests
+    //TODO: Fix this route should check if there is exactly one coordinator
     @PostMapping("/createCommittee")
     public ResponseEntity<Response> createCommittee(@RequestBody CommitteeCreationDto committeeCreationDto, Authentication authentication) {
         Committee savedCommittee = committeeService.saveNewCommittee(committeeCreationDto, authentication.getName());
@@ -88,6 +89,7 @@ public class CommitteeController {
 
     @PostMapping("/addMembersToCommittee")
     //NOTE: LinkedHashSet is made LinkedHashSet to preserve order and avoid duplicate memberIds
+    //TODO: Fix (this route should not add more coordinator to the committee)
     //TODO: Create Tests
     public ResponseEntity<Response> addMembershipsToCommittee(@RequestParam int committeeId, @RequestBody LinkedHashSet<NewMembershipRequest> newMemberships, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);

@@ -28,7 +28,7 @@ public class MeetingCreationDto {
     @NotBlank(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     private String heldPlace;
 
-    private LinkedHashSet<Integer> attendeeIds = new LinkedHashSet<>();
+    private LinkedHashSet<Integer> inviteeIds = new LinkedHashSet<>();
 
     @NotEmpty(message = ValidationErrorMessages.FIELD_CANNOT_BE_EMPTY)
     private List<String> decisions = new ArrayList<>();

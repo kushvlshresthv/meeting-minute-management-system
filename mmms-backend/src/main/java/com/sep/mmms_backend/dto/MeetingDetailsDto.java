@@ -24,7 +24,7 @@ public class MeetingDetailsDto {
     private final String heldPlace;
     private final LocalDate createdDate;
     private final LocalDate updatedDate;
-    private final Set<MemberSummaryDto> attendees = new HashSet<>();
+    private final Set<MemberSummaryDto> invitees = new HashSet<>();
     private final List<DecisionDto> decisions = new ArrayList<>();
     private final List<AgendaDto> agendas = new ArrayList<>();
 
@@ -38,8 +38,8 @@ public class MeetingDetailsDto {
         this.createdDate = meeting.getCreatedDate();
         this.updatedDate = meeting.getUpdatedDate();
 
-        for(Member attendee: meeting.getAttendees()) {
-            this.attendees.add(new MemberSummaryDto(attendee, meeting.getCommittee().getId()));
+        for(Member invitee: meeting.getInvitees()) {
+            this.invitees.add(new MemberSummaryDto(invitee, meeting.getCommittee().getId()));
         }
 
         for(Decision decision: meeting.getDecisions()) {

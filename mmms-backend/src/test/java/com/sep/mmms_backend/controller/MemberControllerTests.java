@@ -9,7 +9,6 @@ import com.sep.mmms_backend.dto.MemberCreationDto;
 import com.sep.mmms_backend.dto.MemberDetailsDto;
 import com.sep.mmms_backend.dto.MemberSummaryDto;
 import com.sep.mmms_backend.entity.Committee;
-import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.ExceptionMessages;
@@ -39,9 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;

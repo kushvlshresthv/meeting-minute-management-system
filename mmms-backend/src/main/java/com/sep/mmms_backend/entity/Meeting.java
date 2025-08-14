@@ -83,6 +83,18 @@ public class Meeting {
     )
     public List<Member> attendees = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="meeting_invitees",
+            inverseJoinColumns = {
+                    @JoinColumn(name="member_id", referencedColumnName = "member_id"),
+            },
+
+            joinColumns = {
+                    @JoinColumn(name="meeting_id", referencedColumnName = "meeting_id"),
+            }
+    )
+    public List<Member> invitees = new ArrayList<>();
+
     @OneToMany(mappedBy="meeting", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Decision> decisions = new ArrayList<>();
 

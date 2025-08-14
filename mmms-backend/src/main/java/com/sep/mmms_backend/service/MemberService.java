@@ -91,6 +91,24 @@ public class MemberService {
     }
 
 
+
+    //similar to saveNewMember, but just does not save the membership with the committee
+    public Member saveNewInvitee(MemberCreationDto memberDto){
+        //TODO: do something about this workaround
+        memberDto.setRole("toPassValidation");
+        entityValidator.validate(memberDto);
+
+        Member member = new Member();
+        member.setFirstName(memberDto.getFirstName());
+        member.setLastName(memberDto.getLastName());
+        member.setFirstNameNepali(memberDto.getFirstNameNepali());
+        member.setLastNameNepali(memberDto.getLastNameNepali());
+        member.setEmail(memberDto.getEmail());
+        member.setPost(memberDto.getPost());
+
+        return memberRepository.save(member);
+    }
+
     @Transactional
     public Member updateExistingMemberDetails(MemberUpdationDto newMemberData, String username) {
 

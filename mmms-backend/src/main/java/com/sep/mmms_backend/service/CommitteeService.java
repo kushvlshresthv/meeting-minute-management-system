@@ -52,6 +52,9 @@ public class CommitteeService {
             throw new InvalidMembershipException(ExceptionMessages.MEMBERSHIP_ROLE_MISSING);
         }
 
+        //adding coordinator to members as well
+        committeeCreationDto.getMembers().put(committeeCreationDto.getCoordinatorId(), "Coordinator");
+
         List<Integer> requestedMemberIds = committeeCreationDto.getMembers().keySet().stream().toList();
 
         List<Member> foundMembers = memberRepository.findAccessibleMembersByIds(requestedMemberIds, username);

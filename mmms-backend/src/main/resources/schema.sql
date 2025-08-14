@@ -85,6 +85,14 @@ CREATE TABLE meeting_attendees (
            FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 );
 
+CREATE TABLE meeting_invitees(
+           member_id INT NOT NULL,
+           meeting_id INT NOT NULL,
+
+           PRIMARY KEY (member_id, meeting_id),
+           FOREIGN KEY (member_id) REFERENCES members(member_id),
+           FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
+);
 
 CREATE TABLE decisions (
            decision_id INT AUTO_INCREMENT PRIMARY KEY,

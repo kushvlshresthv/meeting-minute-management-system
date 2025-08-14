@@ -25,7 +25,7 @@
         </p>
     </div>
 
-    <div class="attendees">
+    <div class="memberships">
 
         <h5 class="heading"><b>उपस्थितिः</b></h5>
         <table border="2" cellspacing="0" cellpadding="5">
@@ -38,7 +38,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="membership, iterStat : ${membershipsOfAttendees}">
+            <tr th:each="membership, iterStat : ${membershipsForMinute}">
                 <td th:text="${numUtils.toNepaliNumber(iterStat.index+1)}">५</td>
                 <td th:text="${membership.member.post + ' ' + membership.member.firstNameNepali + ' ' + membership.member.lastNameNepali}"></td>
                 <td th:text="${membership.role}">संयोजक</td>

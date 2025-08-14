@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Member;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 
 /**

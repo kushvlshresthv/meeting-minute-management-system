@@ -2,6 +2,7 @@ package com.sep.mmms_backend.controller;
 
 import com.sep.mmms_backend.dto.*;
 import com.sep.mmms_backend.entity.Committee;
+import com.sep.mmms_backend.entity.Meeting;
 import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
@@ -50,6 +51,16 @@ public class MemberController {
        MemberSummaryDto memberSummaryDto = new MemberSummaryDto(member, committeeId);
 
         return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS, memberSummaryDto));
+    }
+
+
+    //This route is simular to 'createMember' but does not create a membership for the member
+    @PostMapping("/createInvitee")
+    public ResponseEntity<Response> createInvitee(@RequestBody(required=true) MemberCreationDto memberDto) {
+        Member member = memberService.saveNewInvitee(memberDto);
+        MemberSearchResultDto searchResultDto = new MemberSearchResultDto(member);
+        //returning search result dto, because frontend adds this newly created member below the search bar as search result
+        return ResponseEntity.ok(new Response(ResponseMessages.MEMBER_CREATION_SUCCESS, searchResultDto));
     }
 
 

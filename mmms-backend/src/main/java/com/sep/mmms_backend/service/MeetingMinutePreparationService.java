@@ -3,6 +3,7 @@ package com.sep.mmms_backend.service;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.CommitteeMembership;
 import com.sep.mmms_backend.entity.Meeting;
+import com.sep.mmms_backend.entity.Member;
 import com.sep.mmms_backend.exceptions.CommitteeDoesNotExistException;
 import com.sep.mmms_backend.exceptions.IllegalOperationException;
 import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
@@ -25,7 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MeetingMinutePreparationService {
@@ -97,9 +97,13 @@ public class MeetingMinutePreparationService {
         modelData.put("meetingHeldPlace", meeting.getHeldPlace());
         modelData.put("meetingTitle", meeting.getTitle());
         modelData.put("committeeName", meeting.getCommittee().getName());
-        modelData.put("membershipsOfAttendees", getSortedAttendeesMemberships(meeting, committeeId));
+        modelData.put("coordinatorFullName", getCoordinatorFullName(committee.getMemberships()));
         modelData.put("decisions", meeting.getDecisions());
         modelData.put("agendas", meeting.getAgendas());
+
+
+        //This should be done last because this also parses the roles to nepali
+        modelData.put("membershipsForMinute", getSortedMembershipsForMinute(committee, meeting, committeeId));
 
         return modelData;
     }
@@ -148,70 +152,122 @@ public class MeetingMinutePreparationService {
         return partOfDay;
     }
 
-    private List<CommitteeMembership> getSortedAttendeesMemberships(Meeting meeting, int committeeId) {
-        List<CommitteeMembership> membershipsOfAttendees = meeting.getAttendees().stream()
-                .map(attendee -> {
-                    CommitteeMembership membership = memberService.getMembership(attendee, committeeId);
-
-                    return membership;
-                })
-                .collect(Collectors.toList());
-
-        sortMembershipByRole(membershipsOfAttendees);
-        parsePostForTemplate(membershipsOfAttendees);
-        return membershipsOfAttendees;
-    }
-
-    void parsePostForTemplate(List<CommitteeMembership> membershipsOfAttendees) {
-        for(CommitteeMembership membership: membershipsOfAttendees) {
-            if(membership.getMember().getPost().equalsIgnoreCase("Doctor")){
-                membership.getMember().setPost("डा. ");
-            }
-
-            else if(membership.getMember().getPost().equalsIgnoreCase("Professor")){
-                membership.getMember().setPost("प्रा.");
-            }
-
-            else {
-                membership.getMember().setPost("श्री");
-            }
+    private List<CommitteeMembership> getSortedMembershipsForMinute(Committee committee , Meeting meeting, int committeeId) {
+        List<CommitteeMembership> membershipsForMinute = committee.getMemberships();
+        for(Member invitee: meeting.getInvitees()) {
+            CommitteeMembership inviteeMembership = new CommitteeMembership();
+            inviteeMembership.setMember(invitee);
+            inviteeMembership.setRole("Invitee");
+            membershipsForMinute.add(inviteeMembership);
         }
+        sortMembershipByRole(membershipsForMinute);
+        parseRoleForMinute(committee.getMemberships());
+        return membershipsForMinute;
     }
 
     /**
      * Sorts memberships object based on role in the order: 'coordinator -> member -> member_secretary -> invitee'
      */
-    private void sortMembershipByRole(List<CommitteeMembership> memberships ) {
+    private void sortMembershipByRole(List<CommitteeMembership> memberships) {
         if (memberships == null || memberships.isEmpty()) {
             return;
         }
+
         Map<String, Integer> rolePriority = new HashMap<>();
+
+        // 1. Top Leadership
         rolePriority.put("Coordinator", 1);
-        rolePriority.put("Member", 2);
-        rolePriority.put("Member-Secretary", 3);
-        rolePriority.put("Invitee", 4);
+        rolePriority.put("Chairperson", 2);
+        rolePriority.put("Vice Chairperson", 3);
 
-        memberships.sort(Comparator.comparingInt(m -> rolePriority.getOrDefault(m.getRole(), Integer.MAX_VALUE)));
+        // 2. Executive / Key Decision-Makers
+        rolePriority.put("Vice Coordinator", 4);
+        rolePriority.put("Secretary", 5);
+        rolePriority.put("Joint Secretary", 6);
+        rolePriority.put("Member-Secretary", 7);
 
-        for(CommitteeMembership membership : memberships) {
-            if(membership.getRole().equalsIgnoreCase("coordinator")) {
-                membership.setRole("संयोजक");
-            }
+        // 3. Financial Oversight
+        rolePriority.put("Treasurer", 8);
 
-            else if(membership.getRole().equalsIgnoreCase("member")) {
-                membership.setRole("सदस्य");
-            }
+        // 4. Specialized Leadership Roles
+        rolePriority.put("Program Coordinator", 9);
+        rolePriority.put("Technical Coordinator", 10);
+        rolePriority.put("Event Manager", 11);
 
-            else if(membership.getRole().equalsIgnoreCase("member-secretary")) {
-                membership.setRole("सदस्य-सचिव");
-            }
+        // 5. Communication & External Relations
+        rolePriority.put("Spokesperson", 12);
 
-            else if(membership.getRole().equalsIgnoreCase("invitee")) {
-                membership.setRole("आमन्त्रित");
+        // 6. Advisory / Oversight
+        rolePriority.put("Advisor", 13);
+        rolePriority.put("Observer", 14);
+
+        // 7. General Membership
+        rolePriority.put("Member", 15);
+
+        // 8. Invitee (lowest priority)
+        rolePriority.put("Invitee", 17);
+
+        int unknownRolePriority = 16; // just before Invitee
+
+        memberships.sort(Comparator.comparingInt(m ->
+                rolePriority.getOrDefault(m.getRole(), unknownRolePriority)
+        ));
+    }
+
+
+    private void parseRoleForMinute(List<CommitteeMembership> memberships) {
+        // Nepali translations mapped to English roles
+        Map<String, String> roleTranslations = Map.ofEntries(
+                // 1. Top Leadership
+                Map.entry("coordinator", "संयोजक"),
+                Map.entry("chairperson", "अध्यक्ष"),
+                Map.entry("vice chairperson", "उपाध्यक्ष"),
+
+                // 2. Executive / Key Decision-Makers
+                Map.entry("vice coordinator", "उप-समन्वयक"),
+                Map.entry("secretary", "सचिव"),
+                Map.entry("joint secretary", "सह सचिव"),
+                Map.entry("member-secretary", "सदस्य–सचिव"),
+
+                // 3. Financial Oversight
+                Map.entry("treasurer", "कोषाध्यक्ष"),
+
+                // 4. Specialized Leadership Roles
+                Map.entry("program coordinator", "कार्यक्रम समन्वयक"),
+                Map.entry("technical coordinator", "प्राविधिक समन्वयक"),
+                Map.entry("event manager", "कार्यक्रम प्रबन्धक"),
+
+                // 5. Communication & External Relations
+                Map.entry("spokesperson", "प्रवक्ता"),
+
+                // 6. Advisory / Oversight
+                Map.entry("advisor", "सल्लाहकार"),
+                Map.entry("observer", "पर्यवेक्षक"),
+
+                // 7. General Membership
+                Map.entry("member", "सदस्य"),
+                Map.entry("invitee", "आमन्त्रित")
+        );
+
+        // Loop through memberships
+        for (CommitteeMembership membership : memberships) {
+            String englishRoleLower = membership.getRole().toLowerCase();
+            String translatedRole = roleTranslations.get(englishRoleLower);
+            if (translatedRole != null) {
+                membership.setRole(translatedRole);
             }
         }
     }
 
+    private String getCoordinatorFullName(List<CommitteeMembership> memberships) {
+        //TODO: Optimize (there might be better ways to get coordinator membership
+        for(CommitteeMembership membership : memberships) {
+            if(membership.getRole().equalsIgnoreCase("Coordinator"))
+                return membership.getMember().getFirstNameNepali() + " " + membership.getMember().getLastNameNepali();
+        }
+
+        return "[Error: No Coordinator]";
+    }
 
 
 
@@ -221,6 +277,7 @@ public class MeetingMinutePreparationService {
 
     //----------------------------------------------------------------------------------
     //This part is for msword creation
+    //TODO: Consider moving the code below to a separate service like: MeetingMinuteWordPreparationService
 
 
     public String renderHtmlTemplate(String templateName, Map<String, Object> dataModel) {
@@ -235,7 +292,7 @@ public class MeetingMinutePreparationService {
     1. introduction -> signifies sections
     2. justify-text -> styling
     3. heading -> styling
-    4. attendees -> signifies sections
+    4. memberships -> signifies sections
     5. decisions -> signifies sections
 
     Structure of the template:
@@ -243,9 +300,9 @@ public class MeetingMinutePreparationService {
     #a4-box
         #introduction
             #introduction-body
-        #attendees
-            #heading-attendees
-            #attendee-table
+        #memberships
+            #heading
+            #table
         #agendas  (only have this section if agenda isn't empty)
             #heading-agendas
             #agendas-list
@@ -289,7 +346,7 @@ public class MeetingMinutePreparationService {
                     }
                 }
 
-                else if (element.className().contains("attendees")) {
+                else if (element.className().contains("memberships")) {
                     Elements children = element.children();
 
                     //attendee has two children, a heading, and the table
@@ -392,7 +449,7 @@ public class MeetingMinutePreparationService {
 
                             // 2. Define abstract numbering style (numbered list)
                             CTAbstractNum abstractNum = CTAbstractNum.Factory.newInstance();
-                            abstractNum.setAbstractNumId(BigInteger.ZERO);
+                            abstractNum.setAbstractNumId(BigInteger.ONE);
 
                             CTLvl level = abstractNum.addNewLvl();
                             level.setIlvl(BigInteger.ZERO);

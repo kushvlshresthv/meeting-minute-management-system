@@ -6,22 +6,15 @@ import com.sep.mmms_backend.dto.MeetingSummaryDto;
 import com.sep.mmms_backend.dto.MeetingUpdationDto;
 import com.sep.mmms_backend.entity.Committee;
 import com.sep.mmms_backend.entity.Meeting;
-import com.sep.mmms_backend.entity.Member;
-import com.sep.mmms_backend.exceptions.MeetingDoesNotExistException;
 import com.sep.mmms_backend.response.Response;
 import com.sep.mmms_backend.response.ResponseMessages;
 import com.sep.mmms_backend.service.CommitteeService;
 import com.sep.mmms_backend.service.MeetingService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api")
@@ -65,12 +58,12 @@ public class MeetingController {
 
 
     //TODO: Create Tests
-    @PostMapping("addAttendeesToMeeting")
-    public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody LinkedHashSet<Integer> newAttendeeIds, Authentication authentication) {
+    @PostMapping("addInviteesToMeeting")
+    public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody LinkedHashSet<Integer> newInviteeIds, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
         Meeting meeting = meetingService.findMeetingById(meetingId);
 
-        meetingService.addAttendeesToMeeting(newAttendeeIds, committee, meeting, authentication.getName());
+        meetingService.addInviteesToMeeting(newInviteeIds, committee, meeting, authentication.getName());
 
         return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS));
     }

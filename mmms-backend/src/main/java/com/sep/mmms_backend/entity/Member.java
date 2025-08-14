@@ -76,6 +76,9 @@ public class Member {
     Set<Meeting> attendedMeetings = new HashSet<>();
 
 
+    @ManyToMany(mappedBy = "invitees", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    Set<Meeting> invitedMeetings = new HashSet<>();
+
     @PrePersist
     public void initUUID() {
         if (this.uuid == null) {
