@@ -72,6 +72,7 @@ public class MemberDetailsDto {
     private final String institution;
     private final String post;
     private final String qualification;
+    private final String email;
     private final List<CommitteeWithMeetings> committeeWithMeetings;
 
 
@@ -92,6 +93,7 @@ public class MemberDetailsDto {
         this.lastNameNepali = member.getLastNameNepali();
         this.institution = member.getInstitution();
         this.post = member.getPost();
+        this.email = member.getEmail();
         this.qualification = member.getQualification();
         this.committeeWithMeetings = List.copyOf(committeeWithMeetings);
     }
@@ -111,13 +113,15 @@ public class MemberDetailsDto {
             @JsonProperty("institution") String institution,
             @JsonProperty("post") String post,
             @JsonProperty("qualification") String qualification,
-            @JsonProperty("committeeWithMeetings") List<CommitteeWithMeetings> committeeWithMeetings
+            @JsonProperty("committeeWithMeetings") List<CommitteeWithMeetings> committeeWithMeetings,
+            @JsonProperty("email") String email
     ) {
         this.memberId = memberId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.institution = institution;
         this.post = post;
+        this.email = email;
         this.qualification = qualification;
         this.committeeWithMeetings = committeeWithMeetings;
         this.firstNameNepali = firstNameNepali;

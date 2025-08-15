@@ -86,22 +86,22 @@ public class MeetingService {
             throw new MeetingNotAccessibleException(ExceptionMessages.MEETING_NOT_ACCESSIBLE, existingMeeting.getTitle());
         }
 
-        if(newMeetingData.getTitle() != null)
+        if(newMeetingData.getTitle() != null && !newMeetingData.getTitle().isBlank())
             existingMeeting.setTitle(newMeetingData.getTitle());
-        if(newMeetingData.getDescription() != null)
+        if(newMeetingData.getDescription() != null && !newMeetingData.getDescription().isBlank())
             existingMeeting.setDescription(newMeetingData.getDescription());
         if(newMeetingData.getHeldDate() != null)
             existingMeeting.setHeldDate(newMeetingData.getHeldDate());
         if(newMeetingData.getHeldTime() != null)
             existingMeeting.setHeldTime(newMeetingData.getHeldTime());
-        if(newMeetingData.getHeldPlace() != null)
+        if(newMeetingData.getHeldPlace() != null && !newMeetingData.getHeldPlace().isBlank())
             existingMeeting.setHeldPlace(newMeetingData.getHeldPlace());
 
 
         Map<Integer, Agenda> existingAgendas = existingMeeting.getAgendas().stream().collect(Collectors.toMap(Agenda::getAgendaId, agenda->agenda));
 
+        List<Agenda> updatedAgendas = new ArrayList<>();
         if(!newMeetingData.getAgendas().isEmpty()) {
-            List<Agenda> updatedAgendas = new ArrayList<>();
             newMeetingData.getAgendas().forEach(newAgendaDto -> {
                 if(newAgendaDto.getAgendaId() != null && existingAgendas.containsKey(newAgendaDto.getAgendaId())) {
                     if(newAgendaDto.getAgenda() != null && !newAgendaDto.getAgenda().isBlank()) {
@@ -116,14 +116,14 @@ public class MeetingService {
                     }
                 }
             });
-            existingMeeting.getAgendas().clear();
-            existingMeeting.addAllAgendas(updatedAgendas);
         }
+        existingMeeting.getAgendas().clear();
+        existingMeeting.addAllAgendas(updatedAgendas);
 
         Map<Integer, Decision> existingDecisions = existingMeeting.getDecisions().stream().collect(Collectors.toMap(Decision::getDecisionId, decision->decision));
 
+        List<Decision> updatedDecisions = new ArrayList<>();
         if(!newMeetingData.getDecisions().isEmpty()) {
-            List<Decision> updatedDecisions = new ArrayList<>();
             newMeetingData.getDecisions().forEach(newDecisionDto -> {
                 if(newDecisionDto.getDecisionId() != null && existingDecisions.containsKey(newDecisionDto.getDecisionId())) {
                     if( newDecisionDto.getDecision() != null && !newDecisionDto.getDecision().isBlank()) {
@@ -138,9 +138,9 @@ public class MeetingService {
                     }
                 }
             });
-            existingMeeting.getDecisions().clear();
-            existingMeeting.addAllDecisions(updatedDecisions);
         }
+        existingMeeting.getDecisions().clear();
+        existingMeeting.addAllDecisions(updatedDecisions);
 
         return meetingRepository.save(existingMeeting);
     }

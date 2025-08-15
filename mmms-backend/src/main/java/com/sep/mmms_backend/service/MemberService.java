@@ -75,10 +75,15 @@ public class MemberService {
         Member member = new Member();
         member.setFirstName(memberDto.getFirstName());
         member.setLastName(memberDto.getLastName());
-        member.setFirstNameNepali(memberDto.getFirstNameNepali());
-        member.setLastNameNepali(memberDto.getLastNameNepali());
-        member.setEmail(memberDto.getEmail());
         member.setPost(memberDto.getPost());
+        if(memberDto.getFirstNameNepali() != null && !memberDto.getFirstNameNepali().isEmpty())
+            member.setFirstNameNepali(memberDto.getFirstNameNepali());
+        if(memberDto.getLastNameNepali() != null && !memberDto.getLastNameNepali().isEmpty())
+            member.setLastNameNepali(memberDto.getLastNameNepali());
+        if(memberDto.getFirstNameNepali() != null && !memberDto.getFirstNameNepali().isEmpty())
+            member.setEmail(memberDto.getEmail());
+        if(memberDto.getEmail() != null && !memberDto.getEmail().isEmpty())
+            member.setInstitution(memberDto.getInstitution());
 
         CommitteeMembership membership = new CommitteeMembership();
         membership.setRole(memberDto.getRole());
@@ -122,19 +127,19 @@ public class MemberService {
             //maybe create MemberNotAccessible exception
         }
 
-        if(newMemberData.getFirstName() != null)
+        if(newMemberData.getFirstName() != null && !newMemberData.getFirstName().isBlank())
             existingMember.setFirstName(newMemberData.getFirstName());
-        if(newMemberData.getLastName() != null)
+        if(newMemberData.getLastName() != null && !newMemberData.getLastName().isBlank())
             existingMember.setLastName(newMemberData.getLastName());
-        if(newMemberData.getEmail() != null)
+        if(newMemberData.getEmail() != null && !newMemberData.getEmail().isBlank())
             existingMember.setEmail(newMemberData.getEmail());
-        if(newMemberData.getPost() != null)
+        if(newMemberData.getPost() != null && !newMemberData.getPost().isBlank())
             existingMember.setPost(newMemberData.getPost());
-        if(newMemberData.getFirstNameNepali() != null)
+        if(newMemberData.getFirstNameNepali() != null && !newMemberData.getFirstNameNepali().isBlank())
             existingMember.setFirstNameNepali(newMemberData.getFirstNameNepali());
-        if(newMemberData.getLastNameNepali() != null)
+        if(newMemberData.getLastNameNepali() != null && !newMemberData.getLastNameNepali().isBlank())
             existingMember.setLastNameNepali(newMemberData.getLastNameNepali());
-        if(newMemberData.getInstitution() != null)
+        if(newMemberData.getInstitution() != null && !newMemberData.getInstitution().isBlank())
             existingMember.setInstitution(newMemberData.getInstitution());
 
         return memberRepository.save(existingMember);

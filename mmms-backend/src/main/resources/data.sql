@@ -115,19 +115,19 @@ VALUES
     (1, 6, 'Member', UUID()),
 
     -- Committee 2 (5 members)
-    (2, 9,  'Member', UUID()),
+    (2, 9,  'Coordinator', UUID()),
     (2, 10, 'Member', UUID()),
     (2, 11, 'Member-Secretary', UUID()),
     (2, 12, 'Member', UUID()),
     (2, 13, 'Member', UUID()),
 
     -- Committee 3 (3 members)
-    (3, 14, 'Member', UUID()),
+    (3, 14, 'Coordinator', UUID()),
     (3, 15, 'Member', UUID()),
     (3, 16, 'Member', UUID()),
 
     -- Committee 4 (1 member)
-    (4, 17, 'Member', UUID()),
+    (4, 17, 'Coordinator', UUID()),
     (4,  7, 'Member', UUID()),
      (4, 8, 'Member', UUID());
 

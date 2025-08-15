@@ -65,7 +65,7 @@ public class MemberController {
 
 
 
-    @PutMapping("/updateMemberDetails")
+    @PostMapping("/updateMemberDetails")
     public ResponseEntity<Response> updateMemberDetails(@RequestBody(required=true) MemberUpdationDto memberUpdationDto, Authentication authentication) {
         Member updatedMember = memberService.updateExistingMemberDetails(memberUpdationDto, authentication.getName());
 

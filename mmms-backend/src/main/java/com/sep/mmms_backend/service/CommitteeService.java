@@ -85,9 +85,9 @@ public class CommitteeService {
     @Transactional
     @CheckCommitteeAccess
     public Committee updateExistingCommittee(CommitteeUpdationDto newCommitteeData, Committee existingCommittee, String username) {
-        if(newCommitteeData.getName() != null)
+        if(newCommitteeData.getName() != null && !newCommitteeData.getName().isBlank())
             existingCommittee.setName(newCommitteeData.getName());
-        if(newCommitteeData.getDescription() != null)
+        if(newCommitteeData.getDescription() != null && !newCommitteeData.getDescription().isBlank())
             existingCommittee.setDescription(newCommitteeData.getDescription());
         if(newCommitteeData.getStatus() != null)
             existingCommittee.setStatus(newCommitteeData.getStatus());
