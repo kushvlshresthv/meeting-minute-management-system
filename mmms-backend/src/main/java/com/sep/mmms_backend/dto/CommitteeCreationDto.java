@@ -16,6 +16,7 @@ public class CommitteeCreationDto {
     @NotBlank(message ="committee name is required")
     private String name;
 
+    @NotBlank(message="committee description/aim is required")
     private String description;
 
     private CommitteeStatus status = CommitteeStatus.ACTIVE;

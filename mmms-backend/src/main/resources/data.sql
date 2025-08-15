@@ -40,12 +40,12 @@ INSERT INTO committees (
     max_no_of_meetings
 )
 VALUES
-    ('Academic Committee',                 'Oversees academic policies and curriculum development.', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
-    ('Events Committee',                   'Plans and organizes all institutional events and seminars.', 1, CURDATE(), 'username', CURDATE(), UUID(),'ACTIVE', 10),
-    ('Research and Development Committee', 'Promotes research and innovation.', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
-    ('Disciplinary Committee',             'Handles student and staff disciplinary issues.', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
-    ('Student Welfare Committee',          'Addresses student concerns and well-being.', 1, CURDATE(), 'username', CURDATE(), UUID(),'ACTIVE', 10),
-    ('IT and Infrastructure Committee',    'Manages IT resources and campus infrastructure.', 2, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10);
+    ('Academic Committee',                 'Oversee academic policies and curriculum development', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
+    ('Events Committee',                   'Plan and organize all institutional events and seminars', 1, CURDATE(), 'username', CURDATE(), UUID(),'ACTIVE', 10),
+    ('Research and Development Committee', 'Promote research and innovation', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
+    ('Disciplinary Committee',             'Handle student and staff disciplinary issues', 1, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10),
+    ('Student Welfare Committee',          'Addresse student concerns and well-being', 1, CURDATE(), 'username', CURDATE(), UUID(),'ACTIVE', 10),
+    ('IT and Infrastructure Committee',    'Manage IT resources and campus infrastructure', 2, CURDATE(), 'username', CURDATE(), UUID(), 'ACTIVE', 10);
 
 -- Insert Meetings
 INSERT INTO meetings (
@@ -55,10 +55,10 @@ INSERT INTO meetings (
 )
 VALUES
     -- meetings for committee 1
-    (1, 'Syllabus Update Discussion',         'Discussing proposed updates to the engineering syllabus.',             '2025-07-18', 'Pulchowk Campus',       '14:30:00', 'username', 'username', '2025-07-13', '2025-07-13',  UUID()),
-    (1, 'Annual Seminar Planning',            'Organizing the annual institutional seminar.',                        '2025-07-22', 'Auditorium',     '11:00:00', 'username', 'username', '2025-07-14', '2025-07-14', UUID()),
-    (1, 'Research Grant Proposals Review',    'Assessment of new research funding requests.',                        '2025-07-25', 'Innovation Hub', '13:00:00', 'username', 'username', '2025-07-21', '2025-07-21', UUID()),
-    (1, 'Review of Recent Incidents',         'Addressing recent disciplinary cases and policy updates.',            '2025-07-28', 'Admin Office 1', '10:00:00', 'username', 'username', '2025-07-22', '2025-07-22', UUID()),
+    (1, 'Syllabus Update Discussion',         'Discuss Updated Syllabus',             '2025-07-18', 'Pulchowk Campus',       '14:30:00', 'username', 'username', '2025-07-13', '2025-07-13',  UUID()),
+    (1, 'Annual Seminar Planning',            'Organize the annual institutional seminar',                        '2025-07-22', 'Auditorium',     '11:00:00', 'username', 'username', '2025-07-14', '2025-07-14', UUID()),
+    (1, 'Research Grant Proposals Review',    'Assessment of new research funding requests',                        '2025-07-25', 'Innovation Hub', '13:00:00', 'username', 'username', '2025-07-21', '2025-07-21', UUID()),
+    (1, 'Review of Recent Incidents',         'Addressing recent disciplinary cases and policy updates',            '2025-07-28', 'Admin Office 1', '10:00:00', 'username', 'username', '2025-07-22', '2025-07-22', UUID()),
 
     -- meetings for committee 2
     (2, 'Canteen and Hostel Feedback Session','Discussing feedback from students on facilities.',                    '2025-07-29', 'Student Lounge', '15:00:00', 'username', 'username', '2025-07-23', '2025-07-23', UUID()),
