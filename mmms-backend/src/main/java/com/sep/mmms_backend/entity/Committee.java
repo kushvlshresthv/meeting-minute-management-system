@@ -36,7 +36,7 @@ public class Committee {
     @Column(name="committee_name", nullable = false)
     private String name;
 
-    @Column(name="committee_description")
+    @Column(name="committee_description", nullable = false)
     private String description;
 
     @Column(name="max_no_of_meetings")

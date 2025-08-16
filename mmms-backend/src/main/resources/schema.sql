@@ -15,7 +15,7 @@ CREATE TABLE committees (
         committee_id INT AUTO_INCREMENT PRIMARY KEY,
         uuid VARCHAR(36) NOT NULL UNIQUE,
         committee_name VARCHAR(255) NOT NULL,
-        committee_description TEXT,
+        committee_description TEXT NOT NULL,
         created_by INT NOT NULL,
         created_date DATE NOT NULL,
         modified_by VARCHAR(255) NOT NULL,
