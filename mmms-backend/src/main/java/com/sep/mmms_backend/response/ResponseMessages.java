@@ -15,7 +15,8 @@ public enum ResponseMessages {
     //MEETING RELATED:
     MEETING_CREATION_FAILED("Failed to create meeting"),
     MEETING_CREATION_SUCCESSFUL("Meeting registered successfully"),
-    MEETING_ATTENDEE_ADDITION_SUCCESS("New attendees added to the meeting successfully"),
+    MEETING_INVITEES_ADDITION_SUCCESS("New invitees added to the meeting successfully"),
+    MEETING_INVITEE_REMOVAL_SUCCESS("New invitee removed from the meeting successfully"),
     MEETING_DETAIL_RETRIEVED_SUCCESSFULLY("Meeting retrieved successfully"),
     MEETING_UPDATION_SUCCESS("Meeting updated successfully"),
 

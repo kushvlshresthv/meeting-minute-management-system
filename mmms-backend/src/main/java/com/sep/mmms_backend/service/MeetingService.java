@@ -168,7 +168,7 @@ public class MeetingService {
         }
 
         //find the members exists in the database and part of the committee and also accessible by the user
-        List<Member> validNewInvitees = memberRepository.findExistingMembersInCommittee(newInvitteeIds, committee.getId(), username);
+        List<Member> validNewInvitees = memberRepository.findAccessibleMembersByIds(newInvitteeIds.stream().toList(), username);
 
         //check whether the member is already an invittee to the meeting
         Set<Integer> existingInviteeIds = meeting.getInvitees().stream().map(Member::getId).collect(Collectors.toSet());
@@ -185,6 +185,34 @@ public class MeetingService {
         }
 
         meeting.getInvitees().addAll(validNewInvitees);
+        meetingRepository.save(meeting);
+    }
+
+
+
+
+    @CheckCommitteeAccess(shouldValidateMeeting=true)
+    @Transactional
+    //TODO: Create Tests
+    //TODO: Properly check this route, as i have not checked it properly
+    public void removeInviteeFromMeetig(int inviteeIdToBeRemoved, Committee committee, Meeting meeting, String username) {
+
+        if (!meeting.getCommittee().getId().equals(committee.getId())) {
+            throw new MeetingDoesNotBelongToCommittee(ExceptionMessages.MEETING_NOT_IN_COMMITTEE, meeting.getTitle(), committee.getName());
+        }
+
+
+        //check whether the inviteeToBeRemoved is an invittee to the meeting
+        Set<Integer> existingInviteeIds = meeting.getInvitees().stream().map(Member::getId).collect(Collectors.toSet());
+
+        Member inviteeToBeRemoved = null;
+        if(existingInviteeIds.contains(inviteeIdToBeRemoved)) {
+            inviteeToBeRemoved = memberRepository.findMemberById(inviteeIdToBeRemoved);
+        } else {
+            throw new IllegalOperationException("Invitee does not exist");
+            //TODO: Exception (handle this properly)
+        }
+        meeting.getInvitees().remove(inviteeToBeRemoved);
         meetingRepository.save(meeting);
     }
 

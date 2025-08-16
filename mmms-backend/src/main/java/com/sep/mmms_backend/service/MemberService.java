@@ -108,8 +108,12 @@ public class MemberService {
         member.setLastName(memberDto.getLastName());
         member.setFirstNameNepali(memberDto.getFirstNameNepali());
         member.setLastNameNepali(memberDto.getLastNameNepali());
-        member.setEmail(memberDto.getEmail());
+
+        if(memberDto.getEmail() != null && !memberDto.getEmail().isEmpty())
+            member.setEmail(memberDto.getEmail());
+        member.setInstitution(memberDto.getInstitution());
         member.setPost(memberDto.getPost());
+
 
         return memberRepository.save(member);
     }

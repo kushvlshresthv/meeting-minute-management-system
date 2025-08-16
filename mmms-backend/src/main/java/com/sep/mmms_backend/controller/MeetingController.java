@@ -59,13 +59,27 @@ public class MeetingController {
 
     //TODO: Create Tests
     @PostMapping("addInviteesToMeeting")
-    public ResponseEntity<Response> addAttendeesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody LinkedHashSet<Integer> newInviteeIds, Authentication authentication) {
+    public ResponseEntity<Response> addInviteesToMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestBody LinkedHashSet<Integer> newInviteeIds, Authentication authentication) {
         Committee committee = committeeService.findCommitteeById(committeeId);
         Meeting meeting = meetingService.findMeetingById(meetingId);
 
         meetingService.addInviteesToMeeting(newInviteeIds, committee, meeting, authentication.getName());
 
-        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS));
+        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_INVITEES_ADDITION_SUCCESS));
+    }
+
+
+
+    //TODO: Create Tests
+    //TODO: Figure out the appropriate HTTP verb for this
+    @PostMapping("removeInviteeFromMeeting")
+    public ResponseEntity<Response> removeInviteeFromMeeting(@RequestParam int committeeId, @RequestParam int meetingId, @RequestParam("memberId") int inviteeToBeRemoved, Authentication authentication) {
+        Committee committee = committeeService.findCommitteeById(committeeId);
+        Meeting meeting = meetingService.findMeetingById(meetingId);
+
+        meetingService.removeInviteeFromMeetig(inviteeToBeRemoved, committee, meeting, authentication.getName());
+
+        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_INVITEE_REMOVAL_SUCCESS));
     }
 
     //TODO: Create Tests
@@ -76,6 +90,6 @@ public class MeetingController {
         Meeting meetingDetails = meetingService.getMeetingDetails(committee, meeting, authentication.getName());
 
         MeetingDetailsDto meetingDto = new MeetingDetailsDto(meetingDetails);
-        return ResponseEntity.ok(new Response(ResponseMessages.MEETING_ATTENDEE_ADDITION_SUCCESS, meetingDto));
+        return ResponseEntity.ok(new Response("Requested meeting details: ", meetingDto));
     }
 }
