@@ -1,0 +1,8 @@
+target/
+!target/*.jar
+.mvn/wrapper/maven-wrapper.jar
+.git
+.gitignore
+README.md
+mmms-backend/Dockerfile
+docker-compose.yml
