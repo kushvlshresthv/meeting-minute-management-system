@@ -12,7 +12,7 @@ COPY pom.xml .
 RUN chmod +x ./mvnw
 
 # Download dependencies
-RUN ./mvnw dependency:go-offline -B
+RUN ./mvnw -Dhttps.protocols=TLSv1.2 dependency:go-offline -B
 
 # Copy source code
 COPY src ./src
