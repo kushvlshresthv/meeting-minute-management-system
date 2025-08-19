@@ -111,8 +111,3 @@ CREATE TABLE IF NOT EXISTS agendas (
                                        agenda TEXT,
                                        FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-
--- Grant privileges to the new user
-# GRANT ALL PRIVILEGES ON mmms_db.* TO 'doece'@'%';
-# FLUSH PRIVILEGES;
