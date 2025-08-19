@@ -1,6 +1,6 @@
 use mmms_db;
 
-CREATE TABLE app_users
+CREATE TABLE IF NOT EXISTS app_users
 (
     uid       INT AUTO_INCREMENT PRIMARY KEY,
     firstname VARCHAR(50),
@@ -10,7 +10,7 @@ CREATE TABLE app_users
     password VARCHAR(100)
 );
 
-CREATE TABLE committees (
+CREATE TABLE IF NOT EXISTS committees (
                             committee_id INT AUTO_INCREMENT PRIMARY KEY,
                             uuid VARCHAR(36) NOT NULL UNIQUE,
                             committee_name VARCHAR(255) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE committees (
 );
 
 
-CREATE TABLE members (
+CREATE TABLE IF NOT EXISTS members (
                          member_id INT AUTO_INCREMENT PRIMARY KEY,
                          uuid VARCHAR(36) NOT NULL UNIQUE,
 
@@ -46,7 +46,7 @@ CREATE TABLE members (
                          modified_date DATE NOT NULL
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE committee_memberships (
+CREATE TABLE IF NOT EXISTS committee_memberships (
                                        committee_id INT NOT NULL,
                                        uuid VARCHAR(36) NOT NULL UNIQUE,
                                        member_id INT NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE committee_memberships (
                                        FOREIGN KEY (member_id) REFERENCES members(member_id)
 );
 
-CREATE TABLE meetings (
+CREATE TABLE IF NOT EXISTS meetings (
                           meeting_id INT AUTO_INCREMENT PRIMARY KEY,
                           uuid VARCHAR(36) NOT NULL UNIQUE,
 
@@ -75,7 +75,7 @@ CREATE TABLE meetings (
 );
 
 
-CREATE TABLE meeting_attendees (
+CREATE TABLE IF NOT EXISTS meeting_attendees (
                                    member_id INT NOT NULL,
                                    meeting_id INT NOT NULL,
 
@@ -84,7 +84,7 @@ CREATE TABLE meeting_attendees (
                                    FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 );
 
-CREATE TABLE meeting_invitees(
+CREATE TABLE IF NOT EXISTS meeting_invitees(
                                  member_id INT NOT NULL,
                                  meeting_id INT NOT NULL,
 
@@ -93,7 +93,7 @@ CREATE TABLE meeting_invitees(
                                  FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 );
 
-CREATE TABLE decisions (
+CREATE TABLE IF NOT EXISTS decisions (
                            decision_id INT AUTO_INCREMENT PRIMARY KEY,
                            uuid VARCHAR(36) NOT NULL UNIQUE,
 
@@ -103,8 +103,8 @@ CREATE TABLE decisions (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
-CREATE TABLE agendas (
-                         agenda_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS agendas (
+              agenda_id INT AUTO_INCREMENT PRIMARY KEY,
                          uuid VARCHAR(36) NOT NULL UNIQUE,
 
                          meeting_id INT NOT NULL,
@@ -112,7 +112,7 @@ CREATE TABLE agendas (
                          FOREIGN KEY (meeting_id) REFERENCES meetings(meeting_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-INSERT INTO app_users (username, password, email, firstname, lastname)
+INSERT IGNORE INTO app_users (username, password, email, firstname, lastname)
 VALUES ('username', '{noop}password', 'username@gmail.com', 'admin', 'admin');
 
 -- Grant privileges to the new user
