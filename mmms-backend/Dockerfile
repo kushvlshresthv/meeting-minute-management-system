@@ -12,14 +12,19 @@ COPY lib ./lib
 # Make mvnw executable
 RUN chmod +x ./mvnw
 
-# Download dependencies
-RUN ./mvnw -Dhttps.protocols=TLSv1.2 dependency:go-offline -B
+# Install the local JAR into local Maven repository
+RUN ./mvnw install:install-file \
+    -Dfile=lib/nepali-english-date-converter-1.0.0.jar \
+    -DgroupId=np.com.bahadur.converter.date.nepali \
+    -DartifactId=nepali-english-date-converter \
+    -Dversion=1.0.0 \
+    -Dpackaging=jar
 
 # Copy source code
 COPY src ./src
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -DskipTests -Dhttps.protocols=TLSv1.2
 
 # Runtime stage
 FROM openjdk:21-slim
