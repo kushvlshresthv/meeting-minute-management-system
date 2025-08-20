@@ -12,9 +12,9 @@ COPY lib ./lib
 # Make mvnw executable
 RUN chmod +x ./mvnw
 
-# Install the local JAR into local Maven repository
+# Install the local JAR into local Maven repository (corrected path)
 RUN ./mvnw install:install-file \
-    -Dfile=lib/nepali-english-date-converter-1.0.0.jar \
+    -Dfile=lib/nepali-date/nepali-english-date-converter-1.0.0.jar \
     -DgroupId=np.com.bahadur.converter.date.nepali \
     -DartifactId=nepali-english-date-converter \
     -Dversion=1.0.0 \
